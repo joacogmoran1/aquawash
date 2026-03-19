@@ -124,7 +124,7 @@ export function ClientsPage({ showToast }) {
 		if (!form.nombre) return;
 		setSaving(true);
 		try {
-			const nc = await api.post("/clientes", form);
+			await api.post("/clientes", form);
 			// Recargar la primera página para que aparezca el nuevo cliente
 			setCurrentPage(1);
 			setSearch("");

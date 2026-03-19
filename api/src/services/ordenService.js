@@ -190,10 +190,15 @@ async function avanzarEstado(id, lavadero_id) {
 	});
 }
 
-async function listar(lavadero_id, { estado, fecha } = {}) {
+// api/src/services/ordenService.js
+// Reemplazá la función listar completa:
+
+async function listar(lavadero_id, { estado, fecha, desde, hasta } = {}) {
 	const safeLavaderoId = normalizeId(lavadero_id, 'lavadero_id');
 	const safeEstado = normalizeEstadoFiltro(estado);
 	const safeFecha = normalizeFecha(fecha);
+	const safeDesde = normalizeFecha(desde);
+	const safeHasta = normalizeFecha(hasta);
 
 	const where = { lavadero_id: safeLavaderoId };
 
@@ -206,6 +211,16 @@ async function listar(lavadero_id, { estado, fecha } = {}) {
 		const fin = new Date(`${safeFecha}T00:00:00`);
 		fin.setDate(fin.getDate() + 1);
 		where.hora_llegada = { [Op.gte]: inicio, [Op.lt]: fin };
+	} else if (safeDesde || safeHasta) {
+		where.hora_llegada = {};
+		if (safeDesde) {
+			where.hora_llegada[Op.gte] = new Date(`${safeDesde}T00:00:00`);
+		}
+		if (safeHasta) {
+			const fin = new Date(`${safeHasta}T00:00:00`);
+			fin.setDate(fin.getDate() + 1);
+			where.hora_llegada[Op.lt] = fin;
+		}
 	}
 
 	return OrdenLavado.findAll({

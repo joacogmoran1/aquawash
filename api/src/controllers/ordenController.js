@@ -26,6 +26,9 @@ function normalizeNullableString(value) {
 const ESTADOS_VALIDOS_FILTRO = ['agendado', 'esperando', 'lavando', 'listo', 'entregado', 'cancelado'];
 const SERVICIOS_VALIDOS = ['exterior', 'completo', 'detailing'];
 
+// api/src/controllers/ordenController.js
+// En la función listar, reemplazá:
+
 async function listar(req, res, next) {
 	try {
 		const filters = {};
@@ -40,6 +43,15 @@ async function listar(req, res, next) {
 
 		if (typeof req.query.fecha === 'string' && req.query.fecha.trim()) {
 			filters.fecha = req.query.fecha.trim();
+		}
+
+		// NUEVO: soporte para rango desde/hasta
+		if (typeof req.query.desde === 'string' && req.query.desde.trim()) {
+			filters.desde = req.query.desde.trim();
+		}
+
+		if (typeof req.query.hasta === 'string' && req.query.hasta.trim()) {
+			filters.hasta = req.query.hasta.trim();
 		}
 
 		const ordenes = await ordenService.listar(req.lavaderoId, filters);
