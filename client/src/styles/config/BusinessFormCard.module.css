@@ -1,0 +1,37 @@
+.formStack {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    flex: 1;
+}
+
+/* DESKTOP */
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* TABLET */
+@media (max-width: 1200px) {
+    .formStack {
+        gap: 16px;
+    }
+
+    .formGrid {
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 640px) {
+    .formStack {
+        gap: 14px;
+    }
+
+    .formGrid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}

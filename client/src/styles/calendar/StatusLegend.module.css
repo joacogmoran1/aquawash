@@ -1,0 +1,159 @@
+.card {
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    overflow: hidden;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+.card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: none;
+    opacity: 0;
+}
+
+.legendTitle {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.18em;
+    margin-bottom: 14px;
+    line-height: 1.2;
+}
+
+.statusLegendItem {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.statusLegendItem:last-child {
+    margin-bottom: 0;
+}
+
+.statusLegendDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    box-shadow: 0 0 14px rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+}
+
+.statusLegendText {
+    font-size: 12px;
+    color: var(--muted2);
+    text-transform: capitalize;
+    line-height: 1.3;
+}
+
+/* NOTEBOOK / TABLET GRANDE */
+@media (max-width: 1200px) {
+    .card {
+        padding: 17px;
+        border-radius: 12px;
+    }
+
+    .legendTitle {
+        margin-bottom: 13px;
+    }
+
+    .statusLegendItem {
+        gap: 9px;
+        margin-bottom: 9px;
+    }
+}
+
+/* TABLET */
+@media (max-width: 992px) {
+    .card {
+        padding: 16px;
+        border-radius: 12px;
+    }
+
+    .legendTitle {
+        font-size: 9px;
+        letter-spacing: 0.14em;
+        margin-bottom: 12px;
+    }
+
+    .statusLegendItem {
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .statusLegendDot {
+        width: 7px;
+        height: 7px;
+    }
+
+    .statusLegendText {
+        font-size: 11.5px;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .card {
+        padding: 14px;
+        border-radius: 12px;
+    }
+
+    .legendTitle {
+        font-size: 8.5px;
+        letter-spacing: 0.12em;
+        margin-bottom: 10px;
+    }
+
+    .statusLegendItem {
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .statusLegendDot {
+        width: 7px;
+        height: 7px;
+    }
+
+    .statusLegendText {
+        font-size: 11px;
+    }
+}
+
+/* MOBILE CHICO */
+@media (max-width: 480px) {
+    .card {
+        padding: 12px;
+        border-radius: 12px;
+    }
+
+    .legendTitle {
+        font-size: 8px;
+        letter-spacing: 0.1em;
+        margin-bottom: 9px;
+    }
+
+    .statusLegendItem {
+        gap: 7px;
+        margin-bottom: 7px;
+    }
+
+    .statusLegendDot {
+        width: 6px;
+        height: 6px;
+    }
+
+    .statusLegendText {
+        font-size: 10.5px;
+    }
+}

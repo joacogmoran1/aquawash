@@ -1,0 +1,385 @@
+.loadingPage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    padding: 32px;
+    flex: 1;
+}
+
+.loadingText {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 16px;
+}
+
+.sectionHeaderRight {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.sectionTitle {
+    font-family: var(--font-disp);
+    font-size: 20px;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+.sectionMeta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+.totalText {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted2);
+}
+
+.totalValue {
+    color: var(--cyan);
+}
+
+.btnGhostSm {
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted2);
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btnGhostSm:hover {
+    color: var(--cyan);
+    border-color: var(--cyan);
+    background: rgba(47, 128, 255, 0.08);
+}
+
+.statCard {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, opacity 0.15s;
+}
+
+.statCard::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--accent-color, var(--cyan));
+    box-shadow: 0 0 12px var(--accent-color, var(--cyan));
+}
+
+.statIcon {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    opacity: 0.1;
+    font-size: 36px;
+}
+
+.statLabel {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.statValue {
+    font-family: var(--font-disp);
+    font-size: 42px;
+    color: var(--text);
+    letter-spacing: 1px;
+    line-height: 1;
+}
+
+.statValueMd {
+    font-size: 28px;
+}
+
+.statusStatValue {
+    font-size: 30px;
+}
+
+.statChange {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    margin-top: 8px;
+}
+
+.statUp {
+    color: var(--green);
+}
+
+.statDown {
+    color: var(--red);
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.badgeCyan {
+    background: rgba(47, 128, 255, 0.12);
+    color: var(--cyan);
+    border: 1px solid rgba(47, 128, 255, 0.25);
+}
+
+.badgeGreen {
+    background: rgba(47, 191, 113, 0.1);
+    color: var(--green);
+    border: 1px solid rgba(47, 191, 113, 0.2);
+}
+
+.badgeOrange {
+    background: rgba(242, 198, 109, 0.1);
+    color: var(--orange);
+    border: 1px solid rgba(242, 198, 109, 0.2);
+}
+
+.badgeMuted {
+    background: rgba(127, 135, 150, 0.15);
+    color: var(--muted2);
+    border: 1px solid var(--border);
+}
+
+.badgeRed {
+    color: var(--red);
+    background: rgba(255, 107, 107, 0.12);
+    border: 1px solid rgba(255, 107, 107, 0.25);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table thead th {
+    padding: 10px 16px;
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid rgba(30, 42, 68, 0.5);
+    transition: background 0.1s;
+}
+
+.table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.table tbody td {
+    padding: 14px 16px;
+    font-size: 13.5px;
+}
+
+.clickableRow {
+    cursor: pointer;
+}
+
+.orderRow {
+    transition: background 0.15s;
+}
+
+.clientPrimary {
+    font-weight: 500;
+    font-size: 13.5px;
+}
+
+.clientSecondary {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--font-mono);
+}
+
+.serviceCell {
+    font-size: 13px;
+    color: var(--muted2);
+}
+
+.timeCell,
+.durationCell,
+.durationCellMuted,
+.moneyCell,
+.dayCell,
+.numberCell,
+.orangeMonoCell,
+.diffCell {
+    font-family: var(--font-mono);
+}
+
+.timeCell {
+    font-size: 12px;
+    color: var(--muted2);
+}
+
+.durationCell {
+    font-size: 12px;
+}
+
+.durationCellMuted {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.moneyCell {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--cyan);
+}
+
+.dayCell {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.numberCell {
+    font-size: 13px;
+}
+
+.orangeMonoCell {
+    font-size: 12px;
+    color: var(--orange);
+}
+
+.dateCell {
+    font-size: 12px;
+    color: var(--muted2);
+}
+
+.diffCell {
+    font-size: 11px;
+}
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+}
+
+.emptyIcon {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.emptyText {
+    font-size: 14px;
+    color: var(--muted2);
+}
+
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    max-width: 380px;
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.modalTitle {
+    font-family: var(--font-disp);
+    font-size: 22px;
+    margin-bottom: 12px;
+}
+
+.modalText {
+    font-size: 14px;
+    color: var(--muted2);
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.modalStrong {
+    color: var(--text);
+}
+
+.modalBadgeWrap {
+    margin: 16px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+@media (max-width: 1100px) {
+    .sectionHeader {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+@media (max-width: 640px) {
+    .card {
+        padding: 18px;
+    }
+
+    .table {
+        display: block;
+        overflow-x: auto;
+    }
+}

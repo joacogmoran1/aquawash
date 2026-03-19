@@ -1,0 +1,144 @@
+.globalActions {
+    margin-top: 20px;
+}
+
+.daysScheduleStack {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.dayScheduleCard {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.dayScheduleHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.dayScheduleTitle {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.dayScheduleGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: stretch;
+}
+
+/* NOTEBOOK */
+@media (max-width: 1200px) {
+    .globalActions {
+        margin-top: 18px;
+    }
+
+    .daysScheduleStack {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 11px;
+    }
+
+    .dayScheduleCard {
+        padding: 11px;
+    }
+}
+
+/* TABLET */
+@media (max-width: 900px) {
+    .globalActions {
+        margin-top: 16px;
+    }
+
+    .daysScheduleStack {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .dayScheduleGrid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .dayScheduleHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .dayScheduleCard {
+        padding: 12px;
+    }
+
+    .dayScheduleTitle {
+        font-size: 13px;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .globalActions {
+        margin-top: 14px;
+    }
+
+    .daysScheduleStack {
+        gap: 10px;
+    }
+
+    .dayScheduleCard {
+        padding: 10px;
+        border-radius: 9px;
+    }
+
+    .dayScheduleHeader {
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .dayScheduleTitle {
+        font-size: 12.5px;
+    }
+
+    .dayScheduleGrid {
+        gap: 8px;
+    }
+}
+
+/* MOBILE CHICO */
+@media (max-width: 480px) {
+    .globalActions {
+        margin-top: 12px;
+    }
+
+    .daysScheduleStack {
+        gap: 8px;
+    }
+
+    .dayScheduleCard {
+        padding: 9px;
+        border-radius: 8px;
+    }
+
+    .dayScheduleHeader {
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+
+    .dayScheduleTitle {
+        font-size: 12px;
+    }
+
+    .dayScheduleGrid {
+        gap: 8px;
+    }
+}

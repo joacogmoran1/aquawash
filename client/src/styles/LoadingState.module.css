@@ -1,0 +1,89 @@
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 220px;
+    text-align: center;
+    padding: 16px;
+}
+
+.emptyIcon {
+    font-size: 24px;
+    margin-bottom: 8px;
+    opacity: 0.8;
+}
+
+.emptyText {
+    font-size: 14px;
+    color: var(--muted2);
+    max-width: 220px;
+    line-height: 1.4;
+}
+
+/* NOTEBOOK */
+@media (max-width: 1200px) {
+    .emptyState {
+        min-height: 200px;
+    }
+
+    .emptyIcon {
+        font-size: 22px;
+    }
+
+    .emptyText {
+        font-size: 13.5px;
+    }
+}
+
+/* TABLET */
+@media (max-width: 900px) {
+    .emptyState {
+        min-height: 180px;
+        padding: 14px;
+    }
+
+    .emptyIcon {
+        font-size: 20px;
+        margin-bottom: 6px;
+    }
+
+    .emptyText {
+        font-size: 13px;
+        max-width: 200px;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 640px) {
+    .emptyState {
+        min-height: 160px;
+        padding: 12px;
+    }
+
+    .emptyIcon {
+        font-size: 18px;
+    }
+
+    .emptyText {
+        font-size: 12.5px;
+        max-width: 180px;
+    }
+}
+
+/* MOBILE CHICO */
+@media (max-width: 480px) {
+    .emptyState {
+        min-height: 140px;
+        padding: 10px;
+    }
+
+    .emptyIcon {
+        font-size: 16px;
+    }
+
+    .emptyText {
+        font-size: 12px;
+        max-width: 160px;
+    }
+}

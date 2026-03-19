@@ -1,0 +1,75 @@
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.spacer {
+    flex: 1;
+    min-width: 0;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btnGhost,
+.btnPrimary,
+.btnDanger {
+    height: 36px;
+    padding: 0 16px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.18s ease;
+    white-space: nowrap;
+}
+
+.btnGhost {
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+}
+
+.btnGhost:hover {
+    background: var(--hover);
+    border-color: var(--border-strong);
+}
+
+.btnPrimary {
+    border: 1px solid transparent;
+    background: var(--cyan);
+    color: #07131c;
+}
+
+.btnPrimary:hover {
+    filter: brightness(1.03);
+}
+
+.btnDanger {
+    border: 1px solid rgba(255, 90, 90, 0.22);
+    background: rgba(120, 24, 32, 0.18);
+    color: #ff6b6b;
+}
+
+.btnDanger:hover {
+    background: rgba(120, 24, 32, 0.26);
+    border-color: rgba(255, 90, 90, 0.3);
+}
+
+.btnGhost:disabled,
+.btnPrimary:disabled,
+.btnDanger:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

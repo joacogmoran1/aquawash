@@ -1,0 +1,380 @@
+.card {
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    overflow: hidden;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+.card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: none;
+    opacity: 0;
+}
+
+.appointmentsCard {
+    display: flex;
+    flex-direction: column;
+    height: 380px;
+    min-height: 380px;
+}
+
+.sectionHeaderCompact {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.selectedDateTitle {
+    font-family: var(--font-disp);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--text);
+}
+
+.selectedDateMeta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 5px;
+    letter-spacing: 0.14em;
+}
+
+.appointmentsBody {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 4px;
+    position: relative;
+    z-index: 1;
+}
+
+.appointmentsBody::-webkit-scrollbar,
+.apptList::-webkit-scrollbar {
+    width: 8px;
+}
+
+.appointmentsBody::-webkit-scrollbar-track,
+.apptList::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.appointmentsBody::-webkit-scrollbar-thumb,
+.apptList::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.09);
+    border-radius: 999px;
+}
+
+.appointmentsBody::-webkit-scrollbar-thumb:hover,
+.apptList::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.apptList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    max-height: 380px;
+    padding-right: 4px;
+}
+
+.apptListFull {
+    max-height: none;
+}
+
+.apptCard {
+    background: var(--card2);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 14px;
+    transition:
+        transform 0.18s ease,
+        border-color 0.18s ease;
+    box-shadow: none;
+}
+
+.apptCard:hover {
+    transform: translateY(-1px);
+    border-color: rgba(47, 128, 255, 0.35);
+    background: var(--card2);
+    box-shadow: none;
+}
+
+.apptCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.apptTime {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--cyan);
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+}
+
+.apptName {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.2;
+}
+
+.apptCar {
+    font-size: 12px;
+    color: var(--muted2);
+    margin-top: 4px;
+    line-height: 1.35;
+}
+
+.apptBadgeWrap {
+    margin-top: 8px;
+}
+
+.apptService {
+    margin-top: 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.deleteApptButton {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 56px 20px;
+}
+
+.emptyIcon {
+    font-size: 34px;
+    margin-bottom: 12px;
+    opacity: 0.3;
+}
+
+.emptyText {
+    color: var(--muted2);
+    font-size: 13px;
+}
+
+/* TABLET GRANDE / NOTEBOOK */
+@media (max-width: 1200px) {
+    .appointmentsCard {
+        height: 440px;
+        min-height: 440px;
+    }
+
+    .apptList {
+        max-height: 100%;
+    }
+}
+
+/* TABLET */
+@media (max-width: 992px) {
+    .card {
+        padding: 16px;
+        border-radius: 20px;
+    }
+
+    .appointmentsCard {
+        height: 400px;
+        min-height: 400px;
+    }
+
+    .sectionHeaderCompact {
+        margin-bottom: 14px;
+    }
+
+    .selectedDateTitle {
+        font-size: 17px;
+    }
+
+    .selectedDateMeta {
+        font-size: 9px;
+    }
+
+    .apptCard {
+        padding: 13px;
+        border-radius: 16px;
+    }
+
+    .apptName {
+        font-size: 13.5px;
+    }
+
+    .apptCar {
+        font-size: 11.5px;
+    }
+
+    .apptService {
+        font-size: 9.5px;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .card {
+        padding: 14px;
+        border-radius: 18px;
+    }
+
+    .appointmentsCard {
+        min-height: 320px;
+        max-height: 420px;
+    }
+
+    .sectionHeaderCompact {
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .selectedDateTitle {
+        font-size: 16px;
+    }
+
+    .selectedDateMeta {
+        font-size: 9px;
+        margin-top: 4px;
+    }
+
+    .appointmentsBody {
+        padding-right: 2px;
+    }
+
+    .apptList {
+        gap: 10px;
+        max-height: none;
+        padding-right: 2px;
+    }
+
+    .apptCard {
+        padding: 12px;
+        border-radius: 14px;
+    }
+
+    .apptCardHeader {
+        gap: 10px;
+    }
+
+    .apptTime {
+        font-size: 10px;
+        margin-bottom: 5px;
+    }
+
+    .apptName {
+        font-size: 13px;
+    }
+
+    .apptCar {
+        font-size: 11px;
+        margin-top: 3px;
+    }
+
+    .apptBadgeWrap {
+        margin-top: 6px;
+    }
+
+    .apptService {
+        margin-top: 8px;
+        font-size: 9px;
+        letter-spacing: 0.06em;
+    }
+
+    .deleteApptButton {
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+    }
+
+    .emptyState {
+        padding: 40px 16px;
+    }
+
+    .emptyIcon {
+        font-size: 28px;
+        margin-bottom: 10px;
+    }
+
+    .emptyText {
+        font-size: 12px;
+    }
+}
+
+/* MOBILE CHICO */
+@media (max-width: 480px) {
+    .card {
+        padding: 12px;
+        border-radius: 16px;
+    }
+
+    .appointmentsCard {
+        min-height: 300px;
+        max-height: 380px;
+    }
+
+    .sectionHeaderCompact {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .selectedDateTitle {
+        font-size: 15px;
+    }
+
+    .selectedDateMeta {
+        font-size: 8.5px;
+        letter-spacing: 0.1em;
+    }
+
+    .apptCard {
+        padding: 11px;
+        border-radius: 13px;
+    }
+
+    .apptName {
+        font-size: 12.5px;
+    }
+
+    .apptCar {
+        font-size: 10.5px;
+        line-height: 1.3;
+    }
+
+    .apptService {
+        font-size: 8.5px;
+    }
+
+    .deleteApptButton {
+        width: 28px;
+        height: 28px;
+    }
+
+    .emptyState {
+        padding: 32px 14px;
+    }
+}

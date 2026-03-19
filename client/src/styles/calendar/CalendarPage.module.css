@@ -1,0 +1,81 @@
+.pageContent {
+    padding: 32px;
+    flex: 1;
+    min-width: 0;
+}
+
+.calendarGrid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 20px;
+    align-items: start;
+    min-width: 0;
+}
+
+.sideColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+}
+
+/* NOTEBOOK */
+@media (max-width: 1200px) {
+    .pageContent {
+        padding: 24px;
+    }
+
+    .calendarGrid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .sideColumn {
+        gap: 14px;
+    }
+}
+
+/* TABLET */
+@media (max-width: 992px) {
+    .pageContent {
+        padding: 20px;
+    }
+
+    .calendarGrid {
+        gap: 16px;
+    }
+
+    .sideColumn {
+        gap: 12px;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .pageContent {
+        padding: 16px;
+    }
+
+    .calendarGrid {
+        gap: 14px;
+    }
+
+    .sideColumn {
+        gap: 12px;
+    }
+}
+
+/* MOBILE CHICO */
+@media (max-width: 480px) {
+    .pageContent {
+        padding: 12px;
+    }
+
+    .calendarGrid {
+        gap: 12px;
+    }
+
+    .sideColumn {
+        gap: 10px;
+    }
+}

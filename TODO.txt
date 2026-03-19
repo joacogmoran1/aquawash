@@ -1,0 +1,21 @@
+Testear app
+
+[x] Signup
+[x] Login
+
+[x] Crear cliente
+[x] Editar cliente
+[x] Eliminar cliente
+
+[x] Agendar turno
+[x] cancelar turno
+
+[x] Crear servicios
+[x] Editar servicios
+[x] Eliminar servicios
+
+[x] Editar datos lavadero
+
+
+Errores o puntos de mejora encontrados:
+- 

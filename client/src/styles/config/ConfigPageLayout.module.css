@@ -1,0 +1,74 @@
+.pageContent {
+    padding: 32px;
+    flex: 1;
+    min-width: 0;
+}
+
+.pageGrid {
+    display: grid;
+    grid-template-columns: 0.75fr 1.55fr;
+    gap: 16px;
+    align-items: stretch;
+    min-width: 0;
+}
+
+.gridColumn {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    height: 100%;
+}
+
+.fullWidth {
+    grid-column: 1 / -1;
+}
+
+/* NOTEBOOK */
+@media (max-width: 1200px) {
+    .pageContent {
+        padding: 24px;
+    }
+
+    .pageGrid {
+        grid-template-columns: 0.9fr 1.1fr;
+        gap: 14px;
+    }
+}
+
+/* TABLET */
+@media (max-width: 900px) {
+    .pageContent {
+        padding: 20px;
+    }
+
+    .pageGrid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .gridColumn {
+        height: auto;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .pageContent {
+        padding: 16px;
+    }
+
+    .pageGrid {
+        gap: 12px;
+    }
+}
+
+/* MOBILE CHICO */
+@media (max-width: 480px) {
+    .pageContent {
+        padding: 12px;
+    }
+
+    .pageGrid {
+        gap: 10px;
+    }
+}

@@ -1,0 +1,246 @@
+.authPage {
+    min-height: 100vh;
+    display: flex;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+}
+
+.authLeft {
+    width: 45%;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+.authBgPattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.04;
+    background-image: repeating-linear-gradient(45deg,
+            var(--cyan) 0,
+            var(--cyan) 1px,
+            transparent 0,
+            transparent 50%);
+    background-size: 20px 20px;
+}
+
+.authBigText {
+    font-family: var(--font-disp);
+    font-size: 80px;
+    line-height: 0.9;
+    color: var(--cyan);
+    opacity: 0.15;
+    position: absolute;
+    bottom: 40px;
+    left: 40px;
+    letter-spacing: 4px;
+    user-select: none;
+}
+
+.authBrand {
+    position: relative;
+    z-index: 1;
+}
+
+.authBrandName {
+    font-family: var(--font-disp);
+    font-size: 48px;
+    color: var(--cyan);
+    letter-spacing: 3px;
+}
+
+.authBrandTagline {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 8px;
+}
+
+.signupInfoBlock {
+    margin-top: 48px;
+    position: relative;
+    z-index: 1;
+}
+
+.signupInfoTitle {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+}
+
+.signupInfoItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.signupInfoArrow {
+    color: var(--cyan);
+    flex-shrink: 0;
+}
+
+.signupInfoText {
+    font-size: 13px;
+    color: var(--muted2);
+}
+
+.authRight {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+}
+
+.authFormBox {
+    width: 100%;
+    max-width: 400px;
+}
+
+.authFormBoxWide {
+    max-width: 480px;
+}
+
+.authTitle {
+    font-family: var(--font-disp);
+    font-size: 36px;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+}
+
+.authSubtitle {
+    font-size: 13px;
+    color: var(--muted2);
+    margin-bottom: 36px;
+}
+
+.authForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.inputLabel {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.input {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: var(--font-body);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.input:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 2px rgba(47, 128, 255, 0.14);
+}
+
+.input::placeholder {
+    color: var(--muted);
+}
+
+.errorText {
+    color: var(--red);
+    font-size: 12px;
+    font-family: var(--font-mono);
+}
+
+.primaryButton {
+    width: 100%;
+    justify-content: center;
+    padding: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 8px;
+    border: 1px solid var(--cyan);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--cyan);
+    color: #080b12;
+}
+
+.primaryButton:hover:not(:disabled) {
+    background: rgba(96, 170, 255, 0.95);
+    box-shadow: none;
+}
+
+.primaryButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.authDivider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 0;
+}
+
+.authDividerLine {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+.authDividerText {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+}
+
+.authLink {
+    color: var(--cyan);
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.authLink:hover {
+    text-decoration: underline;
+}
+
+.authSwitch {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted2);
+    margin-top: 20px;
+}

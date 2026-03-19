@@ -1,0 +1,385 @@
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.cardFill {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.sectionTitle {
+    font-family: var(--font-disp);
+    font-size: 20px;
+    letter-spacing: 1px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    line-height: 1.2;
+}
+
+.sectionHeaderNoBorder {
+    border: none;
+    margin-bottom: 16px;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.inputLabel {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.input {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: var(--font-body);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.input:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 2px rgba(47, 128, 255, 0.14);
+}
+
+.input::placeholder {
+    color: var(--muted);
+}
+
+.checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    color: var(--muted2);
+    font-size: 13px;
+}
+
+.checkbox input {
+    accent-color: var(--cyan);
+}
+
+.fullWidthButton {
+    width: 100%;
+}
+
+.primaryButton,
+.ghostButton,
+.ghostButtonSm,
+.dangerButtonSm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 8px;
+    border: 1px solid;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.primaryButton {
+    padding: 10px 18px;
+    background: var(--cyan);
+    border-color: var(--cyan);
+    color: var(--bg);
+}
+
+.primaryButton:hover:not(:disabled) {
+    background: rgba(96, 170, 255, 0.95);
+    box-shadow: none;
+}
+
+.primaryButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.ghostButton {
+    padding: 10px 12px;
+    background: transparent;
+    border-color: var(--border2);
+    color: var(--muted2);
+}
+
+.ghostButton:hover {
+    background: var(--card2);
+    color: var(--text);
+}
+
+.ghostButtonSm,
+.dangerButtonSm {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.ghostButtonSm {
+    background: transparent;
+    border-color: var(--border2);
+    color: var(--muted2);
+}
+
+.ghostButtonSm:hover {
+    background: var(--card2);
+    color: var(--text);
+}
+
+.dangerButtonSm {
+    background: rgba(255, 77, 109, 0.08);
+    border-color: rgba(255, 77, 109, 0.22);
+    color: var(--red);
+}
+
+.dangerButtonSm:hover {
+    background: rgba(255, 77, 109, 0.14);
+}
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.emptyStateLarge {
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.emptyIcon {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.emptyText {
+    font-size: 14px;
+    color: var(--muted2);
+}
+
+/* NOTEBOOK */
+@media (max-width: 1200px) {
+    .card {
+        padding: 20px;
+    }
+
+    .sectionTitle {
+        font-size: 19px;
+        margin-bottom: 14px;
+    }
+}
+
+/* TABLET */
+@media (max-width: 900px) {
+    .card {
+        padding: 18px;
+        border-radius: 10px;
+    }
+
+    .sectionTitle {
+        font-size: 18px;
+        letter-spacing: 0.8px;
+        margin-bottom: 14px;
+    }
+
+    .sectionHeaderNoBorder {
+        margin-bottom: 14px;
+    }
+
+    .inputGroup {
+        gap: 5px;
+    }
+
+    .inputLabel {
+        font-size: 9px;
+        letter-spacing: 1.6px;
+    }
+
+    .input {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .checkbox {
+        gap: 8px;
+        font-size: 12.5px;
+    }
+
+    .primaryButton,
+    .ghostButton {
+        font-size: 12.5px;
+    }
+
+    .primaryButton {
+        padding: 10px 16px;
+    }
+
+    .ghostButton {
+        padding: 10px 12px;
+    }
+
+    .ghostButtonSm,
+    .dangerButtonSm {
+        padding: 6px 10px;
+        font-size: 11.5px;
+    }
+
+    .emptyStateLarge {
+        padding-top: 32px;
+        padding-bottom: 32px;
+    }
+
+    .emptyIcon {
+        font-size: 22px;
+    }
+
+    .emptyText {
+        font-size: 13px;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 640px) {
+    .card {
+        padding: 14px;
+        border-radius: 10px;
+    }
+
+    .cardFill {
+        height: auto;
+    }
+
+    .sectionTitle {
+        font-size: 17px;
+        letter-spacing: 0.6px;
+        margin-bottom: 12px;
+    }
+
+    .sectionHeaderNoBorder {
+        margin-bottom: 12px;
+    }
+
+    .inputLabel {
+        font-size: 8.5px;
+        letter-spacing: 1.2px;
+    }
+
+    .input {
+        padding: 10px 11px;
+        font-size: 13px;
+        border-radius: 7px;
+    }
+
+    .checkbox {
+        gap: 8px;
+        font-size: 12px;
+        line-height: 1.3;
+    }
+
+    .primaryButton,
+    .ghostButton {
+        width: 100%;
+        font-size: 12px;
+    }
+
+    .primaryButton {
+        padding: 10px 14px;
+    }
+
+    .ghostButton {
+        padding: 10px 12px;
+    }
+
+    .ghostButtonSm,
+    .dangerButtonSm {
+        padding: 6px 9px;
+        font-size: 11px;
+    }
+
+    .emptyStateLarge {
+        padding-top: 26px;
+        padding-bottom: 26px;
+    }
+
+    .emptyIcon {
+        font-size: 20px;
+        margin-bottom: 6px;
+    }
+
+    .emptyText {
+        font-size: 12.5px;
+        text-align: center;
+    }
+}
+
+/* MOBILE CHICO */
+@media (max-width: 480px) {
+    .card {
+        padding: 12px;
+        border-radius: 8px;
+    }
+
+    .sectionTitle {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .inputLabel {
+        font-size: 8px;
+        letter-spacing: 1px;
+    }
+
+    .input {
+        padding: 9px 10px;
+        font-size: 12.5px;
+    }
+
+    .checkbox {
+        font-size: 11.5px;
+        gap: 6px;
+    }
+
+    .primaryButton,
+    .ghostButton {
+        font-size: 11.5px;
+    }
+
+    .ghostButtonSm,
+    .dangerButtonSm {
+        padding: 5px 8px;
+        font-size: 10.5px;
+    }
+
+    .emptyIcon {
+        font-size: 18px;
+    }
+
+    .emptyText {
+        font-size: 12px;
+    }
+}
