@@ -6,10 +6,20 @@ import { useAuth } from "../context/AuthContext";
 // Api
 import api from "../api/api";
 
-// Utils
+// Utils — DIAS_SEMANA ahora tiene claves lun/mar/mie/jue/vie/sab/dom
 import { DIAS_SEMANA } from "../utils/constants";
-import { validateConfiguracionGeneral, validateServicio, } from "../utils/config/configValidators";
-import { sanitizeText, sanitizeEmail, sanitizePhone, sanitizeTime, sanitizePrice, sanitizeInteger } from "../utils/config/configSanitizers";
+import {
+    validateConfiguracionGeneral,
+    validateServicio,
+} from "../utils/config/configValidators";
+import {
+    sanitizeText,
+    sanitizeEmail,
+    sanitizePhone,
+    sanitizeTime,
+    sanitizePrice,
+    sanitizeInteger,
+} from "../utils/config/configSanitizers";
 
 const EMPTY_NEGOCIO_FORM = {
     nombre: "",
@@ -61,7 +71,6 @@ export function useConfigPage(showToast) {
 
             setOperacion(data);
             setNegocioForm(negocioData);
-
             setInitialOperacion(data);
             setInitialNegocioForm(negocioData);
         } catch (e) {
@@ -80,12 +89,12 @@ export function useConfigPage(showToast) {
 
     async function saveConfiguracionGeneral() {
         const validationError = validateConfiguracionGeneral(negocioForm, operacion);
-
         if (validationError) {
             showToast(validationError, "error");
             return;
         }
 
+        // DIAS_SEMANA.key ahora es "lun", "mar", etc. — coincide con el backend
         const payload = {
             nombre: sanitizeText(negocioForm.nombre).trim(),
             email: sanitizeEmail(negocioForm.email).trim(),
@@ -119,10 +128,8 @@ export function useConfigPage(showToast) {
 
             setOperacion(updated);
             setNegocioForm(negocioUpdated);
-
             setInitialOperacion(updated);
             setInitialNegocioForm(negocioUpdated);
-
             setConfigEditing(false);
 
             showToast("Configuración guardada", "success");
@@ -135,25 +142,24 @@ export function useConfigPage(showToast) {
 
     async function saveServicio() {
         const validationError = validateServicio(form);
-
         if (validationError) {
             showToast(validationError, "error");
             return;
         }
 
         const nombre = sanitizeText(form.nombre).trim();
-        const precioSanitized = sanitizePrice(form.precio);
-        const capacidadSanitized = sanitizeInteger(form.capacidad_por_hora);
-        const duracionSanitized = sanitizeInteger(form.duracion_estimada_min);
+        const precio = sanitizePrice(form.precio);
+        const capacidad = sanitizeInteger(form.capacidad_por_hora);
+        const duracion = sanitizeInteger(form.duracion_estimada_min);
 
         setSaving(true);
 
         try {
             const payload = {
                 nombre,
-                precio: parseFloat(precioSanitized),
-                capacidad_por_hora: parseInt(capacidadSanitized, 10),
-                duracion_estimada_min: parseInt(duracionSanitized, 10),
+                precio: parseFloat(precio),
+                capacidad_por_hora: parseInt(capacidad, 10),
+                duracion_estimada_min: parseInt(duracion, 10),
             };
 
             if (editing) {
@@ -170,7 +176,6 @@ export function useConfigPage(showToast) {
 
             setForm(EMPTY_SERVICIO_FORM);
             setEditing(null);
-
             await loadOperacion();
         } catch (e) {
             showToast(e?.message || "Error al guardar servicio", "error");
@@ -185,7 +190,7 @@ export function useConfigPage(showToast) {
             showToast("Servicio eliminado", "success");
             await loadOperacion();
         } catch (e) {
-            showToast("Error al eliminar servicio", "error");
+            showToast(e?.message || "Error al eliminar servicio", "error");
         }
     }
 

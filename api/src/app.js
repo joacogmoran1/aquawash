@@ -7,11 +7,12 @@ const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const timeout = require('connect-timeout');
+const sequelize = require('./config/database');
+const logger = require('./utils/logger');
 
 const authenticate = require('./middlewares/authenticate');
 const { errorHandler } = require('./middlewares/errorHandler');
 
-// Rutas
 const authRoutes = require('./routes/auth');
 const lavaderoRoutes = require('./routes/lavaderos');
 const clienteRoutes = require('./routes/clientes');
@@ -52,7 +53,7 @@ app.use(helmet({
 // ── CORS ──────────────────────────────────────────────────────
 const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
 	.split(',')
-	.map(o => o.trim());
+	.map((o) => o.trim());
 
 app.use(cors({
 	origin(origin, callback) {
@@ -68,19 +69,26 @@ app.use(cors({
 	maxAge: 86400,
 }));
 
-// ── Cookie parser ─────────────────────────────────────────────
 app.use(cookieParser());
 
-// ── Logging ───────────────────────────────────────────────────
+// ── Logging HTTP ──────────────────────────────────────────────
 if (process.env.NODE_ENV === 'development') {
 	app.use(morgan('dev'));
+} else {
+	// En producción usar logger estructurado
+	app.use(morgan('combined', {
+		stream: { write: (msg) => logger.info(msg.trim()) },
+		skip: (req) => req.path === '/health',
+	}));
 }
 
 // ── Body limit ────────────────────────────────────────────────
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
-// ── Rate limiter global ───────────────────────────────────────
+// ── Rate limiters ─────────────────────────────────────────────
+
+// Global
 const globalLimiter = rateLimit({
 	windowMs: 15 * 60 * 1000,
 	max: 200,
@@ -91,18 +99,45 @@ const globalLimiter = rateLimit({
 });
 app.use(globalLimiter);
 
-// ── Health check ──────────────────────────────────────────────
-app.get('/health', (req, res) => res.json({ status: 'ok' }));
+// FIX: rate limiter específico para endpoints de creación (POST)
+// evita spam de clientes, autos, etc.
+const createLimiter = rateLimit({
+	windowMs: 15 * 60 * 1000,
+	max: 60, // 60 creaciones por IP cada 15 min
+	message: { error: 'Demasiadas creaciones. Intentá más tarde.' },
+	standardHeaders: true,
+	legacyHeaders: false,
+});
+
+// ── Health check con verificación de BD ──────────────────────
+// FIX: el health check anterior solo verificaba que el proceso vivía.
+// Ahora verifica la conexión a la base de datos también.
+app.get('/health', async (req, res) => {
+	try {
+		await sequelize.authenticate();
+		res.json({
+			status: 'ok',
+			db: 'connected',
+			uptime: Math.floor(process.uptime()),
+		});
+	} catch (err) {
+		logger.error({ err }, 'Health check: DB no disponible');
+		res.status(503).json({
+			status: 'error',
+			db: 'disconnected',
+		});
+	}
+});
 
 // ── Rutas públicas ────────────────────────────────────────────
 app.use('/auth', authRoutes);
 
 // ── Rutas protegidas ──────────────────────────────────────────
-app.use('/clientes', authenticate, clienteRoutes);
+app.use('/clientes', authenticate, createLimiter, clienteRoutes);
 app.use('/lavaderos', authenticate, lavaderoRoutes);
-app.use('/autos', authenticate, autoRoutes);
-app.use('/servicios', authenticate, servicioRoutes);
-app.use('/turnos', authenticate, turnoRoutes);
+app.use('/autos', authenticate, createLimiter, autoRoutes);
+app.use('/servicios', authenticate, createLimiter, servicioRoutes);
+app.use('/turnos', authenticate, createLimiter, turnoRoutes);
 app.use('/ordenes', authenticate, ordenRoutes);
 app.use('/dashboard', authenticate, dashboardRoutes);
 app.use('/operacion', authenticate, operacionRoutes);

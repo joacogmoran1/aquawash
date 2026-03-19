@@ -7,13 +7,11 @@ const CAMPOS_EDITABLES = ['nombre', 'telefono', 'email', 'notas'];
 const REGEX_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const REGEX_TELEFONO = /^[0-9+\-() ]+$/;
 
-const LIMITES = {
-	nombre: 120,
-	telefono: 30,
-	email: 150,
-	notas: 1000,
-	search: 100,
-};
+const LIMITES = { nombre: 120, telefono: 30, email: 150, notas: 1000, search: 100 };
+
+// Paginación: máx 100 por página, default 50
+const DEFAULT_LIMIT = 50;
+const MAX_LIMIT = 100;
 
 function pick(obj, allowedKeys) {
 	const out = {};
@@ -27,10 +25,7 @@ function pick(obj, allowedKeys) {
 
 function sanitizeText(value) {
 	if (typeof value !== 'string') return value;
-	return value
-		.replace(/[<>]/g, '')
-		.replace(/\s+/g, ' ')
-		.trim();
+	return value.replace(/[<>]/g, '').replace(/\s+/g, ' ').trim();
 }
 
 function sanitizeNullableText(value) {
@@ -41,19 +36,12 @@ function sanitizeNullableText(value) {
 
 function sanitizeEmail(value) {
 	if (typeof value !== 'string') return value;
-	return value
-		.toLowerCase()
-		.replace(/[<>]/g, '')
-		.replace(/\s+/g, '')
-		.trim();
+	return value.toLowerCase().replace(/[<>]/g, '').replace(/\s+/g, '').trim();
 }
 
 function sanitizePhone(value) {
 	if (typeof value !== 'string') return value;
-	return value
-		.replace(/[^\d+\-() ]/g, '')
-		.replace(/\s+/g, ' ')
-		.trim();
+	return value.replace(/[^\d+\-() ]/g, '').replace(/\s+/g, ' ').trim();
 }
 
 function escapeLike(value) {
@@ -76,9 +64,7 @@ function normalizeNombre(value) {
 function normalizeTelefono(value) {
 	const telefono = sanitizePhone(value);
 	if (!telefono) throw createError(400, 'telefono es requerido.');
-	if (!REGEX_TELEFONO.test(telefono)) {
-		throw createError(400, 'telefono inválido.');
-	}
+	if (!REGEX_TELEFONO.test(telefono)) throw createError(400, 'telefono inválido.');
 	assertMaxLength(telefono, LIMITES.telefono, 'telefono');
 	return telefono;
 }
@@ -98,10 +84,20 @@ function normalizeNotasOptional(value) {
 	return notas;
 }
 
+// ── Parsear parámetros de paginación ─────────────────────────
+function parsePagination(query) {
+	const page = Math.max(1, parseInt(query.page, 10) || 1);
+	const limit = Math.min(MAX_LIMIT, Math.max(1, parseInt(query.limit, 10) || DEFAULT_LIMIT));
+	const offset = (page - 1) * limit;
+	return { page, limit, offset };
+}
+
 async function listar(req, res, next) {
 	try {
 		const { HistorialServicio } = require('../models');
-		const { fn, col, literal } = require('sequelize');
+		const { fn, col } = require('sequelize');
+
+		const { page, limit, offset } = parsePagination(req.query);
 
 		const where = { lavadero_id: req.lavaderoId };
 
@@ -116,7 +112,7 @@ async function listar(req, res, next) {
 			];
 		}
 
-		const clientes = await Cliente.findAll({
+		const { count, rows: clientes } = await Cliente.findAndCountAll({
 			where,
 			include: [
 				{
@@ -125,7 +121,7 @@ async function listar(req, res, next) {
 				},
 				{
 					model: HistorialServicio,
-					attributes: [],  // no traer columnas, solo para agregar
+					attributes: [],
 					required: false,
 				},
 			],
@@ -135,14 +131,22 @@ async function listar(req, res, next) {
 					[fn('MAX', col('HistorialServicios.fecha_entrega')), 'ultima_visita'],
 				],
 			},
-			group: [
-				'Cliente.id',
-				'Autos.id',
-			],
+			group: ['Cliente.id', 'Autos.id'],
 			order: [['nombre', 'ASC']],
+			limit,
+			offset,
+			subQuery: false, // necesario para que limit/offset funcionen con GROUP BY
 		});
 
-		res.json(clientes);
+		res.json({
+			data: clientes,
+			pagination: {
+				page,
+				limit,
+				total: count.length ?? count, // count es array cuando hay GROUP BY
+				totalPages: Math.ceil((count.length ?? count) / limit),
+			},
+		});
 	} catch (err) {
 		next(err);
 	}
@@ -169,7 +173,6 @@ async function obtener(req, res, next) {
 		});
 
 		if (!cliente) throw createError(404, 'Cliente no encontrado.');
-
 		res.json(cliente);
 	} catch (err) {
 		next(err);
@@ -179,19 +182,29 @@ async function obtener(req, res, next) {
 async function historial(req, res, next) {
 	try {
 		const { HistorialServicio } = require('../models');
+		const { page, limit, offset } = parsePagination(req.query);
 
-		// Verificar que el cliente pertenece al lavadero
 		const cliente = await Cliente.findOne({
 			where: { id: req.params.id, lavadero_id: req.lavaderoId },
 		});
 		if (!cliente) throw createError(404, 'Cliente no encontrado.');
 
-		const registros = await HistorialServicio.findAll({
+		const { count, rows: registros } = await HistorialServicio.findAndCountAll({
 			where: { cliente_id: req.params.id, lavadero_id: req.lavaderoId },
 			order: [['fecha_entrega', 'DESC']],
+			limit,
+			offset,
 		});
 
-		res.json(registros);
+		res.json({
+			data: registros,
+			pagination: {
+				page,
+				limit,
+				total: count,
+				totalPages: Math.ceil(count / limit),
+			},
+		});
 	} catch (err) { next(err); }
 }
 
@@ -233,24 +246,19 @@ async function actualizar(req, res, next) {
 
 		const patch = {};
 
-		if (Object.prototype.hasOwnProperty.call(rawPatch, 'nombre')) {
+		if (Object.prototype.hasOwnProperty.call(rawPatch, 'nombre'))
 			patch.nombre = normalizeNombre(rawPatch.nombre);
-		}
 
-		if (Object.prototype.hasOwnProperty.call(rawPatch, 'telefono')) {
+		if (Object.prototype.hasOwnProperty.call(rawPatch, 'telefono'))
 			patch.telefono = normalizeTelefono(rawPatch.telefono);
-		}
 
-		if (Object.prototype.hasOwnProperty.call(rawPatch, 'email')) {
+		if (Object.prototype.hasOwnProperty.call(rawPatch, 'email'))
 			patch.email = normalizeEmailOptional(rawPatch.email);
-		}
 
-		if (Object.prototype.hasOwnProperty.call(rawPatch, 'notas')) {
+		if (Object.prototype.hasOwnProperty.call(rawPatch, 'notas'))
 			patch.notas = normalizeNotasOptional(rawPatch.notas);
-		}
 
 		await cliente.update(patch);
-
 		res.json(cliente);
 	} catch (err) {
 		next(err);
@@ -266,15 +274,10 @@ async function eliminar(req, res, next) {
 		if (!cliente) throw createError(404, 'Cliente no encontrado.');
 
 		await cliente.destroy();
-
 		res.status(204).send();
 	} catch (err) {
 		next(err);
 	}
 }
 
-module.exports = {
-	listar, obtener,
-	crear, actualizar, eliminar,
-	historial,
-};
+module.exports = { listar, obtener, crear, actualizar, eliminar, historial };

@@ -10,6 +10,12 @@ import {
 
 export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/**
+ * Valida el formulario de configuración general.
+ * Las claves de DIAS_SEMANA son ahora "lun", "mar", "mie", etc.
+ * — coinciden con el modelo Lavadero del backend.
+ * @returns {string|null} mensaje de error o null si todo está OK
+ */
 export function validateConfiguracionGeneral(negocioForm, operacion) {
     const nombre = sanitizeText(negocioForm.nombre).trim();
     const email = sanitizeEmail(negocioForm.email).trim();
@@ -41,20 +47,24 @@ export function validateConfiguracionGeneral(negocioForm, operacion) {
     return null;
 }
 
+/**
+ * Valida el formulario de un servicio.
+ * @returns {string|null} mensaje de error o null si todo está OK
+ */
 export function validateServicio(form) {
     const nombre = sanitizeText(form.nombre).trim();
-    const precioSanitized = sanitizePrice(form.precio);
-    const capacidadSanitized = sanitizeInteger(form.capacidad_por_hora);
-    const duracionSanitized = sanitizeInteger(form.duracion_estimada_min);
+    const precio = sanitizePrice(form.precio);
+    const capacidad = sanitizeInteger(form.capacidad_por_hora);
+    const duracion = sanitizeInteger(form.duracion_estimada_min);
 
     if (!nombre) return "El nombre del servicio es obligatorio.";
-    if (!precioSanitized) return "El precio es obligatorio.";
-    if (!capacidadSanitized) return "La capacidad por hora es obligatoria.";
-    if (!duracionSanitized) return "La duración estimada es obligatoria.";
+    if (!precio) return "El precio es obligatorio.";
+    if (!capacidad) return "La capacidad por hora es obligatoria.";
+    if (!duracion) return "La duración estimada es obligatoria.";
 
-    if (Number(precioSanitized) <= 0) return "El precio debe ser mayor a 0.";
-    if (Number(capacidadSanitized) <= 0) return "La capacidad por hora debe ser mayor a 0.";
-    if (Number(duracionSanitized) <= 0) return "La duración estimada debe ser mayor a 0.";
+    if (Number(precio) <= 0) return "El precio debe ser mayor a 0.";
+    if (Number(capacidad) <= 0) return "La capacidad por hora debe ser mayor a 0.";
+    if (Number(duracion) <= 0) return "La duración estimada debe ser mayor a 0.";
 
     return null;
 }

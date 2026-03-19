@@ -7,7 +7,6 @@ const Cliente = require('../models/Cliente');
 const Auto = require('../models/Auto');
 const { createError } = require('../middlewares/errorHandler');
 
-// Transiciones válidas: estado actual → siguiente estado
 const TRANSICIONES = {
 	agendado: 'esperando',
 	esperando: 'lavando',
@@ -15,7 +14,11 @@ const TRANSICIONES = {
 	listo: 'entregado',
 };
 
-const ESTADOS_VALIDOS = ['esperando', 'lavando', 'listo', 'entregado'];
+// FIX: incluir todos los estados posibles para que ?estado= no retorne 400
+const ESTADOS_VALIDOS_FILTRO = [
+	'agendado', 'esperando', 'lavando', 'listo', 'entregado', 'cancelado',
+];
+
 const SERVICIOS_VALIDOS = ['exterior', 'completo', 'detailing'];
 
 function normalizeId(value, fieldName) {
@@ -34,45 +37,39 @@ function normalizeServicioTipo(value) {
 	if (typeof value !== 'string' || !value.trim()) {
 		throw createError(400, 'servicio_tipo es requerido.');
 	}
-
 	const safe = value.trim().toLowerCase();
 	if (!SERVICIOS_VALIDOS.includes(safe)) {
 		throw createError(400, 'servicio_tipo inválido.');
 	}
-
 	return safe;
 }
 
 function normalizeNotas(value) {
 	if (value === undefined || value === null) return null;
 	if (typeof value !== 'string') throw createError(400, 'notas inválidas.');
-
 	const safe = value.replace(/[<>]/g, '').replace(/\s+/g, ' ').trim();
 	return safe === '' ? null : safe;
 }
 
+// FIX: usar ESTADOS_VALIDOS_FILTRO completo
 function normalizeEstadoFiltro(value) {
 	if (value === undefined || value === null || value === '') return undefined;
 	if (typeof value !== 'string') throw createError(400, 'estado inválido.');
-
 	const safe = value.trim().toLowerCase();
-	if (!ESTADOS_VALIDOS.includes(safe)) {
-		throw createError(400, 'estado inválido.');
+	if (!ESTADOS_VALIDOS_FILTRO.includes(safe)) {
+		throw createError(400, `estado inválido. Valores permitidos: ${ESTADOS_VALIDOS_FILTRO.join(', ')}`);
 	}
-
 	return safe;
 }
 
 function normalizeFecha(value) {
 	if (value === undefined || value === null || value === '') return undefined;
 	if (typeof value !== 'string') throw createError(400, 'fecha inválida.');
-
 	const safe = value.trim();
 	const parsed = new Date(`${safe}T00:00:00`);
 	if (Number.isNaN(parsed.getTime())) {
 		throw createError(400, 'fecha inválida.');
 	}
-
 	return safe;
 }
 
@@ -102,19 +99,13 @@ async function crear({ lavadero_id, cliente_id, auto_id, turno_id, servicio_tipo
 			where: { id: safeClienteId, lavadero_id: safeLavaderoId },
 			transaction,
 		});
-
-		if (!cliente) {
-			throw createError(404, 'Cliente no encontrado.');
-		}
+		if (!cliente) throw createError(404, 'Cliente no encontrado.');
 
 		const auto = await Auto.findOne({
 			where: { id: safeAutoId, lavadero_id: safeLavaderoId },
 			transaction,
 		});
-
-		if (!auto) {
-			throw createError(404, 'Auto no encontrado.');
-		}
+		if (!auto) throw createError(404, 'Auto no encontrado.');
 
 		const orden = await OrdenLavado.create(
 			{
@@ -145,9 +136,7 @@ async function avanzarEstado(id, lavadero_id) {
 			lock: transaction.LOCK.UPDATE,
 		});
 
-		if (!orden) {
-			throw createError(404, 'Orden no encontrada.');
-		}
+		if (!orden) throw createError(404, 'Orden no encontrada.');
 
 		const nextEstado = TRANSICIONES[orden.estado];
 		if (!nextEstado) {
@@ -166,16 +155,11 @@ async function avanzarEstado(id, lavadero_id) {
 		if (nextEstado === 'entregado') {
 			const { Turno, HistorialServicio, Auto } = require('../models');
 
-			// ── Liberar turno asociado ───────────────────────────
 			if (orden.turno_id) {
-				const turno = await Turno.findOne({
-					where: { id: orden.turno_id },
-					transaction,
-				});
+				const turno = await Turno.findOne({ where: { id: orden.turno_id }, transaction });
 				if (turno) await turno.destroy({ transaction });
 			}
 
-			// ── Guardar snapshot en historial ────────────────────
 			const auto = await Auto.findByPk(orden.auto_id, { transaction });
 
 			await HistorialServicio.create({
@@ -190,12 +174,7 @@ async function avanzarEstado(id, lavadero_id) {
 				auto_patente: auto?.patente || null,
 			}, { transaction });
 
-			// ── Registrar pago ───────────────────────────────────
-			const pagoExistente = await Pago.findOne({
-				where: { orden_id: orden.id },
-				transaction,
-			});
-
+			const pagoExistente = await Pago.findOne({ where: { orden_id: orden.id }, transaction });
 			if (!pagoExistente) {
 				await Pago.create({
 					orden_id: orden.id,
@@ -226,11 +205,7 @@ async function listar(lavadero_id, { estado, fecha } = {}) {
 		const inicio = new Date(`${safeFecha}T00:00:00`);
 		const fin = new Date(`${safeFecha}T00:00:00`);
 		fin.setDate(fin.getDate() + 1);
-
-		where.hora_llegada = {
-			[Op.gte]: inicio,
-			[Op.lt]: fin,
-		};
+		where.hora_llegada = { [Op.gte]: inicio, [Op.lt]: fin };
 	}
 
 	return OrdenLavado.findAll({
@@ -256,10 +231,7 @@ async function obtener(id, lavadero_id) {
 		],
 	});
 
-	if (!orden) {
-		throw createError(404, 'Orden no encontrada.');
-	}
-
+	if (!orden) throw createError(404, 'Orden no encontrada.');
 	return orden;
 }
 
@@ -275,8 +247,8 @@ async function cancelarEstado(id, lavadero_id) {
 
 	if (!orden) throw createError(404, 'Orden no encontrada.');
 
-	if (orden.estado === 'esperando' || orden.estado === 'lavando' || orden.estado === 'listo' || orden.estado === 'entregado') {
-		throw createError(400, 'No se puede cancelar una orden ya entregada.');
+	if (['lavando', 'listo', 'entregado'].includes(orden.estado)) {
+		throw createError(400, 'No se puede cancelar una orden que ya está en proceso o entregada.');
 	}
 
 	if (orden.estado === 'cancelado') {
@@ -285,7 +257,6 @@ async function cancelarEstado(id, lavadero_id) {
 
 	await orden.update({ estado: 'cancelado' });
 
-	// Si tiene turno asociado, eliminarlo para liberar el horario
 	if (orden.turno_id) {
 		const turno = await Turno.findOne({
 			where: { id: orden.turno_id, lavadero_id: safeLavaderoId },

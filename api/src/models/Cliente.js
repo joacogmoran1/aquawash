@@ -31,6 +31,13 @@ const Cliente = sequelize.define('Cliente', {
 	},
 }, {
 	tableName: 'clientes',
+	indexes: [
+		// FIX: índices para búsqueda por nombre, teléfono y email
+		{ fields: ['lavadero_id'] },
+		{ fields: ['lavadero_id', 'nombre'] },
+		{ fields: ['lavadero_id', 'telefono'] },
+		{ fields: ['lavadero_id', 'email'] },
+	],
 });
 
 module.exports = Cliente;

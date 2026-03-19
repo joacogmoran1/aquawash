@@ -21,13 +21,12 @@ const OrdenLavado = sequelize.define('OrdenLavado', {
 	},
 	turno_id: {
 		type: DataTypes.UUID,
-		allowNull: true, // Null si el cliente llegó sin turno
+		allowNull: true,
 	},
 	servicio_tipo: {
 		type: DataTypes.STRING,
 		allowNull: false,
 	},
-	// Snapshot del precio al momento de crear la orden
 	precio: {
 		type: DataTypes.DECIMAL(10, 2),
 		allowNull: false,
@@ -44,15 +43,15 @@ const OrdenLavado = sequelize.define('OrdenLavado', {
 	},
 	hora_inicio: {
 		type: DataTypes.DATE,
-		allowNull: true, // Se completa al pasar a 'lavando'
+		allowNull: true,
 	},
 	hora_fin: {
 		type: DataTypes.DATE,
-		allowNull: true, // Se completa al pasar a 'listo'
+		allowNull: true,
 	},
 	hora_entrega: {
 		type: DataTypes.DATE,
-		allowNull: true, // Se completa al pasar a 'entregado'
+		allowNull: true,
 	},
 	notas: {
 		type: DataTypes.TEXT,
@@ -62,7 +61,10 @@ const OrdenLavado = sequelize.define('OrdenLavado', {
 	tableName: 'ordenes_lavado',
 	indexes: [
 		{ fields: ['lavadero_id', 'estado'] },
-		{ fields: ['lavadero_id', 'hora_llegada'] }, // Para dashboard del día
+		{ fields: ['lavadero_id', 'hora_llegada'] },
+		// FIX: índice compuesto para las queries del dashboard (entregado + fecha)
+		{ fields: ['lavadero_id', 'estado', 'hora_entrega'] },
+		{ fields: ['turno_id'] },
 	],
 });
 

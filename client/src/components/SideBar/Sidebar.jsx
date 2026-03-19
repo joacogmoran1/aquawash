@@ -14,14 +14,15 @@ import { NAV } from "../../utils/constants";
 // Style
 import styles from "./Sidebar.module.css";
 
+
 export function Sidebar() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { user, logout } = useAuth();
 	const [mobileOpen, setMobileOpen] = useState(false);
 
-	function handleNav(id) {
-		navigate(`/${id}`);
+	function handleNav(path) {
+		navigate(path);
 		setMobileOpen(false);
 	}
 
@@ -30,17 +31,16 @@ export function Sidebar() {
 		logout();
 	}
 
+	// Cerrar al cambiar de ruta
 	useEffect(() => {
 		setMobileOpen(false);
 	}, [location.pathname]);
 
+	// Cerrar al ampliar la pantalla
 	useEffect(() => {
 		function handleResize() {
-			if (window.innerWidth > 768) {
-				setMobileOpen(false);
-			}
+			if (window.innerWidth > 768) setMobileOpen(false);
 		}
-
 		window.addEventListener("resize", handleResize);
 		return () => window.removeEventListener("resize", handleResize);
 	}, []);
@@ -50,8 +50,9 @@ export function Sidebar() {
 			<button
 				className={`${styles.mobileMenuBtn} ${mobileOpen ? styles.mobileMenuBtnActive : ""}`}
 				onClick={() => setMobileOpen((prev) => !prev)}
+				aria-label="Menú"
 			>
-				<Icon name={mobileOpen ? "close" : "menu"} size={18} />
+				<Icon name={mobileOpen ? "x" : "dashboard"} size={18} />
 			</button>
 
 			{mobileOpen && (
@@ -61,9 +62,7 @@ export function Sidebar() {
 				/>
 			)}
 
-			<aside
-				className={`${styles.sidebar} ${mobileOpen ? styles.sidebarOpen : ""}`}
-			>
+			<aside className={`${styles.sidebar} ${mobileOpen ? styles.sidebarOpen : ""}`}>
 				<div className={styles.sidebarLogo}>
 					<div className={styles.logoRow}>
 						<div className={styles.logoBlock}>
@@ -77,7 +76,8 @@ export function Sidebar() {
 
 				<nav className={styles.sidebarNav}>
 					{NAV.map((n) => {
-						const isActive = location.pathname === `/${n.id}`;
+						// FIX: comparar contra n.path, no contra `/${n.id}`
+						const isActive = location.pathname === n.path;
 
 						return (
 							<button
@@ -85,6 +85,7 @@ export function Sidebar() {
 								type="button"
 								className={`${styles.navItem} ${isActive ? styles.navItemActive : ""}`}
 								onClick={() => handleNav(n.path)}
+								aria-current={isActive ? "page" : undefined}
 							>
 								<Icon name={n.icon} size={16} />
 								<span>{n.label}</span>
@@ -98,7 +99,6 @@ export function Sidebar() {
 						<div className={styles.userAvatar}>
 							{initials(user?.nombre || "?")}
 						</div>
-
 						<div className={styles.userInfo}>
 							<div className={styles.userName}>{user?.nombre || "Lavadero"}</div>
 							<div className={styles.userRole}>Propietario</div>

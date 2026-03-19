@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { ErrorBoundary } from "./components/ErrorBoundary/ErrorBoundary";
 import { Sidebar } from "./components/SideBar/Sidebar";
 import { Toast } from "./components/Toast/Toast";
 import { LoginPage } from "./pages/LoginPage/LoginPage";
@@ -42,10 +43,38 @@ function AuthRoutes() {
 function AppRoutes({ showToast }) {
 	return (
 		<Routes>
-			<Route path="/dashboard" element={<DashboardPage showToast={showToast} />} />
-			<Route path="/calendar" element={<CalendarPage showToast={showToast} />} />
-			<Route path="/clients" element={<ClientsPage showToast={showToast} />} />
-			<Route path="/config" element={<ConfigPage showToast={showToast} />} />
+			<Route
+				path="/dashboard"
+				element={
+					<ErrorBoundary>
+						<DashboardPage showToast={showToast} />
+					</ErrorBoundary>
+				}
+			/>
+			<Route
+				path="/calendar"
+				element={
+					<ErrorBoundary>
+						<CalendarPage showToast={showToast} />
+					</ErrorBoundary>
+				}
+			/>
+			<Route
+				path="/clients"
+				element={
+					<ErrorBoundary>
+						<ClientsPage showToast={showToast} />
+					</ErrorBoundary>
+				}
+			/>
+			<Route
+				path="/config"
+				element={
+					<ErrorBoundary>
+						<ConfigPage showToast={showToast} />
+					</ErrorBoundary>
+				}
+			/>
 			<Route path="*" element={<Navigate to="/dashboard" replace />} />
 		</Routes>
 	);
@@ -69,7 +98,15 @@ function AppShell() {
 
 	return (
 		<div className="app">
-			<Sidebar />
+			<ErrorBoundary
+				fallback={
+					<div style={{ padding: 24, color: "var(--red)" }}>
+						Error en la barra lateral — recargá la página.
+					</div>
+				}
+			>
+				<Sidebar />
+			</ErrorBoundary>
 
 			<main className="main">
 				<AppRoutes showToast={showToast} />
