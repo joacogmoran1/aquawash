@@ -20,6 +20,7 @@ import shared from "../../styles/clients/ClientsShared.module.css";
 
 const PAGE_SIZE = 50;
 
+
 export function ClientsPage({ showToast }) {
 	const [clients, setClients] = useState([]);
 	const [pagination, setPagination] = useState({ page: 1, total: 0, totalPages: 1 });

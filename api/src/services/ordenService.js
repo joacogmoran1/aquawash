@@ -193,6 +193,9 @@ async function avanzarEstado(id, lavadero_id) {
 // api/src/services/ordenService.js
 // Reemplazá la función listar completa:
 
+// api/src/services/ordenService.js
+// Reemplazá la función listar completa:
+
 async function listar(lavadero_id, { estado, fecha, desde, hasta } = {}) {
 	const safeLavaderoId = normalizeId(lavadero_id, 'lavadero_id');
 	const safeEstado = normalizeEstadoFiltro(estado);
