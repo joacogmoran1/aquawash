@@ -1,7 +1,14 @@
 require('dotenv').config();
 
-// Este archivo es usado por sequelize-cli para las migraciones.
-// Es diferente de src/config/database.js que usa el ORM en runtime.
+const sslConfig = process.env.DB_SSL === 'true'
+    ? {
+        require: true,
+        rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false',
+        // Si tenés el certificado CA, descommentá la línea de abajo:
+        // ca: require('fs').readFileSync(process.env.DB_SSL_CA_PATH),
+    }
+    : false;
+
 module.exports = {
     development: {
         username: process.env.DB_USER,
@@ -10,10 +17,8 @@ module.exports = {
         host: process.env.DB_HOST || 'localhost',
         port: parseInt(process.env.DB_PORT, 10) || 5432,
         dialect: 'postgres',
-        define: {
-            underscored: true,
-            freezeTableName: false,
-        },
+        define: { underscored: true, freezeTableName: false },
+        logging: false,
     },
     test: {
         username: process.env.DB_USER,
@@ -32,11 +37,8 @@ module.exports = {
         port: parseInt(process.env.DB_PORT, 10) || 5432,
         dialect: 'postgres',
         logging: false,
-        dialectOptions: {
-            ssl: {
-                require: true,
-                rejectUnauthorized: false,
-            },
-        },
+        ...(sslConfig && {
+            dialectOptions: { ssl: sslConfig },
+        }),
     },
 };

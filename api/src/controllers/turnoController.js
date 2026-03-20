@@ -31,8 +31,11 @@ function buildArgDatetime(fecha, hora) {
 	return new Date(`${fecha}T${hora}:00-03:00`);
 }
 
-async function assertPertenece(Model, id, lavaderoId, label) {
-	const inst = await Model.findOne({ where: { id, lavadero_id: lavaderoId } });
+async function assertPertenece(Model, id, lavaderoId, label, transaction) {
+	const inst = await Model.findOne({
+		where: { id, lavadero_id: lavaderoId },
+		...(transaction ? { transaction } : {}),
+	});
 	if (!inst) throw createError(404, `${label} no encontrado/a.`);
 	return inst;
 }
@@ -71,80 +74,86 @@ async function obtener(req, res, next) {
 
 async function crear(req, res, next) {
 	try {
-		// FIX: sin notas
+		const sequelize = require('../config/database');  // ← era ../../config/database
+		const { Lavadero, OrdenLavado } = require('../models');
+
 		const { cliente_id, auto_id, servicio_id, fecha, hora, estado } = req.body;
 
-		const [cliente, auto, servicio] = await Promise.all([
-			assertPertenece(Cliente, trim(cliente_id), req.lavaderoId, 'Cliente'),
-			assertPertenece(Auto, trim(auto_id), req.lavaderoId, 'Auto'),
-			assertPertenece(Servicio, trim(servicio_id), req.lavaderoId, 'Servicio'),
-		]);
+		const result = await sequelize.transaction(async (t) => {
+			const [cliente, auto, servicio] = await Promise.all([
+				assertPertenece(Cliente, trim(cliente_id), req.lavaderoId, 'Cliente', t),
+				assertPertenece(Auto, trim(auto_id), req.lavaderoId, 'Auto', t),
+				assertPertenece(Servicio, trim(servicio_id), req.lavaderoId, 'Servicio', t),
+			]);
 
-		const { Lavadero, OrdenLavado } = require('../models');
-		const lavadero = await Lavadero.findByPk(req.lavaderoId);
-		if (!lavadero) throw createError(404, 'Lavadero no encontrado.');
+			const lavadero = await Lavadero.findByPk(req.lavaderoId, { transaction: t });
+			if (!lavadero) throw createError(404, 'Lavadero no encontrado.');
 
-		// Validar día de apertura
-		const DIA_MAP = ['dom', 'lun', 'mar', 'mie', 'jue', 'vie', 'sab'];
-		const [y, m, d] = fecha.split('-').map(Number);
-		const diaKey = DIA_MAP[new Date(y, m - 1, d).getDay()];
-		if (!lavadero[diaKey]) throw createError(400, `El lavadero no abre los ${diaKey}.`);
+			const DIA_MAP = ['dom', 'lun', 'mar', 'mie', 'jue', 'vie', 'sab'];
+			const [y, m, d] = fecha.split('-').map(Number);
+			const diaKey = DIA_MAP[new Date(y, m - 1, d).getDay()];
+			if (!lavadero[diaKey]) throw createError(400, `El lavadero no abre los ${diaKey}.`);
 
-		const apertura = lavadero[`${diaKey}_apertura`] || '00:00';
-		const cierre = lavadero[`${diaKey}_cierre`] || '23:59';
-		const horaMin = toMin(hora);
-		if (horaMin < toMin(apertura) || horaMin >= toMin(cierre))
-			throw createError(400, `Horario ${hora} fuera del rango de atención (${apertura}–${cierre}).`);
+			const apertura = lavadero[`${diaKey}_apertura`] || '00:00';
+			const cierre = lavadero[`${diaKey}_cierre`] || '23:59';
+			const horaMin = toMin(hora);
+			if (horaMin < toMin(apertura) || horaMin >= toMin(cierre))
+				throw createError(400, `Horario ${hora} fuera del rango de atención (${apertura}–${cierre}).`);
 
-		// FIX #9: usar timezone Argentina
-		const horaLlegada = buildArgDatetime(fecha, hora);
-		if (horaLlegada <= new Date())
-			throw createError(400, `No se puede agendar en el pasado (${fecha} ${hora}).`);
+			const horaLlegada = buildArgDatetime(fecha, hora);
+			if (horaLlegada <= new Date())
+				throw createError(400, `No se puede agendar en el pasado (${fecha} ${hora}).`);
 
-		// Validar capacidad
-		const [hh] = hora.split(':').map(Number);
-		const franjaInicio = `${String(hh).padStart(2, '0')}:00:00`;
-		const franjaFin = hh + 1 < 24 ? `${String(hh + 1).padStart(2, '0')}:00:00` : '23:59:59';
+			const [hh] = hora.split(':').map(Number);
+			const franjaInicio = `${String(hh).padStart(2, '0')}:00:00`;
+			const franjaFin = hh + 1 < 24 ? `${String(hh + 1).padStart(2, '0')}:00:00` : '23:59:59';
 
-		const enFranja = await Turno.count({
-			where: {
+			const turnosEnFranja = await Turno.findAll({
+				where: {
+					lavadero_id: req.lavaderoId,
+					fecha,
+					servicio_id: trim(servicio_id),
+					hora: { [Op.gte]: franjaInicio, [Op.lt]: franjaFin },
+					estado: { [Op.notIn]: ['cancelado'] },
+				},
+				attributes: ['id'],  // solo traer el id, no todos los campos
+				transaction: t,
+				lock: t.LOCK.UPDATE,
+			});
+
+			if (turnosEnFranja.length >= servicio.capacidad_por_hora)
+				throw createError(400,
+					`Cupo agotado para '${servicio.nombre}' entre ${String(hh).padStart(2, '0')}:00 y ${String(hh + 1).padStart(2, '0')}:00.`
+				);
+
+			if (estado && !ESTADOS_VALIDOS.includes(estado)) throw createError(400, 'Estado inválido.');
+
+			const turno = await Turno.create({
 				lavadero_id: req.lavaderoId,
-				fecha,
+				cliente_id: trim(cliente_id),
+				auto_id: trim(auto_id),
 				servicio_id: trim(servicio_id),
-				hora: { [Op.gte]: franjaInicio, [Op.lt]: franjaFin },
-				estado: { [Op.notIn]: ['cancelado'] },
-			},
-		});
-		if (enFranja >= servicio.capacidad_por_hora)
-			throw createError(400,
-				`Cupo agotado para '${servicio.nombre}' entre ${String(hh).padStart(2, '0')}:00 y ${String(hh + 1).padStart(2, '0')}:00.`
-			);
+				fecha,
+				hora,
+				estado: estado || 'reservado',
+			}, { transaction: t });
 
-		if (estado && !ESTADOS_VALIDOS.includes(estado)) throw createError(400, 'Estado inválido.');
+			await OrdenLavado.create({
+				lavadero_id: req.lavaderoId,
+				cliente_id: trim(cliente_id),
+				auto_id: trim(auto_id),
+				turno_id: turno.id,
+				servicio_id: trim(servicio_id),
+				servicio_tipo: servicio.nombre,
+				precio: servicio.precio,
+				estado: 'agendado',
+				hora_llegada: horaLlegada,
+			}, { transaction: t });
 
-		const turno = await Turno.create({
-			lavadero_id: req.lavaderoId,
-			cliente_id: trim(cliente_id),
-			auto_id: trim(auto_id),
-			servicio_id: trim(servicio_id),
-			fecha,
-			hora,
-			estado: estado || 'reservado',
-		});
-
-		// Orden asociada
-		await OrdenLavado.create({
-			lavadero_id: req.lavaderoId,
-			cliente_id: trim(cliente_id),
-			auto_id: trim(auto_id),
-			turno_id: turno.id,
-			servicio_tipo: servicio.nombre,
-			precio: servicio.precio,
-			estado: 'agendado',
-			hora_llegada: horaLlegada,
+			return turno.id;
 		});
 
-		res.status(201).json(await Turno.findByPk(turno.id, { include: INCLUDE_DETALLE }));
+		res.status(201).json(await Turno.findByPk(result, { include: INCLUDE_DETALLE }));
 	} catch (err) { next(err); }
 }
 

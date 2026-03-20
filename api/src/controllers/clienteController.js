@@ -58,11 +58,10 @@ function parsePagination(q) {
 	return { page, limit, offset };
 }
 
-// FIX #6: query de conteo separada para evitar bug GROUP BY + LIMIT en Sequelize
 async function listar(req, res, next) {
 	try {
 		const { HistorialServicio } = require('../models');
-		const { fn, col } = require('sequelize');
+		const { fn, col, literal } = require('sequelize');
 		const { page, limit, offset } = parsePagination(req.query);
 
 		const where = { lavadero_id: req.lavaderoId };
@@ -78,30 +77,58 @@ async function listar(req, res, next) {
 			];
 		}
 
-		// Conteo simple, sin GROUP BY
+		// Conteo simple y correcto (sin GROUP BY, sin join)
 		const total = await Cliente.count({ where });
 
-		const clientes = await Cliente.findAll({
+		// 1) Obtener los IDs de la página (sin joins, sin GROUP BY)
+		const ids = await Cliente.findAll({
 			where,
-			include: [
-				{ model: Auto, attributes: ['id', 'marca', 'modelo', 'patente', 'color', 'year'] },
-				{ model: HistorialServicio, attributes: [], required: false },
-			],
-			attributes: {
-				include: [
-					[fn('COUNT', col('HistorialServicios.id')), 'cantidad_visitas'],
-					[fn('MAX', col('HistorialServicios.fecha_entrega')), 'ultima_visita'],
-				],
-			},
-			group: ['Cliente.id', 'Autos.id'],
+			attributes: ['id'],
 			order: [['nombre', 'ASC']],
 			limit,
 			offset,
-			subQuery: false,
+			raw: true,
 		});
 
+		if (!ids.length) {
+			return res.json({
+				data: [],
+				pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+			});
+		}
+
+		const clienteIds = ids.map((r) => r.id);
+
+		// 2) Traer los clientes con sus autos (por los IDs de la página)
+		const clientes = await Cliente.findAll({
+			where: { id: { [Op.in]: clienteIds } },
+			include: [{ model: Auto, attributes: ['id', 'marca', 'modelo', 'patente', 'color', 'year'] }],
+			order: [['nombre', 'ASC']],
+		});
+
+		// 3) Estadísticas de historial en una sola query agregada
+		const stats = await HistorialServicio.findAll({
+			attributes: [
+				'cliente_id',
+				[fn('COUNT', col('id')), 'cantidad_visitas'],
+				[fn('MAX', col('fecha_entrega')), 'ultima_visita'],
+			],
+			where: { cliente_id: { [Op.in]: clienteIds } },
+			group: ['cliente_id'],
+			raw: true,
+		});
+
+		const statsMap = Object.fromEntries(stats.map((s) => [s.cliente_id, s]));
+
+		// 4) Combinar
+		const data = clientes.map((c) => ({
+			...c.toJSON(),
+			cantidad_visitas: statsMap[c.id]?.cantidad_visitas || 0,
+			ultima_visita: statsMap[c.id]?.ultima_visita || null,
+		}));
+
 		res.json({
-			data: clientes,
+			data,
 			pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
 		});
 	} catch (err) { next(err); }

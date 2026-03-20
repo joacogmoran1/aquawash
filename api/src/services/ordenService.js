@@ -75,7 +75,8 @@ async function crear({ lavadero_id, cliente_id, auto_id, turno_id, servicio_id }
 			cliente_id: safeClienteId,
 			auto_id: safeAutoId,
 			turno_id: safeTurnoId,
-			servicio_tipo: servicio.nombre, // snapshot del nombre
+			servicio_id: safeServicioId,
+			servicio_tipo: servicio.nombre,
 			precio: Number(servicio.precio || 0),
 			hora_llegada: new Date(),
 		}, { transaction: t });

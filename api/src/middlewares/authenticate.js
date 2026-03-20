@@ -1,33 +1,35 @@
 const jwt = require('jsonwebtoken');
-const { Lavadero } = require('../models');
+const { Usuario, Lavadero } = require('../models');
 
 async function authenticate(req, res, next) {
 	try {
 		const header = req.headers.authorization;
-		if (!header?.startsWith('Bearer ')) {
+		if (!header?.startsWith('Bearer '))
 			return res.status(401).json({ error: 'No autorizado.' });
-		}
 
 		const token = header.split(' ')[1];
 
 		let payload;
 		try {
 			payload = jwt.verify(token, process.env.JWT_SECRET, { issuer: 'washly' });
-		} catch (err) {
-			// No revelar si es "expirado" o "inválido" (información de más)
+		} catch {
 			return res.status(401).json({ error: 'No autorizado.' });
 		}
 
-		const lavadero = await Lavadero.findByPk(payload.lavaderoId);
-		if (!lavadero) {
+		const usuario = await Usuario.findByPk(payload.usuarioId);
+		if (!usuario || !usuario.activo)
 			return res.status(401).json({ error: 'No autorizado.' });
-		}
 
-		req.lavaderoId = lavadero.id;
+		const lavadero = await Lavadero.findByPk(usuario.lavadero_id);
+		if (!lavadero)
+			return res.status(401).json({ error: 'No autorizado.' });
+
+		req.usuario = usuario;
+		req.lavaderoId = usuario.lavadero_id;
 		req.lavadero = lavadero;
+		req.rol = usuario.rol;
 		next();
-	} catch (err) {
-		// Error interno → no filtrar detalles
+	} catch {
 		return res.status(401).json({ error: 'No autorizado.' });
 	}
 }

@@ -7,7 +7,8 @@ const OrdenLavado = sequelize.define('OrdenLavado', {
 	cliente_id: { type: DataTypes.UUID, allowNull: false },
 	auto_id: { type: DataTypes.UUID, allowNull: false },
 	turno_id: { type: DataTypes.UUID, allowNull: true },
-	servicio_tipo: { type: DataTypes.STRING, allowNull: false },
+	servicio_id: { type: DataTypes.UUID, allowNull: true },   // ← nuevo
+	servicio_tipo: { type: DataTypes.STRING, allowNull: false }, // snapshot del nombre
 	precio: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
 	estado: {
 		type: DataTypes.ENUM('agendado', 'esperando', 'lavando', 'listo', 'entregado', 'cancelado'),
@@ -18,7 +19,6 @@ const OrdenLavado = sequelize.define('OrdenLavado', {
 	hora_inicio: { type: DataTypes.DATE, allowNull: true },
 	hora_fin: { type: DataTypes.DATE, allowNull: true },
 	hora_entrega: { type: DataTypes.DATE, allowNull: true },
-	// notas ELIMINADO
 }, {
 	tableName: 'ordenes_lavado',
 	indexes: [
@@ -26,6 +26,7 @@ const OrdenLavado = sequelize.define('OrdenLavado', {
 		{ fields: ['lavadero_id', 'hora_llegada'] },
 		{ fields: ['lavadero_id', 'estado', 'hora_entrega'] },
 		{ fields: ['turno_id'] },
+		{ fields: ['servicio_id'] },
 	],
 });
 

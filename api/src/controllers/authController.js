@@ -59,41 +59,26 @@ async function register(req, res, next) {
 			password: normalizePassword(raw.password),
 		};
 
-		const lavadero = await authService.register(payload);
+		const { lavadero, usuario } = await authService.register(payload);
 
-		// FIX #12: enviar email de verificación si SMTP está configurado
-		if (emailService && process.env.SMTP_USER) {
-			try {
-				const token = crypto.randomBytes(32).toString('hex');
-				const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-				await Lavadero.update(
-					{ email_verify_token: token, email_verify_expires: expires },
-					{ where: { id: lavadero.id } }
-				);
-				await emailService.sendVerificationEmail(lavadero.email, lavadero.nombre, token);
-			} catch (e) {
-				console.error('Error enviando email de verificación:', e.message);
-			}
-		}
-
-		const accessToken = authService.generateAccessToken(lavadero.id);
-		const refreshToken = await authService.issueRefreshToken(lavadero.id, req.ip, req.headers['user-agent']);
+		const accessToken = authService.generateAccessToken(usuario.id, lavadero.id, usuario.rol);
+		const refreshToken = await authService.issueRefreshToken(usuario.id, req.ip, req.headers['user-agent']);
 		res.cookie(COOKIE_NAME, refreshToken, COOKIE_OPTS);
-		res.status(201).json({ lavadero, accessToken });
+		res.status(201).json({ lavadero, usuario, accessToken });
 	} catch (err) { next(err); }
 }
 
 async function login(req, res, next) {
 	try {
 		const raw = pick(req.body, ['email', 'password']);
-		const lavadero = await authService.login({
+		const { lavadero, usuario } = await authService.login({
 			email: normalizeEmail(raw.email),
 			password: normalizePassword(raw.password),
 		});
-		const accessToken = authService.generateAccessToken(lavadero.id);
-		const refreshToken = await authService.issueRefreshToken(lavadero.id, req.ip, req.headers['user-agent']);
+		const accessToken = authService.generateAccessToken(usuario.id, lavadero.id, usuario.rol);
+		const refreshToken = await authService.issueRefreshToken(usuario.id, req.ip, req.headers['user-agent']);
 		res.cookie(COOKIE_NAME, refreshToken, COOKIE_OPTS);
-		res.json({ lavadero, accessToken });
+		res.json({ lavadero, usuario, accessToken });
 	} catch (err) { next(err); }
 }
 
@@ -116,7 +101,77 @@ async function logout(req, res, next) {
 }
 
 function me(req, res) {
-	res.json({ lavadero: req.lavadero });
+	res.json({ lavadero: req.lavadero, usuario: req.usuario, rol: req.rol });
+}
+
+async function listarUsuarios(req, res, next) {
+	try {
+		const { Usuario } = require('../models');
+		const usuarios = await Usuario.findAll({
+			where: { lavadero_id: req.lavaderoId },
+			order: [['nombre', 'ASC']],
+		});
+		res.json(usuarios);
+	} catch (err) { next(err); }
+}
+
+async function crearUsuario(req, res, next) {
+	try {
+		const bcrypt = require('bcrypt');
+		const { Usuario } = require('../models');
+		const raw = pick(req.body, ['nombre', 'email', 'password', 'rol']);
+
+		const existing = await Usuario.findOne({ where: { email: raw.email } });
+		if (existing) throw createError(409, 'El email ya está en uso.');
+
+		const password_hash = await bcrypt.hash(normalizePassword(raw.password), 12);
+		const usuario = await Usuario.create({
+			lavadero_id: req.lavaderoId,
+			nombre: normalizeNombre(raw.nombre),
+			email: normalizeEmail(raw.email),
+			password_hash,
+			rol: raw.rol,
+		});
+
+		res.status(201).json(usuario);
+	} catch (err) { next(err); }
+}
+
+async function actualizarUsuario(req, res, next) {
+	try {
+		const { Usuario } = require('../models');
+		const usuario = await Usuario.findOne({
+			where: { id: req.params.id, lavadero_id: req.lavaderoId },
+		});
+		if (!usuario) throw createError(404, 'Usuario no encontrado.');
+
+		// Los owners no pueden ser degradados por admins
+		if (usuario.rol === 'owner' && req.rol !== 'owner')
+			throw createError(403, 'No podés modificar al owner.');
+
+		const patch = pick(req.body, ['nombre', 'rol', 'activo']);
+		if (patch.nombre) patch.nombre = normalizeNombre(patch.nombre);
+		if (patch.rol && patch.rol === 'owner') throw createError(400, 'No se puede asignar el rol owner.');
+
+		await usuario.update(patch);
+		res.json(usuario);
+	} catch (err) { next(err); }
+}
+
+async function eliminarUsuario(req, res, next) {
+	try {
+		const { Usuario } = require('../models');
+		const usuario = await Usuario.findOne({
+			where: { id: req.params.id, lavadero_id: req.lavaderoId },
+		});
+		if (!usuario) throw createError(404, 'Usuario no encontrado.');
+		if (usuario.rol === 'owner') throw createError(400, 'No se puede eliminar al owner.');
+		if (usuario.id === req.usuario.id) throw createError(400, 'No podés eliminarte a vos mismo.');
+
+		await authService.revokeAllUserTokens(usuario.id);
+		await usuario.destroy();
+		res.status(204).send();
+	} catch (err) { next(err); }
 }
 
 // FIX #12: verificar email
@@ -202,4 +257,5 @@ module.exports = {
 	register, login, refresh, logout, me,
 	verifyEmail, resendVerification,
 	forgotPassword, resetPassword,
+	listarUsuarios, crearUsuario, actualizarUsuario, eliminarUsuario,
 };

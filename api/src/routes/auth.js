@@ -3,6 +3,7 @@ const { body } = require('express-validator');
 const controller = require('../controllers/authController');
 const validate = require('../middlewares/validate');
 const authenticate = require('../middlewares/authenticate');
+const requireRol = require('../middlewares/requireRol');
 const rateLimit = require('express-rate-limit');
 
 const loginLimiter = rateLimit({
@@ -20,7 +21,6 @@ const refreshLimiter = rateLimit({
 	message: { error: 'Demasiadas solicitudes.' },
 	standardHeaders: true, legacyHeaders: false,
 });
-// FIX #13: rate limit para reset
 const resetLimiter = rateLimit({
 	windowMs: 60 * 60 * 1000, max: 5,
 	message: { error: 'Demasiados intentos. Intentá en 1 hora.' },
@@ -50,11 +50,9 @@ router.post('/refresh', refreshLimiter, controller.refresh);
 router.post('/logout', controller.logout);
 router.get('/me', authenticate, controller.me);
 
-// FIX #12: verificación de email
 router.get('/verify-email', controller.verifyEmail);
 router.post('/resend-verification', resetLimiter, controller.resendVerification);
 
-// FIX #13: reset de contraseña
 router.post('/forgot-password', resetLimiter,
 	[body('email').isEmail().withMessage('Email inválido.')],
 	validate, controller.forgotPassword
@@ -65,6 +63,38 @@ router.post('/reset-password', resetLimiter,
 		body('password').isLength({ min: 8 }).withMessage('Mínimo 8 caracteres.'),
 	],
 	validate, controller.resetPassword
+);
+
+// ── Gestión del equipo (solo owners y admins) ──────────────────
+router.get('/equipo',
+	authenticate, requireRol('owner', 'admin'),
+	controller.listarUsuarios
+);
+
+router.post('/equipo',
+	authenticate, requireRol('owner', 'admin'),
+	[
+		body('nombre').trim().notEmpty().withMessage('Nombre requerido.'),
+		body('email').isEmail().normalizeEmail().withMessage('Email inválido.'),
+		body('password').isLength({ min: 8 }).withMessage('Mínimo 8 caracteres.'),
+		body('rol').isIn(['admin', 'operario']).withMessage('Rol inválido.'),
+	],
+	validate, controller.crearUsuario
+);
+
+router.put('/equipo/:id',
+	authenticate, requireRol('owner', 'admin'),
+	[
+		body('nombre').optional().trim().notEmpty(),
+		body('rol').optional().isIn(['admin', 'operario']),
+		body('activo').optional().isBoolean(),
+	],
+	validate, controller.actualizarUsuario
+);
+
+router.delete('/equipo/:id',
+	authenticate, requireRol('owner'),
+	controller.eliminarUsuario
 );
 
 module.exports = router;

@@ -11,11 +11,9 @@ for (const key of REQUIRED_ENV) {
 
 if (process.env.JWT_SECRET.length < 32) {
 	console.error('❌ JWT_SECRET debe tener al menos 32 caracteres.');
-	console.error('   Generá uno con: node -e "console.log(require(\'crypto\').randomBytes(48).toString(\'hex\'))"');
 	process.exit(1);
 }
 
-// FIX #8: models PRIMERO, antes que authService (que requiere RefreshToken)
 require('./src/models');
 
 const app = require('./src/app');
@@ -40,11 +38,9 @@ async function start() {
 		await sequelize.authenticate();
 		logger.info('✅ Conectado a PostgreSQL.');
 
-		if (process.env.NODE_ENV === 'development' && process.env.DB_SYNC === 'true') {
-			logger.info('🔄 Sincronizando tablas (development only)…');
-			await sequelize.sync({ alter: true });
-			logger.info('✅ Tablas sincronizadas.');
-		}
+		// DB_SYNC eliminado — usar `npm run db:migrate` para cambios de schema.
+		// El script db:sync (src/config/sync.js) sigue disponible SOLO para
+		// desarrollo inicial: `npm run db:sync`
 
 		const server = app.listen(PORT, () => {
 			logger.info(`🚀 Servidor corriendo en http://localhost:${PORT}`);

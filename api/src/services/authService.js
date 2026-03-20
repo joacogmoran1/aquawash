@@ -2,20 +2,18 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { Op } = require('sequelize');
-const { Lavadero, RefreshToken } = require('../models');
+const { Lavadero, Usuario, RefreshToken } = require('../models');
 const { createError } = require('../middlewares/errorHandler');
 
 const ACCESS_TTL = '10m';
 const REFRESH_TTL = 7 * 24 * 60 * 60 * 1000;
 const MAX_ACTIVE_TOKENS = 10;
 
-// FIX #2: hash bcrypt real y válido para protección timing attack
-// Se genera UNA sola vez al cargar el módulo (síncrono, salt rounds 12).
 const FAKE_HASH = bcrypt.hashSync('__aquawash_dummy_placeholder__', 12);
 
-function generateAccessToken(lavaderoId) {
+function generateAccessToken(usuarioId, lavaderoId, rol) {
 	return jwt.sign(
-		{ lavaderoId },
+		{ usuarioId, lavaderoId, rol },
 		process.env.JWT_SECRET,
 		{ expiresIn: ACCESS_TTL, issuer: 'washly' }
 	);
@@ -25,11 +23,10 @@ function hashToken(plain) {
 	return crypto.createHash('sha256').update(plain).digest('hex');
 }
 
-async function issueRefreshToken(lavaderoId, ip, userAgent) {
-	// FIX #15: máximo 10 tokens activos por usuario
+async function issueRefreshToken(usuarioId, ip, userAgent) {
 	const activeCount = await RefreshToken.count({
 		where: {
-			lavadero_id: lavaderoId,
+			usuario_id: usuarioId,
 			revoked: false,
 			expires_at: { [Op.gt]: new Date() },
 		},
@@ -37,7 +34,7 @@ async function issueRefreshToken(lavaderoId, ip, userAgent) {
 
 	if (activeCount >= MAX_ACTIVE_TOKENS) {
 		const oldest = await RefreshToken.findOne({
-			where: { lavadero_id: lavaderoId, revoked: false, expires_at: { [Op.gt]: new Date() } },
+			where: { usuario_id: usuarioId, revoked: false, expires_at: { [Op.gt]: new Date() } },
 			order: [['created_at', 'ASC']],
 		});
 		if (oldest) await oldest.update({ revoked: true });
@@ -48,7 +45,7 @@ async function issueRefreshToken(lavaderoId, ip, userAgent) {
 	const expires_at = new Date(Date.now() + REFRESH_TTL);
 
 	await RefreshToken.create({
-		lavadero_id: lavaderoId,
+		usuario_id: usuarioId,
 		token_hash,
 		expires_at,
 		ip: ip || null,
@@ -69,24 +66,40 @@ async function cleanupExpiredTokens() {
 	});
 }
 
+/**
+ * Registrar un lavadero crea automáticamente un usuario con rol 'owner'.
+ */
 async function register({ nombre, direccion, telefono, email, password }) {
-	const existing = await Lavadero.findOne({ where: { email } });
+	const existing = await Usuario.findOne({ where: { email } });
 	if (existing) throw createError(409, 'No se pudo completar el registro.');
 
 	const password_hash = await bcrypt.hash(password, 12);
+
+	// Crear el Lavadero
 	const lavadero = await Lavadero.create({ nombre, direccion, telefono, email, password_hash });
-	return Lavadero.findByPk(lavadero.id);
+
+	// Crear el usuario owner
+	const usuario = await Usuario.create({
+		lavadero_id: lavadero.id,
+		nombre,
+		email,
+		password_hash,
+		rol: 'owner',
+	});
+
+	return { lavadero, usuario };
 }
 
 async function login({ email, password }) {
-	const lavadero = await Lavadero.scope('withPassword').findOne({ where: { email } });
+	const usuario = await Usuario.scope('withPassword').findOne({ where: { email, activo: true } });
 
-	// FIX #2: FAKE_HASH ahora es un hash bcrypt válido
-	const hash = lavadero?.password_hash || FAKE_HASH;
+	const hash = usuario?.password_hash || FAKE_HASH;
 	const valid = await bcrypt.compare(password, hash);
 
-	if (!lavadero || !valid) throw createError(401, 'Credenciales inválidas.');
-	return Lavadero.findByPk(lavadero.id);
+	if (!usuario || !valid) throw createError(401, 'Credenciales inválidas.');
+
+	const lavadero = await Lavadero.findByPk(usuario.lavadero_id);
+	return { usuario, lavadero };
 }
 
 async function rotateRefreshToken(plainToken, ip, userAgent) {
@@ -98,7 +111,10 @@ async function rotateRefreshToken(plainToken, ip, userAgent) {
 	if (!stored) {
 		const anyToken = await RefreshToken.findOne({ where: { token_hash } });
 		if (anyToken) {
-			await RefreshToken.update({ revoked: true }, { where: { lavadero_id: anyToken.lavadero_id } });
+			await RefreshToken.update(
+				{ revoked: true },
+				{ where: { usuario_id: anyToken.usuario_id } }
+			);
 		}
 		throw createError(401, 'Sesión inválida. Por favor iniciá sesión nuevamente.');
 	}
@@ -110,12 +126,14 @@ async function rotateRefreshToken(plainToken, ip, userAgent) {
 
 	await stored.update({ revoked: true });
 
-	const lavadero = await Lavadero.findByPk(stored.lavadero_id);
-	if (!lavadero) throw createError(401, 'Sesión inválida.');
+	const usuario = await Usuario.findByPk(stored.usuario_id);
+	if (!usuario || !usuario.activo) throw createError(401, 'Sesión inválida.');
 
-	const accessToken = generateAccessToken(lavadero.id);
-	const refreshToken = await issueRefreshToken(lavadero.id, ip, userAgent);
-	return { lavadero, accessToken, refreshToken };
+	const lavadero = await Lavadero.findByPk(usuario.lavadero_id);
+	const accessToken = generateAccessToken(usuario.id, usuario.lavadero_id, usuario.rol);
+	const refreshToken = await issueRefreshToken(usuario.id, ip, userAgent);
+
+	return { lavadero, usuario, accessToken, refreshToken };
 }
 
 async function revokeRefreshToken(plainToken) {
@@ -124,10 +142,10 @@ async function revokeRefreshToken(plainToken) {
 	await RefreshToken.update({ revoked: true }, { where: { token_hash } });
 }
 
-async function revokeAllUserTokens(lavaderoId) {
+async function revokeAllUserTokens(usuarioId) {
 	await RefreshToken.update(
 		{ revoked: true },
-		{ where: { lavadero_id: lavaderoId, revoked: false } }
+		{ where: { usuario_id: usuarioId, revoked: false } }
 	);
 }
 

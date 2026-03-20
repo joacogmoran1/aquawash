@@ -1,4 +1,5 @@
 const Lavadero = require('./Lavadero');
+const Usuario = require('./Usuario');
 const HistorialServicio = require('./HistorialServicio');
 const Cliente = require('./Cliente');
 const Auto = require('./Auto');
@@ -10,12 +11,18 @@ const RefreshToken = require('./RefreshToken');
 
 /* ─── Asociaciones ──────────────────────────────────────────── */
 
+Lavadero.hasMany(Usuario, { foreignKey: 'lavadero_id', onDelete: 'CASCADE' });
+Usuario.belongsTo(Lavadero, { foreignKey: 'lavadero_id' });
+
+// RefreshToken ahora apunta a Usuario en vez de Lavadero
+Usuario.hasMany(RefreshToken, { foreignKey: 'usuario_id', onDelete: 'CASCADE' });
+RefreshToken.belongsTo(Usuario, { foreignKey: 'usuario_id' });
+
 Lavadero.hasMany(Cliente, { foreignKey: 'lavadero_id', onDelete: 'CASCADE' });
 Lavadero.hasMany(Auto, { foreignKey: 'lavadero_id', onDelete: 'CASCADE' });
 Lavadero.hasMany(Servicio, { foreignKey: 'lavadero_id', onDelete: 'CASCADE' });
 Lavadero.hasMany(Turno, { foreignKey: 'lavadero_id', onDelete: 'CASCADE' });
 Lavadero.hasMany(OrdenLavado, { foreignKey: 'lavadero_id', onDelete: 'CASCADE' });
-Lavadero.hasMany(RefreshToken, { foreignKey: 'lavadero_id', onDelete: 'CASCADE' });
 Lavadero.hasMany(HistorialServicio, { foreignKey: 'lavadero_id', onDelete: 'CASCADE' });
 
 HistorialServicio.belongsTo(Lavadero, { foreignKey: 'lavadero_id' });
@@ -47,20 +54,13 @@ OrdenLavado.belongsTo(Lavadero, { foreignKey: 'lavadero_id' });
 OrdenLavado.belongsTo(Cliente, { foreignKey: 'cliente_id' });
 OrdenLavado.belongsTo(Auto, { foreignKey: 'auto_id' });
 OrdenLavado.belongsTo(Turno, { foreignKey: 'turno_id', constraints: false });
+OrdenLavado.belongsTo(Servicio, { foreignKey: 'servicio_id', constraints: false });
 OrdenLavado.hasOne(Pago, { foreignKey: 'orden_id', onDelete: 'CASCADE' });
 
 Pago.belongsTo(OrdenLavado, { foreignKey: 'orden_id' });
 
-RefreshToken.belongsTo(Lavadero, { foreignKey: 'lavadero_id' });
-
 module.exports = {
-	Lavadero,
-	HistorialServicio,
-	Cliente,
-	Auto,
-	Servicio,
-	Turno,
-	OrdenLavado,
-	Pago,
-	RefreshToken,
+	Lavadero, Usuario, HistorialServicio,
+	Cliente, Auto, Servicio, Turno,
+	OrdenLavado, Pago, RefreshToken,
 };

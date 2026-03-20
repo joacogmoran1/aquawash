@@ -10,14 +10,30 @@ const sequelize = new Sequelize(
 		dialect: 'postgres',
 		logging: process.env.NODE_ENV === 'development' ? console.log : false,
 		define: {
-			underscored: true,   // ← usa snake_case en todas las tablas
+			underscored: true,
 			freezeTableName: false,
 		},
 		pool: {
 			max: 10,
 			min: 2,
-			acquire: 30000,
-			idle: 10000,
+			acquire: 30_000,
+			idle: 10_000,
+		},
+		retry: {
+			max: 3,
+			backoffBase: 300,
+			backoffExponent: 1.5,
+			match: [
+				/SequelizeConnectionError/,
+				/SequelizeConnectionRefusedError/,
+				/SequelizeConnectionTimedOutError/,
+				/SequelizeHostNotFoundError/,
+				/SequelizeHostNotReachableError/,
+				/ECONNRESET/,
+				/ECONNREFUSED/,
+				/ETIMEDOUT/,
+			],
+			timeout: 60_000,
 		},
 	}
 );

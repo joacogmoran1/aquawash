@@ -16,12 +16,21 @@ function toSafeNumber(value) {
 	return Number.isFinite(num) ? num : 0;
 }
 
-function getDayRange(date = new Date()) {
-	const start = new Date(date);
-	start.setHours(0, 0, 0, 0);
+const ARG_OFFSET_MS = -3 * 60 * 60 * 1000;
 
-	const end = new Date(date);
-	end.setHours(23, 59, 59, 999);
+function toArgentineDate(utcDate) {
+	return new Date(utcDate.getTime() + ARG_OFFSET_MS);
+}
+
+function getDayRange(date = new Date()) {
+	const argDate = toArgentineDate(date);
+	const y = argDate.getUTCFullYear();
+	const m = argDate.getUTCMonth();
+	const d = argDate.getUTCDate();
+
+	// Inicio del día en Argentina = medianoche ARG en UTC
+	const start = new Date(Date.UTC(y, m, d, 3, 0, 0, 0));     // 00:00 ARG = 03:00 UTC
+	const end = new Date(Date.UTC(y, m, d + 1, 2, 59, 59, 999)); // 23:59:59.999 ARG
 
 	return { start, end };
 }
