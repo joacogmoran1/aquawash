@@ -209,7 +209,9 @@ export function CalendarPage({ showToast }) {
 		}
 	}
 
+	// FIX #17 + #18: cleanup + showToast ya estable gracias a useCallback en App.jsx
 	useEffect(() => {
+		let cancelled = false;
 		setLoading(true);
 
 		const desde = `${year}-${String(month + 1).padStart(2, "0")}-01`;
@@ -218,33 +220,39 @@ export function CalendarPage({ showToast }) {
 
 		api.get(`/turnos?desde=${desde}&hasta=${hasta}`)
 			.then((data) => {
+				if (cancelled) return;
 				const grouped = {};
-
 				data.forEach((t) => {
-					const key = t.fecha;
-					if (!grouped[key]) grouped[key] = [];
-					grouped[key].push(t);
+					if (!grouped[t.fecha]) grouped[t.fecha] = [];
+					grouped[t.fecha].push(t);
 				});
-
 				setTurnos(grouped);
 			})
-			.catch((error) => {
-				console.error(error);
-				showToast?.("Error al cargar turnos", "error");
-			})
-			.finally(() => setLoading(false));
-	}, [year, month, showToast]);
+			.catch((err) => { if (!cancelled) showToast?.("Error al cargar turnos", "error"); console.error(err); })
+			.finally(() => { if (!cancelled) setLoading(false); });
+
+		return () => { cancelled = true; };
+	}, [year, month, showToast]); // showToast ahora es estable → no re-ejecuta
 
 	useEffect(() => {
+		let cancelled = false;
+
 		Promise.all([api.get("/clientes"), api.get("/servicios")])
-			.then(([clientesData, serviciosData]) => {
-				setClientes(clientesData);
-				setServicios(serviciosData);
+			.then(([clientesRes, s]) => {
+				if (cancelled) return;
+				// clientesRes puede ser array (legacy) o { data: [] }
+				const c = Array.isArray(clientesRes) ? clientesRes : (clientesRes.data ?? []);
+				setClientes(c);
+				setServicios(s);
 			})
-			.catch((error) => {
-				console.error(error);
-				showToast?.("Error al cargar datos iniciales", "error");
+			.catch((err) => {
+				if (!cancelled) {
+					console.error(err);
+					showToast?.("Error al cargar datos", "error");
+				}
 			});
+
+		return () => { cancelled = true; };
 	}, [showToast]);
 
 	return (

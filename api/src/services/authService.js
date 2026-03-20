@@ -5,11 +5,13 @@ const { Op } = require('sequelize');
 const { Lavadero, RefreshToken } = require('../models');
 const { createError } = require('../middlewares/errorHandler');
 
-// ── Constantes ───────────────────────────────────────────────
 const ACCESS_TTL = '10m';
-const REFRESH_TTL = 7 * 24 * 60 * 60 * 1000; // 7 días en ms
+const REFRESH_TTL = 7 * 24 * 60 * 60 * 1000;
+const MAX_ACTIVE_TOKENS = 10;
 
-// ── Helpers internos ─────────────────────────────────────────
+// FIX #2: hash bcrypt real y válido para protección timing attack
+// Se genera UNA sola vez al cargar el módulo (síncrono, salt rounds 12).
+const FAKE_HASH = bcrypt.hashSync('__aquawash_dummy_placeholder__', 12);
 
 function generateAccessToken(lavaderoId) {
 	return jwt.sign(
@@ -24,7 +26,24 @@ function hashToken(plain) {
 }
 
 async function issueRefreshToken(lavaderoId, ip, userAgent) {
-	const plain = crypto.randomBytes(40).toString('hex'); // 80 chars hex
+	// FIX #15: máximo 10 tokens activos por usuario
+	const activeCount = await RefreshToken.count({
+		where: {
+			lavadero_id: lavaderoId,
+			revoked: false,
+			expires_at: { [Op.gt]: new Date() },
+		},
+	});
+
+	if (activeCount >= MAX_ACTIVE_TOKENS) {
+		const oldest = await RefreshToken.findOne({
+			where: { lavadero_id: lavaderoId, revoked: false, expires_at: { [Op.gt]: new Date() } },
+			order: [['created_at', 'ASC']],
+		});
+		if (oldest) await oldest.update({ revoked: true });
+	}
+
+	const plain = crypto.randomBytes(40).toString('hex');
 	const token_hash = hashToken(plain);
 	const expires_at = new Date(Date.now() + REFRESH_TTL);
 
@@ -39,7 +58,6 @@ async function issueRefreshToken(lavaderoId, ip, userAgent) {
 	return plain;
 }
 
-// Eliminar tokens expirados (llamar periódicamente desde server.js)
 async function cleanupExpiredTokens() {
 	await RefreshToken.destroy({
 		where: {
@@ -51,37 +69,23 @@ async function cleanupExpiredTokens() {
 	});
 }
 
-// ── Servicios públicos ───────────────────────────────────────
-
 async function register({ nombre, direccion, telefono, email, password }) {
 	const existing = await Lavadero.findOne({ where: { email } });
-	// Mismo mensaje para email existente o no → evitar enumeración de usuarios
 	if (existing) throw createError(409, 'No se pudo completar el registro.');
 
 	const password_hash = await bcrypt.hash(password, 12);
-	const lavadero = await Lavadero.create({
-		nombre, direccion, telefono, email, password_hash,
-	});
-
-	// Recargar sin password_hash (defaultScope lo excluye)
+	const lavadero = await Lavadero.create({ nombre, direccion, telefono, email, password_hash });
 	return Lavadero.findByPk(lavadero.id);
 }
 
 async function login({ email, password }) {
-	// withPassword scope devuelve todos los campos incluyendo password_hash
 	const lavadero = await Lavadero.scope('withPassword').findOne({ where: { email } });
 
-	// Siempre ejecutar bcrypt aunque no exista el usuario → prevenir timing attacks
-	const fakeHash = '$2b$12$invalidhashtopreventtimingattack000000000000000000000000';
-	const hash = lavadero?.password_hash || fakeHash;
+	// FIX #2: FAKE_HASH ahora es un hash bcrypt válido
+	const hash = lavadero?.password_hash || FAKE_HASH;
 	const valid = await bcrypt.compare(password, hash);
 
-	if (!lavadero || !valid) {
-		// Mismo mensaje para usuario no existe y contraseña incorrecta → evitar enumeración
-		throw createError(401, 'Credenciales inválidas.');
-	}
-
-	// Devolver sin password_hash
+	if (!lavadero || !valid) throw createError(401, 'Credenciales inválidas.');
 	return Lavadero.findByPk(lavadero.id);
 }
 
@@ -89,21 +93,12 @@ async function rotateRefreshToken(plainToken, ip, userAgent) {
 	if (!plainToken) throw createError(401, 'Refresh token no proporcionado.');
 
 	const token_hash = hashToken(plainToken);
-
-	const stored = await RefreshToken.findOne({
-		where: { token_hash, revoked: false },
-	});
+	const stored = await RefreshToken.findOne({ where: { token_hash, revoked: false } });
 
 	if (!stored) {
-		// Token no encontrado o ya revocado → posible token theft
-		// Revocar TODOS los tokens del usuario si el hash existe pero está revocado
 		const anyToken = await RefreshToken.findOne({ where: { token_hash } });
 		if (anyToken) {
-			// Token reusado → posible ataque, revocar toda la familia
-			await RefreshToken.update(
-				{ revoked: true },
-				{ where: { lavadero_id: anyToken.lavadero_id } }
-			);
+			await RefreshToken.update({ revoked: true }, { where: { lavadero_id: anyToken.lavadero_id } });
 		}
 		throw createError(401, 'Sesión inválida. Por favor iniciá sesión nuevamente.');
 	}
@@ -113,16 +108,13 @@ async function rotateRefreshToken(plainToken, ip, userAgent) {
 		throw createError(401, 'Sesión expirada. Por favor iniciá sesión nuevamente.');
 	}
 
-	// Revocar el token usado (rotación)
 	await stored.update({ revoked: true });
 
 	const lavadero = await Lavadero.findByPk(stored.lavadero_id);
 	if (!lavadero) throw createError(401, 'Sesión inválida.');
 
-	// Emitir nuevos tokens
 	const accessToken = generateAccessToken(lavadero.id);
 	const refreshToken = await issueRefreshToken(lavadero.id, ip, userAgent);
-
 	return { lavadero, accessToken, refreshToken };
 }
 
@@ -140,12 +132,8 @@ async function revokeAllUserTokens(lavaderoId) {
 }
 
 module.exports = {
-	register,
-	login,
-	generateAccessToken,
-	issueRefreshToken,
-	rotateRefreshToken,
-	revokeRefreshToken,
-	revokeAllUserTokens,
+	register, login,
+	generateAccessToken, issueRefreshToken,
+	rotateRefreshToken, revokeRefreshToken, revokeAllUserTokens,
 	cleanupExpiredTokens,
 };

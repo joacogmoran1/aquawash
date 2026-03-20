@@ -42,9 +42,6 @@ export function ClientsTable({
                                     <div className={styles.clientAvatar}>{initials(c.nombre)}</div>
                                     <div className={styles.clientInfo}>
                                         <div className={styles.clientNameText}>{c.nombre}</div>
-                                        {c.notas && (
-                                            <div className={styles.notasCell}>💬 {c.notas}</div>
-                                        )}
                                     </div>
                                 </div>
                             </td>
@@ -69,8 +66,9 @@ export function ClientsTable({
                             </td>
 
                             <td className={styles.dateText}>
-                                {c.created_at
-                                    ? new Date(c.created_at).toLocaleDateString("es-AR")
+                                {/* FIX: Sequelize devuelve createdAt (camelCase) */}
+                                {(c.createdAt || c.created_at)
+                                    ? new Date(c.createdAt || c.created_at).toLocaleDateString("es-AR")
                                     : "—"}
                             </td>
 

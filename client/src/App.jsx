@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { ErrorBoundary } from "./components/ErrorBoundary/ErrorBoundary";
@@ -14,18 +14,11 @@ import { CSS } from "./utils/theme";
 
 function FullscreenLoader() {
 	return (
-		<div
-			style={{
-				display: "flex",
-				alignItems: "center",
-				justifyContent: "center",
-				minHeight: "100vh",
-				backgroundColor: "var(--bg)",
-			}}
-		>
-			<div style={{ textAlign: "center", color: "var(--muted)" }}>
-				Cargando…
-			</div>
+		<div style={{
+			display: "flex", alignItems: "center", justifyContent: "center",
+			minHeight: "100vh", backgroundColor: "var(--bg)"
+		}}>
+			<div style={{ color: "var(--muted)" }}>Cargando…</div>
 		</div>
 	);
 }
@@ -43,38 +36,10 @@ function AuthRoutes() {
 function AppRoutes({ showToast }) {
 	return (
 		<Routes>
-			<Route
-				path="/dashboard"
-				element={
-					<ErrorBoundary>
-						<DashboardPage showToast={showToast} />
-					</ErrorBoundary>
-				}
-			/>
-			<Route
-				path="/calendar"
-				element={
-					<ErrorBoundary>
-						<CalendarPage showToast={showToast} />
-					</ErrorBoundary>
-				}
-			/>
-			<Route
-				path="/clients"
-				element={
-					<ErrorBoundary>
-						<ClientsPage showToast={showToast} />
-					</ErrorBoundary>
-				}
-			/>
-			<Route
-				path="/config"
-				element={
-					<ErrorBoundary>
-						<ConfigPage showToast={showToast} />
-					</ErrorBoundary>
-				}
-			/>
+			<Route path="/dashboard" element={<ErrorBoundary><DashboardPage showToast={showToast} /></ErrorBoundary>} />
+			<Route path="/calendar" element={<ErrorBoundary><CalendarPage showToast={showToast} /></ErrorBoundary>} />
+			<Route path="/clients" element={<ErrorBoundary><ClientsPage showToast={showToast} /></ErrorBoundary>} />
+			<Route path="/config" element={<ErrorBoundary><ConfigPage showToast={showToast} /></ErrorBoundary>} />
 			<Route path="*" element={<Navigate to="/dashboard" replace />} />
 		</Routes>
 	);
@@ -84,27 +49,21 @@ function AppShell() {
 	const { user, isLoading } = useAuth();
 	const [toast, setToast] = useState(null);
 
-	function showToast(msg, type = "success") {
+	// FIX #18: referencia estable — no dispara re-ejecución de useEffect
+	const showToast = useCallback((msg, type = "success") => {
 		setToast({ msg, type });
-	}
+	}, []);
 
-	if (isLoading) {
-		return <FullscreenLoader />;
-	}
-
-	if (!user) {
-		return <AuthRoutes />;
-	}
+	if (isLoading) return <FullscreenLoader />;
+	if (!user) return <AuthRoutes />;
 
 	return (
 		<div className="app">
-			<ErrorBoundary
-				fallback={
-					<div style={{ padding: 24, color: "var(--red)" }}>
-						Error en la barra lateral — recargá la página.
-					</div>
-				}
-			>
+			<ErrorBoundary fallback={
+				<div style={{ padding: 24, color: "var(--red)" }}>
+					Error en la barra lateral — recargá la página.
+				</div>
+			}>
 				<Sidebar />
 			</ErrorBoundary>
 
@@ -113,11 +72,7 @@ function AppShell() {
 			</main>
 
 			{toast && (
-				<Toast
-					msg={toast.msg}
-					type={toast.type}
-					onClose={() => setToast(null)}
-				/>
+				<Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />
 			)}
 		</div>
 	);

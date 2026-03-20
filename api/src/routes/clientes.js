@@ -1,18 +1,27 @@
-const router      = require('express').Router();
-const { body }    = require('express-validator');
-const controller  = require('../controllers/clienteController');
-const validate    = require('../middlewares/validate');
+const router = require('express').Router();
+const { body } = require('express-validator');
+const rateLimit = require('express-rate-limit');
+const controller = require('../controllers/clienteController');
+const validate = require('../middlewares/validate');
 
-router.get('/',    controller.listar);
+const createLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 60,
+  message: { error: 'Demasiadas creaciones. Intentá más tarde.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+router.get('/', controller.listar);
 router.get('/:id', controller.obtener);
 router.get('/:id/historial', controller.historial);
 
 router.post('/',
+  createLimiter,
   [
     body('nombre').trim().notEmpty().withMessage('El nombre es requerido.'),
     body('email').optional({ checkFalsy: true }).isEmail().withMessage('Email inválido.'),
     body('telefono').optional().trim(),
-    body('notas').optional().trim(),
   ],
   validate,
   controller.crear

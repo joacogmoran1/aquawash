@@ -24,7 +24,10 @@ export function DashboardMain({ onGoIngresos, onGoOrdenes }) {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // FIX #17: cleanup correcto en useEffect con intervalo
     useEffect(() => {
+        let cancelled = false;
+
         async function load() {
             try {
                 const [dashData, ordenesData, semanaData] = await Promise.all([
@@ -33,20 +36,27 @@ export function DashboardMain({ onGoIngresos, onGoOrdenes }) {
                     api.get("/dashboard/semana"),
                 ]);
 
+                if (cancelled) return;
+
                 setStats(dashData);
                 setOrders(ordenesData.filter((o) => o.estado !== "entregado"));
                 setSemana(semanaData);
             } catch (e) {
-                console.error("Dashboard error:", e);
+                if (!cancelled) console.error("Dashboard error:", e);
             } finally {
-                setLoading(false);
+                if (!cancelled) setLoading(false);
             }
         }
 
         load();
-        const interval = setInterval(load, 30000);
-        return () => clearInterval(interval);
-    }, []);
+        const interval = setInterval(() => { if (!cancelled) load(); }, 30_000);
+
+        // FIX #17: cleanup
+        return () => {
+            cancelled = true;
+            clearInterval(interval);
+        };
+    }, []); // sin dependencias — load es local al effect
 
     if (loading) {
         return (

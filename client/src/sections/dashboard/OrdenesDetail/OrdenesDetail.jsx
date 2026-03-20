@@ -27,9 +27,10 @@ import styles from "../../../styles/dashboard/Ordenes.module.css";
 
 // Rango de fechas por defecto: últimos 30 días
 function getDefaultDateRange() {
-	const hasta = new Date();
 	const desde = new Date();
 	desde.setDate(desde.getDate() - 30);
+	const hasta = new Date();
+	hasta.setDate(hasta.getDate() + 60); // incluye turnos futuros
 	return {
 		desde: dateKey(desde),
 		hasta: dateKey(hasta),

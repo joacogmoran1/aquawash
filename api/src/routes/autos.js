@@ -1,12 +1,22 @@
-const router     = require('express').Router();
-const { body }   = require('express-validator');
+const router = require('express').Router();
+const { body } = require('express-validator');
+const rateLimit = require('express-rate-limit');
 const controller = require('../controllers/autoController');
-const validate   = require('../middlewares/validate');
+const validate = require('../middlewares/validate');
 
-router.get('/',    controller.listar);
+const createLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 60,
+  message: { error: 'Demasiadas creaciones. Intentá más tarde.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+router.get('/', controller.listar);
 router.get('/:id', controller.obtener);
 
 router.post('/',
+  createLimiter,
   [
     body('cliente_id').isUUID().withMessage('cliente_id inválido.'),
     body('marca').trim().notEmpty().withMessage('La marca es requerida.'),

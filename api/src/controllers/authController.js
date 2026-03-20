@@ -1,95 +1,52 @@
+const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 const authService = require('../services/authService');
 const { createError } = require('../middlewares/errorHandler');
+const { Lavadero } = require('../models');
 
-// ── Opciones de la cookie ─────────────────────────────────────
-// httpOnly  → JS no puede leerla (protección XSS)
-// secure    → solo HTTPS en producción
-// sameSite  → protección CSRF
-// path      → solo se envía a /auth (no a /clientes, /ordenes, etc.)
+// emailService es opcional: si no hay SMTP configurado, el registro igual funciona
+let emailService = null;
+try { emailService = require('../utils/emailService'); } catch { }
+
 const COOKIE_NAME = 'refresh_token';
-const COOKIE_OPTIONS = {
+const COOKIE_OPTS = {
 	httpOnly: true,
 	secure: process.env.NODE_ENV === 'production',
 	sameSite: 'strict',
-	maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
+	maxAge: 7 * 24 * 60 * 60 * 1000,
 	path: '/auth',
 };
 
-const CLEAR_COOKIE_OPTIONS = {
-	...COOKIE_OPTIONS,
-	maxAge: 0,
-};
-
-// ── Sanitización ─────────────────────────────────────────────
 const REGEX_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const REGEX_TELEFONO = /^[0-9+\-() ]+$/;
 const LIMITES = { nombre: 120, direccion: 180, telefono: 30, email: 150, password: 200 };
 
 function pick(obj, keys) {
-	return keys.reduce((out, k) => {
-		if (Object.prototype.hasOwnProperty.call(obj, k) && obj[k] !== undefined) out[k] = obj[k];
-		return out;
+	return keys.reduce((o, k) => {
+		if (Object.prototype.hasOwnProperty.call(obj, k) && obj[k] !== undefined) o[k] = obj[k];
+		return o;
 	}, {});
 }
 
-function sanitizeText(v) {
-	if (typeof v !== 'string') return v;
-	return v.replace(/[<>]/g, '').replace(/\s+/g, ' ').trim();
+const san = (v) => typeof v !== 'string' ? v : v.replace(/[<>]/g, '').replace(/\s+/g, ' ').trim();
+const sanEmail = (v) => typeof v !== 'string' ? v : v.toLowerCase().replace(/[<>\s]/g, '').trim();
+const sanPhone = (v) => typeof v !== 'string' ? v : v.replace(/[^\d+\-() ]/g, '').replace(/\s+/g, ' ').trim();
+
+function assertLen(v, max, f) {
+	if (v != null && String(v).length > max) throw createError(400, `${f} supera la longitud máxima.`);
 }
 
-function sanitizeEmail(v) {
-	if (typeof v !== 'string') return v;
-	return v.toLowerCase().replace(/[<>\s]/g, '').trim();
-}
-
-function sanitizePhone(v) {
-	if (typeof v !== 'string') return v;
-	return v.replace(/[^\d+\-() ]/g, '').replace(/\s+/g, ' ').trim();
-}
-
-function assertLen(v, max, field) {
-	if (v != null && String(v).length > max) throw createError(400, `${field} supera la longitud máxima.`);
-}
-
-function normalizeNombre(v) {
-	const s = sanitizeText(v);
-	if (!s) throw createError(400, 'nombre es requerido.');
-	assertLen(s, LIMITES.nombre, 'nombre');
-	return s;
-}
-
-function normalizeDireccion(v) {
-	const s = sanitizeText(v);
-	if (!s) throw createError(400, 'direccion es requerida.');
-	assertLen(s, LIMITES.direccion, 'direccion');
-	return s;
-}
-
-function normalizeTelefono(v) {
-	const s = sanitizePhone(v);
-	if (!s) throw createError(400, 'telefono es requerido.');
-	if (!REGEX_TELEFONO.test(s)) throw createError(400, 'telefono inválido.');
-	assertLen(s, LIMITES.telefono, 'telefono');
-	return s;
-}
-
-function normalizeEmail(v) {
-	const s = sanitizeEmail(v);
-	if (!s) throw createError(400, 'email es requerido.');
-	if (!REGEX_EMAIL.test(s)) throw createError(400, 'email inválido.');
-	assertLen(s, LIMITES.email, 'email');
-	return s;
-}
-
-function normalizePassword(v) {
+const normalizeNombre = (v) => { const s = san(v); if (!s) throw createError(400, 'nombre es requerido.'); assertLen(s, LIMITES.nombre, 'nombre'); return s; };
+const normalizeDireccion = (v) => { const s = san(v); if (!s) throw createError(400, 'direccion es requerida.'); assertLen(s, LIMITES.direccion, 'direccion'); return s; };
+const normalizeTelefono = (v) => { const s = sanPhone(v); if (!s) throw createError(400, 'telefono es requerido.'); if (!REGEX_TELEFONO.test(s)) throw createError(400, 'telefono inválido.'); assertLen(s, LIMITES.telefono, 'telefono'); return s; };
+const normalizeEmail = (v) => { const s = sanEmail(v); if (!s) throw createError(400, 'email es requerido.'); if (!REGEX_EMAIL.test(s)) throw createError(400, 'email inválido.'); assertLen(s, LIMITES.email, 'email'); return s; };
+const normalizePassword = (v) => {
 	if (typeof v !== 'string' || !v.trim()) throw createError(400, 'password es requerido.');
 	const s = v.trim();
 	if (s.length < 8) throw createError(400, 'password debe tener al menos 8 caracteres.');
 	assertLen(s, LIMITES.password, 'password');
 	return s;
-}
-
-// ── Handlers ─────────────────────────────────────────────────
+};
 
 async function register(req, res, next) {
 	try {
@@ -103,12 +60,25 @@ async function register(req, res, next) {
 		};
 
 		const lavadero = await authService.register(payload);
-		const accessToken = authService.generateAccessToken(lavadero.id);
-		const refreshToken = await authService.issueRefreshToken(
-			lavadero.id, req.ip, req.headers['user-agent']
-		);
 
-		res.cookie(COOKIE_NAME, refreshToken, COOKIE_OPTIONS);
+		// FIX #12: enviar email de verificación si SMTP está configurado
+		if (emailService && process.env.SMTP_USER) {
+			try {
+				const token = crypto.randomBytes(32).toString('hex');
+				const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+				await Lavadero.update(
+					{ email_verify_token: token, email_verify_expires: expires },
+					{ where: { id: lavadero.id } }
+				);
+				await emailService.sendVerificationEmail(lavadero.email, lavadero.nombre, token);
+			} catch (e) {
+				console.error('Error enviando email de verificación:', e.message);
+			}
+		}
+
+		const accessToken = authService.generateAccessToken(lavadero.id);
+		const refreshToken = await authService.issueRefreshToken(lavadero.id, req.ip, req.headers['user-agent']);
+		res.cookie(COOKIE_NAME, refreshToken, COOKIE_OPTS);
 		res.status(201).json({ lavadero, accessToken });
 	} catch (err) { next(err); }
 }
@@ -116,47 +86,120 @@ async function register(req, res, next) {
 async function login(req, res, next) {
 	try {
 		const raw = pick(req.body, ['email', 'password']);
-		const payload = {
+		const lavadero = await authService.login({
 			email: normalizeEmail(raw.email),
 			password: normalizePassword(raw.password),
-		};
-
-		const lavadero = await authService.login(payload);
+		});
 		const accessToken = authService.generateAccessToken(lavadero.id);
-		const refreshToken = await authService.issueRefreshToken(
-			lavadero.id, req.ip, req.headers['user-agent']
-		);
-
-		res.cookie(COOKIE_NAME, refreshToken, COOKIE_OPTIONS);
+		const refreshToken = await authService.issueRefreshToken(lavadero.id, req.ip, req.headers['user-agent']);
+		res.cookie(COOKIE_NAME, refreshToken, COOKIE_OPTS);
 		res.json({ lavadero, accessToken });
 	} catch (err) { next(err); }
 }
 
 async function refresh(req, res, next) {
 	try {
-		const plainToken = req.cookies?.[COOKIE_NAME];
-
 		const { lavadero, accessToken, refreshToken } = await authService.rotateRefreshToken(
-			plainToken, req.ip, req.headers['user-agent']
+			req.cookies?.[COOKIE_NAME], req.ip, req.headers['user-agent']
 		);
-
-		res.cookie(COOKIE_NAME, refreshToken, COOKIE_OPTIONS);
+		res.cookie(COOKIE_NAME, refreshToken, COOKIE_OPTS);
 		res.json({ lavadero, accessToken });
 	} catch (err) { next(err); }
 }
 
 async function logout(req, res, next) {
 	try {
-		const plainToken = req.cookies?.[COOKIE_NAME];
-		await authService.revokeRefreshToken(plainToken);
-		res.clearCookie(COOKIE_NAME, CLEAR_COOKIE_OPTIONS);
+		await authService.revokeRefreshToken(req.cookies?.[COOKIE_NAME]);
+		res.clearCookie(COOKIE_NAME, { ...COOKIE_OPTS, maxAge: 0 });
 		res.json({ message: 'Sesión cerrada.' });
 	} catch (err) { next(err); }
 }
 
 function me(req, res) {
-	// req.lavadero ya fue cargado por authenticate.js (defaultScope, sin password_hash)
 	res.json({ lavadero: req.lavadero });
 }
 
-module.exports = { register, login, refresh, logout, me };
+// FIX #12: verificar email
+async function verifyEmail(req, res, next) {
+	try {
+		const { token } = req.query;
+		if (!token || typeof token !== 'string') throw createError(400, 'Token inválido.');
+
+		const lav = await Lavadero.scope('withPassword').findOne({
+			where: { email_verify_token: token },
+		});
+		if (!lav) throw createError(400, 'Token inválido o expirado.');
+		if (lav.email_verified) return res.json({ message: 'Email ya verificado.' });
+		if (lav.email_verify_expires < new Date()) throw createError(400, 'El token de verificación expiró.');
+
+		await lav.update({ email_verified: true, email_verify_token: null, email_verify_expires: null });
+		res.json({ message: 'Email verificado correctamente.' });
+	} catch (err) { next(err); }
+}
+
+// FIX #12: reenviar email de verificación
+async function resendVerification(req, res, next) {
+	try {
+		const email = sanEmail(req.body.email || '');
+		if (!email) throw createError(400, 'email es requerido.');
+
+		const lav = await Lavadero.findOne({ where: { email } });
+		const MSG = 'Si el email existe y no está verificado, recibirás un enlace.';
+
+		if (lav && !lav.email_verified && emailService) {
+			const token = crypto.randomBytes(32).toString('hex');
+			const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+			await lav.update({ email_verify_token: token, email_verify_expires: expires });
+			await emailService.sendVerificationEmail(lav.email, lav.nombre, token);
+		}
+
+		res.json({ message: MSG });
+	} catch (err) { next(err); }
+}
+
+// FIX #13: solicitar reset de contraseña
+async function forgotPassword(req, res, next) {
+	try {
+		const email = sanEmail(req.body.email || '');
+		if (!email) throw createError(400, 'email es requerido.');
+
+		const lav = await Lavadero.findOne({ where: { email } });
+		const MSG = 'Si el email existe, recibirás las instrucciones.';
+
+		if (lav && emailService) {
+			const token = crypto.randomBytes(32).toString('hex');
+			const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+			await lav.update({ reset_password_token: token, reset_password_expires: expires });
+			await emailService.sendPasswordResetEmail(lav.email, lav.nombre, token);
+		}
+
+		res.json({ message: MSG });
+	} catch (err) { next(err); }
+}
+
+// FIX #13: aplicar nueva contraseña con el token
+async function resetPassword(req, res, next) {
+	try {
+		const { token, password } = req.body;
+		if (!token || typeof token !== 'string') throw createError(400, 'Token inválido.');
+		const safePass = normalizePassword(password);
+
+		const lav = await Lavadero.scope('withPassword').findOne({
+			where: { reset_password_token: token },
+		});
+		if (!lav) throw createError(400, 'Token inválido o expirado.');
+		if (lav.reset_password_expires < new Date()) throw createError(400, 'El token expiró. Solicitá uno nuevo.');
+
+		const password_hash = await bcrypt.hash(safePass, 12);
+		await lav.update({ password_hash, reset_password_token: null, reset_password_expires: null });
+		await authService.revokeAllUserTokens(lav.id); // invalidar todas las sesiones
+
+		res.json({ message: 'Contraseña actualizada. Iniciá sesión nuevamente.' });
+	} catch (err) { next(err); }
+}
+
+module.exports = {
+	register, login, refresh, logout, me,
+	verifyEmail, resendVerification,
+	forgotPassword, resetPassword,
+};

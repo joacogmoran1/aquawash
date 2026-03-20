@@ -1,6 +1,5 @@
 require('dotenv').config();
 
-// ── Validación de variables de entorno al inicio ──────────────
 const REQUIRED_ENV = ['JWT_SECRET', 'DB_NAME', 'DB_USER', 'DB_PASSWORD'];
 
 for (const key of REQUIRED_ENV) {
@@ -16,23 +15,23 @@ if (process.env.JWT_SECRET.length < 32) {
 	process.exit(1);
 }
 
+// FIX #8: models PRIMERO, antes que authService (que requiere RefreshToken)
+require('./src/models');
+
 const app = require('./src/app');
 const sequelize = require('./src/config/database');
 const authService = require('./src/services/authService');
 
-// Logger: usa pino si está instalado, sino fallback a console
 let logger;
 try {
 	logger = require('./src/utils/logger');
 } catch {
 	logger = {
-		info: (...args) => console.log('[INFO]', ...args),
-		error: (...args) => console.error('[ERROR]', ...args),
-		warn: (...args) => console.warn('[WARN]', ...args),
+		info: (...a) => console.log('[INFO]', ...a),
+		error: (...a) => console.error('[ERROR]', ...a),
+		warn: (...a) => console.warn('[WARN]', ...a),
 	};
 }
-
-require('./src/models');
 
 const PORT = process.env.PORT || 3000;
 
@@ -41,8 +40,6 @@ async function start() {
 		await sequelize.authenticate();
 		logger.info('✅ Conectado a PostgreSQL.');
 
-		// Sync automático SOLO si NODE_ENV=development Y DB_SYNC=true
-		// En producción usar: npm run db:migrate
 		if (process.env.NODE_ENV === 'development' && process.env.DB_SYNC === 'true') {
 			logger.info('🔄 Sincronizando tablas (development only)…');
 			await sequelize.sync({ alter: true });
@@ -57,8 +54,7 @@ async function start() {
 			}
 		});
 
-		// ── Limpieza periódica de refresh tokens expirados ───────────
-		const CLEANUP_INTERVAL = 6 * 60 * 60 * 1000; // cada 6 horas
+		const CLEANUP_INTERVAL = 6 * 60 * 60 * 1000;
 		setInterval(async () => {
 			try {
 				await authService.cleanupExpiredTokens();
@@ -68,10 +64,8 @@ async function start() {
 			}
 		}, CLEANUP_INTERVAL);
 
-		// ── Graceful shutdown ─────────────────────────────────────────
 		async function shutdown(signal) {
 			logger.info(`\n${signal} recibido — cerrando servidor…`);
-
 			server.close(async () => {
 				try {
 					await sequelize.close();
@@ -81,8 +75,6 @@ async function start() {
 				}
 				process.exit(0);
 			});
-
-			// Forzar cierre si tarda más de 10 segundos
 			setTimeout(() => {
 				logger.error('❌ Timeout en shutdown — forzando cierre.');
 				process.exit(1);

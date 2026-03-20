@@ -5,23 +5,6 @@ import { DeleteClientModal } from "../DeleteClientModal/DeleteClientModal";
 import { initials } from "../../../utils/dateUtils";
 import styles from "./ClientDetail.module.css";
 
-function estadoBadge(estado) {
-	const badgeMap = {
-		agendado: styles.badgeCyan,
-		esperando: styles.badgeOrange,
-		lavando: styles.badgeCyan,
-		listo: styles.badgeGreen,
-		entregado: styles.badgeMuted,
-		cancelado: styles.badgeRed,
-	};
-
-	return (
-		<span className={`${styles.statusBadge} ${badgeMap[estado] || styles.badgeMuted}`}>
-			{estado?.toUpperCase()}
-		</span>
-	);
-}
-
 export function ClientDetail({
 	client,
 	onBack,
@@ -35,7 +18,6 @@ export function ClientDetail({
 		nombre: client.nombre || "",
 		telefono: client.telefono || "",
 		email: client.email || "",
-		notas: client.notas || "",
 	});
 
 	const [showAddAuto, setShowAddAuto] = useState(false);
@@ -60,7 +42,6 @@ export function ClientDetail({
 			nombre: client.nombre || "",
 			telefono: client.telefono || "",
 			email: client.email || "",
-			notas: client.notas || "",
 		});
 	}, [client]);
 
@@ -68,7 +49,10 @@ export function ClientDetail({
 		setLoadingHist(true);
 
 		api.get(`/clientes/${client.id}/historial`)
-			.then(setHistorialReal)
+			.then((res) => {
+				const data = Array.isArray(res) ? res : (res.data ?? []);
+				setHistorialReal(data);
+			})
 			.catch(console.error)
 			.finally(() => setLoadingHist(false));
 	}, [client.id]);
@@ -88,20 +72,16 @@ export function ClientDetail({
 		return Object.entries(cnt).sort((a, b) => b[1] - a[1])[0]?.[0] || "—";
 	})();
 
+	// FIX: Sequelize devuelve createdAt (camelCase)
+	const createdAt = client.createdAt || client.created_at;
+
 	function closeAddAutoModal() {
 		setShowAddAuto(false);
-		setAutoForm({
-			marca: "",
-			modelo: "",
-			patente: "",
-			color: "",
-			year: "",
-		});
+		setAutoForm({ marca: "", modelo: "", patente: "", color: "", year: "" });
 	}
 
 	async function saveEdit() {
 		if (!form.nombre?.trim()) return;
-
 		setSaving(true);
 		try {
 			await onUpdate(client.id, form);
@@ -116,14 +96,9 @@ export function ClientDetail({
 
 	async function addVehiculo() {
 		if (!autoForm.marca || !autoForm.modelo || !autoForm.patente) return;
-
 		setSaving(true);
 		try {
-			await api.post("/autos", {
-				...autoForm,
-				cliente_id: client.id,
-			});
-
+			await api.post("/autos", { ...autoForm, cliente_id: client.id });
 			await onRefresh(client.id);
 			closeAddAutoModal();
 			showToast("Vehículo agregado", "success");
@@ -146,7 +121,6 @@ export function ClientDetail({
 
 	async function doDeleteClient() {
 		if (!deleteId) return;
-
 		setDeleting(true);
 		try {
 			await onDelete(deleteId);
@@ -171,39 +145,20 @@ export function ClientDetail({
 				<div className={styles.actions}>
 					{editing ? (
 						<>
-							<button
-								type="button"
-								className={styles.btnGhost}
-								onClick={() => setEditing(false)}
-							>
+							<button type="button" className={styles.btnGhost} onClick={() => setEditing(false)}>
 								Cancelar
 							</button>
-
-							<button
-								type="button"
-								className={styles.btnPrimary}
-								onClick={saveEdit}
-								disabled={saving}
-							>
+							<button type="button" className={styles.btnPrimary} onClick={saveEdit} disabled={saving}>
 								<Icon name="save" size={13} />
 								{saving ? "Guardando…" : "Guardar"}
 							</button>
 						</>
 					) : (
 						<>
-							<button
-								type="button"
-								className={styles.btnGhost}
-								onClick={() => setEditing(true)}
-							>
+							<button type="button" className={styles.btnGhost} onClick={() => setEditing(true)}>
 								<Icon name="edit" size={13} /> Editar
 							</button>
-
-							<button
-								type="button"
-								className={styles.btnDanger}
-								onClick={() => setDeleteId(client.id)}
-							>
+							<button type="button" className={styles.btnDanger} onClick={() => setDeleteId(client.id)}>
 								<Icon name="trash" size={13} /> Eliminar
 							</button>
 						</>
@@ -212,6 +167,7 @@ export function ClientDetail({
 			</div>
 
 			<div className={styles.mainGrid}>
+				{/* Card datos del cliente */}
 				<div className={`${styles.card} ${styles.clientCard}`}>
 					<div className={styles.identityCard}>
 						<div className={styles.avatar}>{initials(client.nombre)}</div>
@@ -220,18 +176,17 @@ export function ClientDetail({
 							<input
 								className={`${styles.input} ${styles.avatarInput}`}
 								value={form.nombre}
-								onChange={(e) =>
-									setForm((p) => ({ ...p, nombre: e.target.value }))
-								}
+								onChange={(e) => setForm((p) => ({ ...p, nombre: e.target.value }))}
 							/>
 						) : (
 							<div className={styles.clientName}>{client.nombre}</div>
 						)}
 
+						{/* FIX: usar createdAt (camelCase) con fallback a created_at */}
 						<div className={styles.clientSince}>
 							CLIENTE DESDE{" "}
-							{client.created_at
-								? new Date(client.created_at).toLocaleDateString("es-AR", {
+							{createdAt
+								? new Date(createdAt).toLocaleDateString("es-AR", {
 									day: "2-digit",
 									month: "long",
 									year: "numeric",
@@ -242,37 +197,20 @@ export function ClientDetail({
 
 					<div className={styles.contactFields}>
 						{[
-							{
-								icon: "phone",
-								label: "Teléfono",
-								key: "telefono",
-								val: client.telefono,
-							},
-							{
-								icon: "mail",
-								label: "Email",
-								key: "email",
-								val: client.email,
-							},
+							{ icon: "phone", label: "Teléfono", key: "telefono", val: client.telefono },
+							{ icon: "mail", label: "Email", key: "email", val: client.email },
 						].map((f) => (
 							<div key={f.key} className={styles.contactField}>
 								<div className={styles.fieldIcon}>
 									<Icon name={f.icon} size={14} color="var(--muted2)" />
 								</div>
-
 								<div className={styles.fieldContent}>
 									<div className={styles.fieldLabel}>{f.label.toUpperCase()}</div>
-
 									{editing ? (
 										<input
 											className={`${styles.input} ${styles.fieldInput}`}
 											value={form[f.key]}
-											onChange={(e) =>
-												setForm((p) => ({
-													...p,
-													[f.key]: e.target.value,
-												}))
-											}
+											onChange={(e) => setForm((p) => ({ ...p, [f.key]: e.target.value }))}
 										/>
 									) : (
 										<div className={styles.fieldValue}>{f.val || "—"}</div>
@@ -283,15 +221,11 @@ export function ClientDetail({
 					</div>
 				</div>
 
+				{/* Card vehículos */}
 				<div className={`${styles.card} ${styles.vehiclesCard}`}>
 					<div className={styles.vehiclesHeader}>
 						<div className={styles.sectionTitle}>Vehículos</div>
-
-						<button
-							type="button"
-							className={styles.btnGhostSm}
-							onClick={() => setShowAddAuto(true)}
-						>
+						<button type="button" className={styles.btnGhostSm} onClick={() => setShowAddAuto(true)}>
 							<Icon name="plus" size={13} /> Agregar
 						</button>
 					</div>
@@ -313,20 +247,12 @@ export function ClientDetail({
 										>
 											<Icon name="x" size={13} />
 										</button>
-
 										<div className={styles.vehicleIcon}>🚗</div>
-										<div className={styles.vehicleTitle}>
-											{v.marca} {v.modelo}
-										</div>
+										<div className={styles.vehicleTitle}>{v.marca} {v.modelo}</div>
 										<div className={styles.vehiclePlate}>{v.patente}</div>
-
 										<div className={styles.vehicleBadges}>
-											{v.color && (
-												<span className={styles.badgeMuted}>{v.color}</span>
-											)}
-											{v.year && (
-												<span className={styles.badgeMuted}>{v.year}</span>
-											)}
+											{v.color && <span className={styles.badgeMuted}>{v.color}</span>}
+											{v.year && <span className={styles.badgeMuted}>{v.year}</span>}
 										</div>
 									</div>
 								))}
@@ -335,47 +261,26 @@ export function ClientDetail({
 					</div>
 				</div>
 
+				{/* Card estadísticas */}
 				<div className={`${styles.card} ${styles.statsPanel}`}>
 					<div className={styles.statsCard}>ESTADÍSTICAS</div>
-
 					<div className={styles.scrollArea}>
 						{[
-							{
-								l: "Total gastado",
-								v: `$${totalGastado.toLocaleString("es-AR")}`,
-								c: "var(--cyan)",
-							},
-							{
-								l: "Visitas totales",
-								v: historialReal.length,
-								c: "var(--text)",
-							},
-							{
-								l: "Última visita",
-								v: ultimaVisita,
-								c: "var(--muted2)",
-							},
-							{
-								l: "Servicio frecuente",
-								v: servicioFrec,
-								c: "var(--orange)",
-							},
-							{
-								l: "Vehículos",
-								v: vehiculos.length,
-								c: "var(--text)",
-							},
+							{ l: "Total gastado", v: `$${totalGastado.toLocaleString("es-AR")}`, c: "var(--cyan)" },
+							{ l: "Visitas totales", v: historialReal.length, c: "var(--text)" },
+							{ l: "Última visita", v: ultimaVisita, c: "var(--muted2)" },
+							{ l: "Servicio frecuente", v: servicioFrec, c: "var(--orange)" },
+							{ l: "Vehículos", v: vehiculos.length, c: "var(--text)" },
 						].map((r) => (
 							<div key={r.l} className={styles.statItem}>
 								<span className={styles.statLabel}>{r.l}</span>
-								<span className={styles.statValue} style={{ color: r.c }}>
-									{r.v}
-								</span>
+								<span className={styles.statValue} style={{ color: r.c }}>{r.v}</span>
 							</div>
 						))}
 					</div>
 				</div>
 
+				{/* Card historial */}
 				<div className={`${styles.card} ${styles.historyCard}`}>
 					<div className={`${styles.sectionTitle} ${styles.historyHeader}`}>
 						Historial de servicios
@@ -404,20 +309,15 @@ export function ClientDetail({
 									<th>Monto</th>
 								</tr>
 							</thead>
-
 							<tbody>
 								{historialReal.map((h) => (
 									<tr key={h.id}>
 										<td className={styles.tableCellDate}>
 											{new Date(h.fecha_entrega).toLocaleDateString("es-AR")}
 										</td>
-										<td className={styles.tableCellAutoPrimary}>
-											{h.servicio_nombre}
-										</td>
+										<td className={styles.tableCellAutoPrimary}>{h.servicio_nombre}</td>
 										<td className={styles.tableCellAutoSecondary}>
-											{[h.auto_marca, h.auto_modelo, h.auto_patente]
-												.filter(Boolean)
-												.join(" ") || "—"}
+											{[h.auto_marca, h.auto_modelo, h.auto_patente].filter(Boolean).join(" ") || "—"}
 										</td>
 										<td className={styles.tableCellAmount}>
 											${Number(h.precio || 0).toLocaleString("es-AR")}
@@ -430,17 +330,13 @@ export function ClientDetail({
 				</div>
 			</div>
 
+			{/* Modal agregar vehículo */}
 			{showAddAuto && (
 				<div className={styles.modalOverlay} onClick={closeAddAutoModal}>
 					<div className={styles.modal} onClick={(e) => e.stopPropagation()}>
 						<div className={styles.modalHeader}>
 							<div className={styles.modalTitle}>Nuevo vehículo</div>
-
-							<button
-								type="button"
-								className={styles.modalCloseBtn}
-								onClick={closeAddAutoModal}
-							>
+							<button type="button" className={styles.modalCloseBtn} onClick={closeAddAutoModal}>
 								<Icon name="x" size={14} />
 							</button>
 						</div>
@@ -457,37 +353,21 @@ export function ClientDetail({
 									<div className={styles.inputLabel}>
 										{f.k.charAt(0).toUpperCase() + f.k.slice(1)}
 									</div>
-
 									<input
 										className={styles.input}
 										placeholder={f.ph}
 										value={autoForm[f.k]}
-										onChange={(e) =>
-											setAutoForm((p) => ({
-												...p,
-												[f.k]: e.target.value,
-											}))
-										}
+										onChange={(e) => setAutoForm((p) => ({ ...p, [f.k]: e.target.value }))}
 									/>
 								</div>
 							))}
 						</div>
 
 						<div className={styles.addVehicleActions}>
-							<button
-								type="button"
-								className={styles.btnGhostSm}
-								onClick={closeAddAutoModal}
-							>
+							<button type="button" className={styles.btnGhostSm} onClick={closeAddAutoModal}>
 								Cancelar
 							</button>
-
-							<button
-								type="button"
-								className={styles.btnPrimarySm}
-								onClick={addVehiculo}
-								disabled={saving}
-							>
+							<button type="button" className={styles.btnPrimarySm} onClick={addVehiculo} disabled={saving}>
 								{saving ? "Agregando…" : "Agregar vehículo"}
 							</button>
 						</div>
