@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { Op } = require('sequelize');
+const sequelize = require('../config/database');
 const { Lavadero, Usuario, RefreshToken } = require('../models');
 const { createError } = require('../middlewares/errorHandler');
 
@@ -75,16 +76,19 @@ async function register({ nombre, direccion, telefono, email, password }) {
 
 	const password_hash = await bcrypt.hash(password, 12);
 
-	// Crear el Lavadero
-	const lavadero = await Lavadero.create({ nombre, direccion, telefono, email, password_hash });
+	const { lavadero, usuario } = await sequelize.transaction(async (t) => {
+		const existing = await Usuario.findOne({ where: { email }, transaction: t });
+		if (existing) throw createError(409, 'No se pudo completar el registro.');
 
-	// Crear el usuario owner
-	const usuario = await Usuario.create({
-		lavadero_id: lavadero.id,
-		nombre,
-		email,
-		password_hash,
-		rol: 'owner',
+		const lavadero = await Lavadero.create(
+			{ nombre, direccion, telefono, email, password_hash },
+			{ transaction: t }
+		);
+		const usuario = await Usuario.create(
+			{ lavadero_id: lavadero.id, nombre, email, password_hash, rol: 'owner' },
+			{ transaction: t }
+		);
+		return { lavadero, usuario };
 	});
 
 	return { lavadero, usuario };

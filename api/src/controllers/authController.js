@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const authService = require('../services/authService');
 const { createError } = require('../middlewares/errorHandler');
-const { Lavadero } = require('../models');
+const { Lavadero, Usuario } = require('../models');
 
 // emailService es opcional: si no hay SMTP configurado, el registro igual funciona
 let emailService = null;
@@ -247,7 +247,11 @@ async function resetPassword(req, res, next) {
 
 		const password_hash = await bcrypt.hash(safePass, 12);
 		await lav.update({ password_hash, reset_password_token: null, reset_password_expires: null });
-		await authService.revokeAllUserTokens(lav.id); // invalidar todas las sesiones
+		const owner = await Usuario.findOne({ where: { lavadero_id: lav.id, rol: 'owner' } });
+		if (owner) {
+			await owner.update({ password_hash });
+			await authService.revokeAllUserTokens(owner.id); // ← ID correcto
+		}
 
 		res.json({ message: 'Contraseña actualizada. Iniciá sesión nuevamente.' });
 	} catch (err) { next(err); }

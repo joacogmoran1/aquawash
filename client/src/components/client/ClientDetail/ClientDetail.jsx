@@ -46,15 +46,19 @@ export function ClientDetail({
 	}, [client]);
 
 	useEffect(() => {
+		let cancelled = false;
 		setLoadingHist(true);
 
 		api.get(`/clientes/${client.id}/historial`)
 			.then((res) => {
+				if (cancelled) return;
 				const data = Array.isArray(res) ? res : (res.data ?? []);
 				setHistorialReal(data);
 			})
 			.catch(console.error)
-			.finally(() => setLoadingHist(false));
+			.finally(() => { if (!cancelled) setLoadingHist(false); });
+
+		return () => { cancelled = true; };
 	}, [client.id]);
 
 	const totalGastado = historialReal.reduce((s, h) => s + Number(h.precio || 0), 0);
