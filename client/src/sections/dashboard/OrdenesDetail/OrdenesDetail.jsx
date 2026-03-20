@@ -10,6 +10,7 @@ import { EstadoBadge } from "../../../components/dashboard/EstadoBadage/EstadoBa
 import { ConfirmModal } from "../../../components/dashboard/ConfirmModal/ConfirmModal";
 import { SectionCard } from "../../../components/dashboard/SectionCard/SectionCard";
 import { EmptyState } from "../../../components/dashboard/EmptyState/EmptyState";
+import { PageLoading } from "../../../components/PageLoading/PageLoading";
 
 // Utils
 import {
@@ -137,6 +138,15 @@ export function OrdenesDetail({ onBack }) {
 		} finally {
 			setLimpiando(false);
 		}
+	}
+
+	if (loading) {
+		return (
+			<div className={styles.pageContent}>
+				<BackBtn onClick={onBack} />
+				<PageLoading />
+			</div>
+		);
 	}
 
 	return (
@@ -287,9 +297,7 @@ export function OrdenesDetail({ onBack }) {
 					</div>
 				</div>
 
-				{loading ? (
-					<EmptyState icon="⏳" text="Cargando órdenes…" />
-				) : filtered.length === 0 ? (
+				{filtered.length === 0 ? (
 					<EmptyState icon="🔍" text="Sin resultados" />
 				) : (
 					<table className={shared.table}>

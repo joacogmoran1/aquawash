@@ -9,6 +9,7 @@ import { SectionCard } from "../../../components/dashboard/SectionCard/SectionCa
 import { StatCard } from "../../../components/dashboard/StatCard/StatCard";
 import { EmptyState } from "../../../components/dashboard/EmptyState/EmptyState";
 import { EstadoBadge } from "../../../components/dashboard/EstadoBadage/EstadoBadage";
+import { PageLoading } from "../../../components/PageLoading/PageLoading";
 
 // Utils
 import { fmtCurrency, fmtHour, getWeeklyTotal, getMaxIncome } from "../../../utils/dashboard/helpers";
@@ -59,11 +60,7 @@ export function DashboardMain({ onGoIngresos, onGoOrdenes }) {
     }, []); // sin dependencias — load es local al effect
 
     if (loading) {
-        return (
-            <div className={shared.loadingPage}>
-                <div className={shared.loadingText}>Cargando datos…</div>
-            </div>
-        );
+        return <PageLoading />;
     }
 
     const semanaActual = semana?.semanaActual || [];

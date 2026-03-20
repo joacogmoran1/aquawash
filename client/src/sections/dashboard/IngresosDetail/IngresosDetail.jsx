@@ -8,6 +8,7 @@ import { BackBtn } from "../../../components/BackBtn/BackBtn";
 import { SectionCard } from "../../../components/dashboard/SectionCard/SectionCard";
 import { StatCard } from "../../../components/dashboard/StatCard/StatCard";
 import { EmptyState } from "../../../components/dashboard/EmptyState/EmptyState";
+import { PageLoading } from "../../../components/PageLoading/PageLoading";
 
 // Utils
 import { PAYMENT_METHOD_COLORS, MINI_COLORS } from "../../../utils/constants";
@@ -33,9 +34,7 @@ export function IngresosDetail({ onBack }) {
         return (
             <div className={styles.pageContent}>
                 <BackBtn onClick={onBack} />
-                <div className={shared.loadingPage}>
-                    <div className={shared.loadingText}>Cargando datos…</div>
-                </div>
+                <PageLoading />
             </div>
         );
     }

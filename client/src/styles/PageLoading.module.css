@@ -1,0 +1,23 @@
+.loadingPage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    padding: 32px;
+    flex: 1;
+}
+
+.fullscreenPage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 32px;
+    background: var(--bg);
+}
+
+.loadingText {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+}

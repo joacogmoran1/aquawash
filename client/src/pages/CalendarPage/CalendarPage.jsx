@@ -9,6 +9,8 @@ import { CalendarGrid } from "../../components/calendar/CalendarGrid/CalendarGri
 import { AppointmentList } from "../../components/calendar/AppointmentList/AppointmentList.jsx";
 import { StatusLegend } from "../../components/calendar/StatusLegend/StatusLegend.jsx";
 import { NewAppointmentModal } from "../../components/calendar/NewAppointmentModal/NewAppointmentModal.jsx";
+import { PageLoading } from "../../components/PageLoading/PageLoading.jsx";
+
 
 // Utils
 import { getDaysInMonth, dateKey } from "../../utils/dateUtils";
@@ -254,6 +256,10 @@ export function CalendarPage({ showToast }) {
 
 		return () => { cancelled = true; };
 	}, [showToast]);
+
+	if (loading) {
+		return <PageLoading />;
+	}
 
 	return (
 		<div className={styles.pageContent}>

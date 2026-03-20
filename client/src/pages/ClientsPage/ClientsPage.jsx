@@ -10,6 +10,7 @@ import { ClientsTable } from "../../components/client/ClientsTable/ClientsTable"
 import { ClientsState } from "../../components/client/ClientsState/ClientsState";
 import { NewClientModal } from "../../components/client/NewClientModal/NewClientModal";
 import { DeleteClientModal } from "../../components/client/DeleteClientModal/DeleteClientModal";
+import { PageLoading } from "../../components/PageLoading/PageLoading";
 
 // Utils
 import { getLastVisitGroup } from "../../utils/clientsHelpers";
@@ -186,6 +187,10 @@ export function ClientsPage({ showToast }) {
 		);
 	}
 
+	if (loading) {
+		return <PageLoading />;
+	}
+
 	return (
 		<div className={layoutStyles.pageContent}>
 			<div className={shared.card}>
@@ -201,9 +206,7 @@ export function ClientsPage({ showToast }) {
 					onNewClient={() => setShowModal(true)}
 				/>
 
-				{loading ? (
-					<ClientsState type="loading" />
-				) : processedClients.length === 0 ? (
+				{processedClients.length === 0 ? (
 					<ClientsState type="empty" />
 				) : (
 					<ClientsTable

@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { PageLoading } from "./components/PageLoading/PageLoading";
 import { ErrorBoundary } from "./components/ErrorBoundary/ErrorBoundary";
 import { Sidebar } from "./components/SideBar/Sidebar";
 import { Toast } from "./components/Toast/Toast";
@@ -13,15 +14,9 @@ import { ConfigPage } from "./pages/ConfigPage/ConfigPage";
 import { CSS } from "./utils/theme";
 
 function FullscreenLoader() {
-	return (
-		<div style={{
-			display: "flex", alignItems: "center", justifyContent: "center",
-			minHeight: "100vh", backgroundColor: "var(--bg)"
-		}}>
-			<div style={{ color: "var(--muted)" }}>Cargando…</div>
-		</div>
-	);
+	return <PageLoading text="Cargando datos…" fullscreen />;
 }
+
 
 function AuthRoutes() {
 	return (
