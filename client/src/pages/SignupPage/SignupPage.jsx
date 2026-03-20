@@ -75,7 +75,6 @@ export function SignupPage() {
 
 	function isBackendDownError(error) {
 		const msg = String(error?.message || "").toLowerCase();
-
 		return (
 			msg.includes("failed to fetch") ||
 			msg.includes("network error") ||
@@ -88,13 +87,6 @@ export function SignupPage() {
 			msg.includes("503") ||
 			msg.includes("502") ||
 			msg.includes("500")
-		);
-	}
-
-	async function sendVerification(email) {
-		const data = await resendVerification(email);
-		setVerificationMessage(
-			data.message || "Te enviamos un enlace para verificar tu email."
 		);
 	}
 
@@ -119,12 +111,7 @@ export function SignupPage() {
 				email: normalizedEmail,
 			});
 			setRegisteredEmail(normalizedEmail);
-
-			try {
-				await sendVerification(normalizedEmail);
-			} catch {
-				setVerificationMessage("La cuenta fue creada. Si no recibís el email, podés reenviar la verificación desde esta pantalla.");
-			}
+			setVerificationMessage("Te enviamos un enlace para verificar tu email.");
 		} catch (e) {
 			if (isBackendDownError(e)) {
 				setErr("No se pudo conectar con el servidor. Intentá de nuevo en unos minutos.");
@@ -139,9 +126,11 @@ export function SignupPage() {
 	async function handleResendVerification() {
 		if (!registeredEmail) return;
 		setResendError("");
+		setVerificationMessage("");
 		setResendLoading(true);
 		try {
-			await sendVerification(registeredEmail);
+			const data = await resendVerification(registeredEmail);
+			setVerificationMessage(data.message || "Te reenviamos el enlace de verificación.");
 		} catch (e) {
 			setResendError(e.message || "No se pudo reenviar la verificación.");
 		} finally {
@@ -181,11 +170,19 @@ export function SignupPage() {
 							Tu cuenta fue creada con <strong>{registeredEmail}</strong>.
 						</div>
 
-						{verificationMessage && <div className={styles.successText}>{verificationMessage}</div>}
-						{resendError && <div className={styles.errorText}>{resendError}</div>}
+						{verificationMessage && (
+							<div className={styles.successText}>{verificationMessage}</div>
+						)}
+						{resendError && (
+							<div className={styles.errorText}>{resendError}</div>
+						)}
 
 						<div className={styles.authForm}>
-							<button className={styles.primaryButton} onClick={handleResendVerification} disabled={resendLoading}>
+							<button
+								className={styles.primaryButton}
+								onClick={handleResendVerification}
+								disabled={resendLoading}
+							>
 								{resendLoading ? "Reenviando…" : "Reenviar verificación"}
 							</button>
 
@@ -302,6 +299,7 @@ export function SignupPage() {
 									placeholder="••••••••"
 									value={form.confirm}
 									onChange={set("confirm")}
+									onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
 								/>
 							</div>
 						</div>

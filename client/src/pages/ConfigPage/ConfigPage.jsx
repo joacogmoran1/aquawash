@@ -1,18 +1,10 @@
-
-// Hooks
 import { useConfigPage } from "../../hooks/useConfigPage";
-
-// Components
 import { LoadingState } from "../../components/LoadingState/LoadingState";
-
-// Section
 import { ConfigHeaderSection } from "../../sections/config/ConfigHeaderSection/ConfigHeaderSection";
 import { BusinessSection } from "../../sections/config/BusinessSection/BusinessSection";
 import { ServicesSection } from "../../sections/config/ServicesSection/ServicesSection";
 import { OperationScheduleSection } from "../../sections/config/OperationScheduleSection/OperationScheduleSection";
 import { SecuritySection } from "../../sections/config/SecuritySection/SecuritySection";
-
-// Style
 import layoutStyles from "../../styles/config/ConfigPageLayout.module.css";
 
 export function ConfigPage({ showToast }) {
@@ -39,11 +31,11 @@ export function ConfigPage({ showToast }) {
         resendVerificationEmail,
         sendPasswordResetEmail,
         handleHorarioChange,
+        deletingAccount,
+        deleteUserAccount,
     } = useConfigPage(showToast);
 
-    if (loading) {
-        return <LoadingState />;
-    }
+    if (loading) return <LoadingState />;
 
     return (
         <div className={layoutStyles.pageContent}>
@@ -87,6 +79,8 @@ export function ConfigPage({ showToast }) {
                     sendingPasswordReset={sendingPasswordReset}
                     onResendVerification={resendVerificationEmail}
                     onSendPasswordReset={sendPasswordResetEmail}
+                    onDeleteAccount={deleteUserAccount}
+                    deletingAccount={deletingAccount}
                 />
             </div>
         </div>

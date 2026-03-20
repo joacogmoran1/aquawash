@@ -13,12 +13,8 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }) {
-	// user === null  → no autenticado (o cargando)
-	// user === objeto → autenticado con datos frescos del servidor
 	const [user, setUser] = useState(null);
 
-	// Cache SOLO para mostrar nombre/datos en el loader mientras se valida la sesión.
-	// NUNCA se usa para decidir si el usuario está autenticado.
 	const [cachedUser, setCachedUser] = useState(() => {
 		try { return JSON.parse(localStorage.getItem(USER_KEY)) || null; }
 		catch { return null; }
@@ -26,7 +22,6 @@ export function AuthProvider({ children }) {
 
 	const [isLoading, setIsLoading] = useState(true);
 
-	// Sincronizar cache cuando cambia el usuario real
 	useEffect(() => {
 		if (user) {
 			localStorage.setItem(USER_KEY, JSON.stringify(user));
@@ -44,14 +39,13 @@ export function AuthProvider({ children }) {
 		try {
 			const data = await api.post("/auth/refresh");
 			setAccessToken(data.accessToken);
-			setUser(data.lavadero); // ← datos frescos del servidor, no del localStorage
+			setUser(data.lavadero);
 		} catch (err) {
 			const isNetwork =
 				err.message?.toLowerCase().includes("failed to fetch") ||
 				err.message?.toLowerCase().includes("network") ||
 				err.message?.toLowerCase().includes("tardó demasiado");
 			clearAccessToken();
-			// Si es error de red, no limpiamos el user para no romper UX offline
 			if (!isNetwork) setUser(null);
 		} finally {
 			setIsLoading(false);
@@ -89,6 +83,12 @@ export function AuthProvider({ children }) {
 		}
 	}
 
+	async function deleteAccount(password) {
+		await api.delete("/auth/account", { password });
+		clearAccessToken();
+		setUser(null);
+	}
+
 	const updateUser = (patch) => setUser((prev) => prev ? { ...prev, ...patch } : null);
 
 	async function resendVerification(email) {
@@ -109,14 +109,13 @@ export function AuthProvider({ children }) {
 
 	return (
 		<AuthContext.Provider value={{
-			// user viene del servidor. Durante la carga inicial mostramos el cache
-			// para el nombre/avatar, pero isLoading=true indica que no está confirmado.
 			user: user ?? (isLoading ? cachedUser : null),
-			isAuthenticated: !!user, // ← SOLO true si viene del servidor
+			isAuthenticated: !!user,
 			isLoading,
 			loading: isLoading,
 			login, signup, logout, updateUser,
 			resendVerification, forgotPassword, resetPassword, verifyEmail,
+			deleteAccount,
 		}}>
 			{children}
 		</AuthContext.Provider>

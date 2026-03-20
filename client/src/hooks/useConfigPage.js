@@ -36,7 +36,7 @@ const EMPTY_SERVICIO_FORM = {
 };
 
 export function useConfigPage(showToast) {
-    const { user, updateUser, resendVerification, forgotPassword } = useAuth();
+    const { user, updateUser, resendVerification, forgotPassword, deleteAccount } = useAuth();
 
     const [loading, setLoading] = useState(true);
     const [operacion, setOperacion] = useState({});
@@ -55,6 +55,7 @@ export function useConfigPage(showToast) {
     const [resendingVerification, setResendingVerification] = useState(false);
     const [sendingPasswordReset, setSendingPasswordReset] = useState(false);
 
+    const [deletingAccount, setDeletingAccount] = useState(false);
 
     useEffect(() => {
         loadOperacion();
@@ -237,6 +238,17 @@ export function useConfigPage(showToast) {
         }
     }
 
+    async function deleteUserAccount(password) {
+        setDeletingAccount(true);
+        try {
+            await deleteAccount(password);
+        } catch (e) {
+            showToast(e?.message || 'Error al eliminar la cuenta', 'error');
+        } finally {
+            setDeletingAccount(false);
+        }
+    }
+
     function handleHorarioChange(diaKey, field, value) {
         setOperacion((prev) => ({
             ...prev,
@@ -267,5 +279,7 @@ export function useConfigPage(showToast) {
         resendVerificationEmail,
         sendPasswordResetEmail,
         handleHorarioChange,
+        deletingAccount,
+        deleteUserAccount,
     };
 }

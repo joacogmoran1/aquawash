@@ -18,10 +18,25 @@ const Usuario = sequelize.define('Usuario', {
         defaultValue: 'operario',
     },
     activo: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
+
+    // Verificación de email
+    email_verified: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    email_verify_token: { type: DataTypes.STRING(64), allowNull: true },
+    email_verify_expires: { type: DataTypes.DATE, allowNull: true },
+
+    // Reset de contraseña
+    reset_password_token: { type: DataTypes.STRING(64), allowNull: true },
+    reset_password_expires: { type: DataTypes.DATE, allowNull: true },
 }, {
     tableName: 'usuarios',
     defaultScope: {
-        attributes: { exclude: ['password_hash'] },
+        attributes: {
+            exclude: [
+                'password_hash',
+                'email_verify_token', 'email_verify_expires',
+                'reset_password_token', 'reset_password_expires',
+            ],
+        },
     },
     scopes: {
         withPassword: { attributes: {} },

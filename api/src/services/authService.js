@@ -67,31 +67,41 @@ async function cleanupExpiredTokens() {
 	});
 }
 
-/**
- * Registrar un lavadero crea automáticamente un usuario con rol 'owner'.
- */
 async function register({ nombre, direccion, telefono, email, password }) {
-	const existing = await Usuario.findOne({ where: { email } });
-	if (existing) throw createError(409, 'No se pudo completar el registro.');
+	const existingUsuario = await Usuario.findOne({ where: { email } });
+	if (existingUsuario) throw createError(409, 'No se pudo completar el registro.');
 
 	const password_hash = await bcrypt.hash(password, 12);
+	const email_verify_token = crypto.randomBytes(32).toString('hex');
+	const email_verify_expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
 	const { lavadero, usuario } = await sequelize.transaction(async (t) => {
 		const existing = await Usuario.findOne({ where: { email }, transaction: t });
 		if (existing) throw createError(409, 'No se pudo completar el registro.');
 
 		const lavadero = await Lavadero.create(
-			{ nombre, direccion, telefono, email, password_hash },
+			{ nombre, direccion, telefono, email },
 			{ transaction: t }
 		);
+
 		const usuario = await Usuario.create(
-			{ lavadero_id: lavadero.id, nombre, email, password_hash, rol: 'owner' },
+			{
+				lavadero_id: lavadero.id,
+				nombre,
+				email,
+				password_hash,
+				rol: 'owner',
+				email_verified: false,
+				email_verify_token,
+				email_verify_expires,
+			},
 			{ transaction: t }
 		);
+
 		return { lavadero, usuario };
 	});
 
-	return { lavadero, usuario };
+	return { lavadero, usuario, email_verify_token };
 }
 
 async function login({ email, password }) {
@@ -101,6 +111,10 @@ async function login({ email, password }) {
 	const valid = await bcrypt.compare(password, hash);
 
 	if (!usuario || !valid) throw createError(401, 'Credenciales inválidas.');
+
+	if (!usuario.email_verified) {
+		throw createError(403, 'Debés verificar tu email antes de iniciar sesión. Revisá tu casilla o solicitá un nuevo enlace.');
+	}
 
 	const lavadero = await Lavadero.findByPk(usuario.lavadero_id);
 	return { usuario, lavadero };

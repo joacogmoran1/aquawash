@@ -1,7 +1,4 @@
-// Components
 import { SecurityCard } from "../../../components/config/SecurityCard/SecurityCard";
-
-// Style
 import layoutStyles from "../../../styles/config/ConfigPageLayout.module.css";
 
 export function SecuritySection({
@@ -11,6 +8,8 @@ export function SecuritySection({
     sendingPasswordReset,
     onResendVerification,
     onSendPasswordReset,
+    onDeleteAccount,
+    deletingAccount,
 }) {
     return (
         <div className={layoutStyles.gridColumn}>
@@ -21,6 +20,8 @@ export function SecuritySection({
                 sendingPasswordReset={sendingPasswordReset}
                 onResendVerification={onResendVerification}
                 onSendPasswordReset={onSendPasswordReset}
+                onDeleteAccount={onDeleteAccount}
+                deletingAccount={deletingAccount}
             />
         </div>
     );

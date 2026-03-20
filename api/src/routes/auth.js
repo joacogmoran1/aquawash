@@ -97,4 +97,12 @@ router.delete('/equipo/:id',
 	controller.eliminarUsuario
 );
 
+// Eliminar cuenta (requiere autenticación + contraseña de confirmación)
+router.delete('/account',
+	authenticate,
+	[body('password').notEmpty().withMessage('La contraseña es requerida.')],
+	validate,
+	controller.deleteAccount
+);
+
 module.exports = router;
