@@ -3,6 +3,9 @@ import { useState, useEffect, useMemo } from "react";
 // Api
 import api from "../../api/api";
 
+// Section
+import { CalendarMainSection } from "../../sections/calendar/CalendarMainSection/CalendarMainSection";
+
 // Components
 import { CalendarHeader } from "../../components/calendar/CalendarHeader/CalendarHeader.jsx";
 import { CalendarGrid } from "../../components/calendar/CalendarGrid/CalendarGrid.jsx";
@@ -11,14 +14,11 @@ import { StatusLegend } from "../../components/calendar/StatusLegend/StatusLegen
 import { NewAppointmentModal } from "../../components/calendar/NewAppointmentModal/NewAppointmentModal.jsx";
 import { PageLoading } from "../../components/PageLoading/PageLoading.jsx";
 
-
 // Utils
 import { getDaysInMonth, dateKey } from "../../utils/dateUtils";
 import { MONTHS, WEEKDAYS } from "../../utils/constants";
 import { esPasado, diaEsPasado } from "../../utils/calendarHelpers";
 
-// Styles
-import styles from "../../styles/calendar/CalendarPage.module.css";
 
 export function CalendarPage({ showToast }) {
 	const today = new Date();
@@ -211,7 +211,6 @@ export function CalendarPage({ showToast }) {
 		}
 	}
 
-	// FIX #17 + #18: cleanup + showToast ya estable gracias a useCallback en App.jsx
 	useEffect(() => {
 		let cancelled = false;
 		setLoading(true);
@@ -230,22 +229,33 @@ export function CalendarPage({ showToast }) {
 				});
 				setTurnos(grouped);
 			})
-			.catch((err) => { if (!cancelled) showToast?.("Error al cargar turnos", "error"); console.error(err); })
-			.finally(() => { if (!cancelled) setLoading(false); });
+			.catch((err) => {
+				if (!cancelled) showToast?.("Error al cargar turnos", "error");
+				console.error(err);
+			})
+			.finally(() => {
+				if (!cancelled) setLoading(false);
+			});
 
-		return () => { cancelled = true; };
-	}, [year, month, showToast]); // showToast ahora es estable → no re-ejecuta
+
+		return () => {
+			cancelled = true;
+		};
+	}, [year, month, showToast]);
+
 
 	useEffect(() => {
 		let cancelled = false;
 
 		Promise.all([api.get("/clientes"), api.get("/servicios")])
-			.then(([clientesRes, s]) => {
+			.then(([clientesRes, serviciosRes]) => {
 				if (cancelled) return;
 				// clientesRes puede ser array (legacy) o { data: [] }
-				const c = Array.isArray(clientesRes) ? clientesRes : (clientesRes.data ?? []);
-				setClientes(c);
-				setServicios(s);
+				const clientesData = Array.isArray(clientesRes)
+					? clientesRes
+					: (clientesRes.data ?? []);
+				setClientes(clientesData);
+				setServicios(serviciosRes);
 			})
 			.catch((err) => {
 				if (!cancelled) {
@@ -254,72 +264,50 @@ export function CalendarPage({ showToast }) {
 				}
 			});
 
-		return () => { cancelled = true; };
+		return () => {
+			cancelled = true;
+		};
+
 	}, [showToast]);
 
-	if (loading) {
-		return <PageLoading />;
-	}
-
+	if (loading) return <PageLoading />;
 	return (
-		<div className={styles.pageContent}>
-			<div className={styles.calendarGrid}>
-				<div className={styles.card}>
-					<CalendarHeader
-						month={month}
-						year={year}
-						MONTHS={MONTHS}
-						onPrevMonth={prevMonth}
-						onNextMonth={nextMonth}
-					/>
-
-					<CalendarGrid
-						days={days}
-						turnos={turnos}
-						selected={selected}
-						today={today}
-						setSelected={setSelected}
-						diaEsPasado={diaEsPasado}
-						WEEKDAYS={WEEKDAYS}
-					/>
-				</div>
-
-				<div className={styles.sideColumn}>
-					<AppointmentList
-						loading={loading}
-						selTurnos={selTurnos}
-						selD={selD}
-						selM={selM}
-						MONTHS={MONTHS}
-						selectedEsPasado={selectedEsPasado}
-						openModal={openModal}
-						deleteAppt={deleteAppt}
-					/>
-
-					<StatusLegend />
-				</div>
-			</div>
-
-			<NewAppointmentModal
-				showModal={showModal}
-				setShowModal={setShowModal}
-				selD={selD}
-				selM={selM}
-				newAppt={newAppt}
-				setNewAppt={setNewAppt}
-				turnoEsPasado={turnoEsPasado}
-				clienteSeleccionado={clienteSeleccionado}
-				clearClienteSeleccionado={clearClienteSeleccionado}
-				clienteSearch={clienteSearch}
-				setClienteSearch={setClienteSearch}
-				clientesFiltrados={clientesFiltrados}
-				selectCliente={selectCliente}
-				autosDelCliente={autosDelCliente}
-				servicios={servicios}
-				addAppt={addAppt}
-				confirmDisabled={confirmDisabled}
-				saving={saving}
-			/>
-		</div>
+		<CalendarMainSection
+			month={month}
+			year={year}
+			MONTHS={MONTHS}
+			onPrevMonth={prevMonth}
+			onNextMonth={nextMonth}
+			days={days}
+			turnos={turnos}
+			selected={selected}
+			today={today}
+			setSelected={setSelected}
+			diaEsPasado={diaEsPasado}
+			WEEKDAYS={WEEKDAYS}
+			loading={loading}
+			selTurnos={selTurnos}
+			selD={selD}
+			selM={selM}
+			selectedEsPasado={selectedEsPasado}
+			openModal={openModal}
+			deleteAppt={deleteAppt}
+			showModal={showModal}
+			setShowModal={setShowModal}
+			newAppt={newAppt}
+			setNewAppt={setNewAppt}
+			turnoEsPasado={turnoEsPasado}
+			clienteSeleccionado={clienteSeleccionado}
+			clearClienteSeleccionado={clearClienteSeleccionado}
+			clienteSearch={clienteSearch}
+			setClienteSearch={setClienteSearch}
+			clientesFiltrados={clientesFiltrados}
+			selectCliente={selectCliente}
+			autosDelCliente={autosDelCliente}
+			servicios={servicios}
+			addAppt={addAppt}
+			confirmDisabled={confirmDisabled}
+			saving={saving}
+		/>
 	);
 }

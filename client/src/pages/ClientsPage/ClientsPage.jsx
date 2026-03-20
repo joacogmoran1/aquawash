@@ -3,21 +3,16 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 // Api
 import api from "../../api/api";
 
+// Section
+import { ClientsContentSection } from "../../sections/client/ClientsContentSection/ClientsContentSection";
+import { ClientsModalsSection } from "../../sections/client/ClientsModalsSection/ClientsModalsSection";
+
 // Components
 import { ClientDetail } from "../../components/client/ClientDetail/ClientDetail";
-import { ClientsToolbar } from "../../components/client/ClientsToolbar/ClientsToolbar";
-import { ClientsTable } from "../../components/client/ClientsTable/ClientsTable";
-import { ClientsState } from "../../components/client/ClientsState/ClientsState";
-import { NewClientModal } from "../../components/client/NewClientModal/NewClientModal";
-import { DeleteClientModal } from "../../components/client/DeleteClientModal/DeleteClientModal";
 import { PageLoading } from "../../components/PageLoading/PageLoading";
 
 // Utils
 import { getLastVisitGroup } from "../../utils/clientsHelpers";
-
-// Style
-import layoutStyles from "../../styles/clients/ClientsPageLayout.module.css";
-import shared from "../../styles/clients/ClientsShared.module.css";
 
 const PAGE_SIZE = 50;
 
@@ -38,11 +33,6 @@ export function ClientsPage({ showToast }) {
 	const [sortBy, setSortBy] = useState("default");
 	const [lastVisitFilter, setLastVisitFilter] = useState("todas");
 
-	// Resetear a página 1 cuando cambia el search
-	useEffect(() => {
-		setCurrentPage(1);
-	}, [search]);
-
 	const loadClients = useCallback(async (q, page) => {
 		setLoading(true);
 		try {
@@ -51,10 +41,8 @@ export function ClientsPage({ showToast }) {
 			params.set("page", String(page));
 			params.set("limit", String(PAGE_SIZE));
 
-			// La API ahora retorna { data: [], pagination: { page, limit, total, totalPages } }
 			const res = await api.get(`/clientes?${params.toString()}`);
 
-			// Compatibilidad: si el backend todavía retorna array plano (durante transición)
 			if (Array.isArray(res)) {
 				setClients(res);
 				setPagination({ page: 1, total: res.length, totalPages: 1 });
@@ -69,27 +57,10 @@ export function ClientsPage({ showToast }) {
 		}
 	}, [showToast]);
 
-	useEffect(() => {
-		loadClients(search, currentPage);
-	}, [search, currentPage, loadClients]);
-
-	// Cargar detalle al seleccionar un cliente
-	useEffect(() => {
-		if (!selectedId) {
-			setDetailClient(null);
-			return;
-		}
-		api.get(`/clientes/${selectedId}`)
-			.then(setDetailClient)
-			.catch(console.error);
-	}, [selectedId]);
-
 	async function handleUpdate(id, patch) {
 		const updated = await api.put(`/clientes/${id}`, patch);
 		setDetailClient((prev) => ({ ...prev, ...updated }));
-		setClients((prev) =>
-			prev.map((c) => (c.id === id ? { ...c, ...updated } : c))
-		);
+		setClients((prev) => prev.map((c) => (c.id === id ? { ...c, ...updated } : c)));
 	}
 
 	async function handleRefresh(id) {
@@ -127,7 +98,6 @@ export function ClientsPage({ showToast }) {
 		setSaving(true);
 		try {
 			await api.post("/clientes", form);
-			// Recargar la primera página para que aparezca el nuevo cliente
 			setCurrentPage(1);
 			setSearch("");
 			await loadClients("", 1);
@@ -141,7 +111,6 @@ export function ClientsPage({ showToast }) {
 		}
 	}
 
-	// Filtros y ordenamiento en el cliente (sobre los datos de la página actual)
 	const processedClients = useMemo(() => {
 		let result = [...clients];
 
@@ -174,6 +143,24 @@ export function ClientsPage({ showToast }) {
 		return result;
 	}, [clients, sortBy, lastVisitFilter]);
 
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [search]);
+
+	useEffect(() => {
+		loadClients(search, currentPage);
+	}, [search, currentPage, loadClients]);
+
+	useEffect(() => {
+		if (!selectedId) {
+			setDetailClient(null);
+			return;
+		}
+		api.get(`/clientes/${selectedId}`)
+			.then(setDetailClient)
+			.catch(console.error);
+	}, [selectedId]);
+
 	if (selectedId && detailClient) {
 		return (
 			<ClientDetail
@@ -187,97 +174,37 @@ export function ClientsPage({ showToast }) {
 		);
 	}
 
-	if (loading) {
-		return <PageLoading />;
-	}
-
+	if (loading) return <PageLoading />;
 	return (
-		<div className={layoutStyles.pageContent}>
-			<div className={shared.card}>
-				<ClientsToolbar
-					search={search}
-					setSearch={setSearch}
-					sortBy={sortBy}
-					setSortBy={setSortBy}
-					lastVisitFilter={lastVisitFilter}
-					setLastVisitFilter={setLastVisitFilter}
-					processedClients={processedClients}
-					totalClients={pagination.total}
-					onNewClient={() => setShowModal(true)}
-				/>
+		<>
+			<ClientsContentSection
+				search={search}
+				setSearch={setSearch}
+				sortBy={sortBy}
+				setSortBy={setSortBy}
+				lastVisitFilter={lastVisitFilter}
+				setLastVisitFilter={setLastVisitFilter}
+				processedClients={processedClients}
+				totalClients={pagination.total}
+				onNewClient={() => setShowModal(true)}
+				setSelectedId={setSelectedId}
+				requestDelete={requestDelete}
+				pagination={pagination}
+				currentPage={currentPage}
+				setCurrentPage={setCurrentPage}
+			/>
 
-				{processedClients.length === 0 ? (
-					<ClientsState type="empty" />
-				) : (
-					<ClientsTable
-						processedClients={processedClients}
-						setSelectedId={setSelectedId}
-						handleDelete={requestDelete}
-					/>
-				)}
-
-				{/* Paginación */}
-				{!loading && pagination.totalPages > 1 && (
-					<div
-						style={{
-							display: "flex",
-							justifyContent: "center",
-							alignItems: "center",
-							gap: 12,
-							padding: "16px 0 4px",
-							borderTop: "1px solid var(--border)",
-							marginTop: 12,
-						}}
-					>
-						<button
-							className={`${shared.btn} ${shared.btnGhost} ${shared.btnSm}`}
-							onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-							disabled={currentPage <= 1}
-						>
-							← Anterior
-						</button>
-
-						<span
-							style={{
-								fontFamily: "var(--font-mono)",
-								fontSize: 12,
-								color: "var(--muted2)",
-							}}
-						>
-							{currentPage} / {pagination.totalPages}
-							{" "}·{" "}
-							{pagination.total} clientes
-						</span>
-
-						<button
-							className={`${shared.btn} ${shared.btnGhost} ${shared.btnSm}`}
-							onClick={() =>
-								setCurrentPage((p) =>
-									Math.min(pagination.totalPages, p + 1)
-								)
-							}
-							disabled={currentPage >= pagination.totalPages}
-						>
-							Siguiente →
-						</button>
-					</div>
-				)}
-			</div>
-
-			<NewClientModal
+			<ClientsModalsSection
 				showModal={showModal}
 				setShowModal={setShowModal}
 				form={form}
 				setForm={setForm}
 				addClient={addClient}
 				saving={saving}
-			/>
-
-			<DeleteClientModal
 				deleteId={deleteId}
 				setDeleteId={setDeleteId}
 				doDelete={doDelete}
 			/>
-		</div>
+		</>
 	);
 }
