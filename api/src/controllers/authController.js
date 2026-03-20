@@ -48,6 +48,8 @@ const normalizePassword = (v) => {
 	return s;
 };
 
+
+// Login
 async function register(req, res, next) {
 	try {
 		const raw = pick(req.body, ['nombre', 'direccion', 'telefono', 'email', 'password']);
@@ -104,6 +106,87 @@ function me(req, res) {
 	res.json({ lavadero: req.lavadero, usuario: req.usuario, rol: req.rol });
 }
 
+// Email & Password
+async function verifyEmail(req, res, next) {
+	try {
+		const { token } = req.query;
+		if (!token || typeof token !== 'string') throw createError(400, 'Token inválido.');
+
+		const lav = await Lavadero.scope('withPassword').findOne({
+			where: { email_verify_token: token },
+		});
+		if (!lav) throw createError(400, 'Token inválido o expirado.');
+		if (lav.email_verified) return res.json({ message: 'Email ya verificado.' });
+		if (lav.email_verify_expires < new Date()) throw createError(400, 'El token de verificación expiró.');
+
+		await lav.update({ email_verified: true, email_verify_token: null, email_verify_expires: null });
+		res.json({ message: 'Email verificado correctamente.' });
+	} catch (err) { next(err); }
+}
+
+async function resendVerification(req, res, next) {
+	try {
+		const email = sanEmail(req.body.email || '');
+		if (!email) throw createError(400, 'email es requerido.');
+
+		const lav = await Lavadero.findOne({ where: { email } });
+		const MSG = 'Si el email existe y no está verificado, recibirás un enlace.';
+
+		if (lav && !lav.email_verified && emailService) {
+			const token = crypto.randomBytes(32).toString('hex');
+			const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+			await lav.update({ email_verify_token: token, email_verify_expires: expires });
+			await emailService.sendVerificationEmail(lav.email, lav.nombre, token);
+		}
+
+		res.json({ message: MSG });
+	} catch (err) { next(err); }
+}
+
+async function forgotPassword(req, res, next) {
+	try {
+		const email = sanEmail(req.body.email || '');
+		if (!email) throw createError(400, 'email es requerido.');
+
+		const lav = await Lavadero.findOne({ where: { email } });
+		const MSG = 'Si el email existe, recibirás las instrucciones.';
+
+		if (lav && emailService) {
+			const token = crypto.randomBytes(32).toString('hex');
+			const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+			await lav.update({ reset_password_token: token, reset_password_expires: expires });
+			await emailService.sendPasswordResetEmail(lav.email, lav.nombre, token);
+		}
+
+		res.json({ message: MSG });
+	} catch (err) { next(err); }
+}
+
+async function resetPassword(req, res, next) {
+	try {
+		const { token, password } = req.body;
+		if (!token || typeof token !== 'string') throw createError(400, 'Token inválido.');
+		const safePass = normalizePassword(password);
+
+		const lav = await Lavadero.scope('withPassword').findOne({
+			where: { reset_password_token: token },
+		});
+		if (!lav) throw createError(400, 'Token inválido o expirado.');
+		if (lav.reset_password_expires < new Date()) throw createError(400, 'El token expiró. Solicitá uno nuevo.');
+
+		const password_hash = await bcrypt.hash(safePass, 12);
+		await lav.update({ password_hash, reset_password_token: null, reset_password_expires: null });
+		const owner = await Usuario.findOne({ where: { lavadero_id: lav.id, rol: 'owner' } });
+		if (owner) {
+			await owner.update({ password_hash });
+			await authService.revokeAllUserTokens(owner.id); // ← ID correcto
+		}
+
+		res.json({ message: 'Contraseña actualizada. Iniciá sesión nuevamente.' });
+	} catch (err) { next(err); }
+}
+
+// Users
 async function listarUsuarios(req, res, next) {
 	try {
 		const { Usuario } = require('../models');
@@ -171,89 +254,6 @@ async function eliminarUsuario(req, res, next) {
 		await authService.revokeAllUserTokens(usuario.id);
 		await usuario.destroy();
 		res.status(204).send();
-	} catch (err) { next(err); }
-}
-
-// FIX #12: verificar email
-async function verifyEmail(req, res, next) {
-	try {
-		const { token } = req.query;
-		if (!token || typeof token !== 'string') throw createError(400, 'Token inválido.');
-
-		const lav = await Lavadero.scope('withPassword').findOne({
-			where: { email_verify_token: token },
-		});
-		if (!lav) throw createError(400, 'Token inválido o expirado.');
-		if (lav.email_verified) return res.json({ message: 'Email ya verificado.' });
-		if (lav.email_verify_expires < new Date()) throw createError(400, 'El token de verificación expiró.');
-
-		await lav.update({ email_verified: true, email_verify_token: null, email_verify_expires: null });
-		res.json({ message: 'Email verificado correctamente.' });
-	} catch (err) { next(err); }
-}
-
-// FIX #12: reenviar email de verificación
-async function resendVerification(req, res, next) {
-	try {
-		const email = sanEmail(req.body.email || '');
-		if (!email) throw createError(400, 'email es requerido.');
-
-		const lav = await Lavadero.findOne({ where: { email } });
-		const MSG = 'Si el email existe y no está verificado, recibirás un enlace.';
-
-		if (lav && !lav.email_verified && emailService) {
-			const token = crypto.randomBytes(32).toString('hex');
-			const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-			await lav.update({ email_verify_token: token, email_verify_expires: expires });
-			await emailService.sendVerificationEmail(lav.email, lav.nombre, token);
-		}
-
-		res.json({ message: MSG });
-	} catch (err) { next(err); }
-}
-
-// FIX #13: solicitar reset de contraseña
-async function forgotPassword(req, res, next) {
-	try {
-		const email = sanEmail(req.body.email || '');
-		if (!email) throw createError(400, 'email es requerido.');
-
-		const lav = await Lavadero.findOne({ where: { email } });
-		const MSG = 'Si el email existe, recibirás las instrucciones.';
-
-		if (lav && emailService) {
-			const token = crypto.randomBytes(32).toString('hex');
-			const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
-			await lav.update({ reset_password_token: token, reset_password_expires: expires });
-			await emailService.sendPasswordResetEmail(lav.email, lav.nombre, token);
-		}
-
-		res.json({ message: MSG });
-	} catch (err) { next(err); }
-}
-
-// FIX #13: aplicar nueva contraseña con el token
-async function resetPassword(req, res, next) {
-	try {
-		const { token, password } = req.body;
-		if (!token || typeof token !== 'string') throw createError(400, 'Token inválido.');
-		const safePass = normalizePassword(password);
-
-		const lav = await Lavadero.scope('withPassword').findOne({
-			where: { reset_password_token: token },
-		});
-		if (!lav) throw createError(400, 'Token inválido o expirado.');
-		if (lav.reset_password_expires < new Date()) throw createError(400, 'El token expiró. Solicitá uno nuevo.');
-
-		const password_hash = await bcrypt.hash(safePass, 12);
-		await lav.update({ password_hash, reset_password_token: null, reset_password_expires: null });
-		const owner = await Usuario.findOne({ where: { lavadero_id: lav.id, rol: 'owner' } });
-		if (owner) {
-			await owner.update({ password_hash });
-			await authService.revokeAllUserTokens(owner.id); // ← ID correcto
-		}
-
-		res.json({ message: 'Contraseña actualizada. Iniciá sesión nuevamente.' });
 	} catch (err) { next(err); }
 }
 

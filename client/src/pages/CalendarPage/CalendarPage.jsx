@@ -7,11 +7,6 @@ import api from "../../api/api";
 import { CalendarMainSection } from "../../sections/calendar/CalendarMainSection/CalendarMainSection";
 
 // Components
-import { CalendarHeader } from "../../components/calendar/CalendarHeader/CalendarHeader.jsx";
-import { CalendarGrid } from "../../components/calendar/CalendarGrid/CalendarGrid.jsx";
-import { AppointmentList } from "../../components/calendar/AppointmentList/AppointmentList.jsx";
-import { StatusLegend } from "../../components/calendar/StatusLegend/StatusLegend.jsx";
-import { NewAppointmentModal } from "../../components/calendar/NewAppointmentModal/NewAppointmentModal.jsx";
 import { PageLoading } from "../../components/PageLoading/PageLoading.jsx";
 
 // Utils

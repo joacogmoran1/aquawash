@@ -1,28 +1,50 @@
 import { useState, useCallback } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+
+// Context
 import { AuthProvider, useAuth } from "./context/AuthContext";
-import { PageLoading } from "./components/PageLoading/PageLoading";
-import { ErrorBoundary } from "./components/ErrorBoundary/ErrorBoundary";
-import { Sidebar } from "./components/SideBar/Sidebar";
-import { Toast } from "./components/Toast/Toast";
+
+// Pages
 import { LoginPage } from "./pages/LoginPage/LoginPage";
 import { SignupPage } from "./pages/SignupPage/SignupPage";
+import { VerifyEmailPage } from "./pages/VerifyEmailPage/VerifyEmailPage";
+import { ResetPasswordPage } from "./pages/ResetPasswordPage/ResetPasswordPage";
 import { DashboardPage } from "./pages/DashboardPage/DashboardPage";
 import { CalendarPage } from "./pages/CalendarPage/CalendarPage";
 import { ClientsPage } from "./pages/ClientsPage/ClientsPage";
 import { ConfigPage } from "./pages/ConfigPage/ConfigPage";
+
+// Components
+import { PageLoading } from "./components/PageLoading/PageLoading";
+import { ErrorBoundary } from "./components/ErrorBoundary/ErrorBoundary";
+import { Sidebar } from "./components/SideBar/Sidebar";
+import { Toast } from "./components/Toast/Toast";
+
+// Uitls
 import { CSS } from "./utils/theme";
+
+
 
 function FullscreenLoader() {
 	return <PageLoading text="Cargando datos…" fullscreen />;
 }
 
+function PublicAuthRoutes() {
+	return (
+		<Routes>
+			<Route path="/verify-email" element={<VerifyEmailPage />} />
+			<Route path="/reset-password" element={<ResetPasswordPage />} />
+		</Routes>
+	);
+}
 
 function AuthRoutes() {
 	return (
 		<Routes>
 			<Route path="/login" element={<LoginPage />} />
 			<Route path="/signup" element={<SignupPage />} />
+			<Route path="/verify-email" element={<VerifyEmailPage />} />
+			<Route path="/reset-password" element={<ResetPasswordPage />} />
 			<Route path="*" element={<Navigate to="/login" replace />} />
 		</Routes>
 	);
@@ -41,13 +63,17 @@ function AppRoutes({ showToast }) {
 }
 
 function AppShell() {
+	const location = useLocation();
 	const { user, isLoading } = useAuth();
 	const [toast, setToast] = useState(null);
 
-	// FIX #18: referencia estable — no dispara re-ejecución de useEffect
 	const showToast = useCallback((msg, type = "success") => {
 		setToast({ msg, type });
 	}, []);
+
+	if (["/verify-email", "/reset-password"].includes(location.pathname)) {
+		return <PublicAuthRoutes />;
+	}
 
 	if (isLoading) return <FullscreenLoader />;
 	if (!user) return <AuthRoutes />;

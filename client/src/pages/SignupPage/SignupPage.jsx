@@ -5,7 +5,7 @@ import styles from "./SignupPage.module.css";
 
 export function SignupPage() {
 	const navigate = useNavigate();
-	const { signup } = useAuth();
+	const { signup, resendVerification } = useAuth();
 
 	const [form, setForm] = useState({
 		nombre: "",
@@ -18,12 +18,17 @@ export function SignupPage() {
 
 	const [err, setErr] = useState("");
 	const [loading, setLoading] = useState(false);
+	const [registeredEmail, setRegisteredEmail] = useState("");
+	const [verificationMessage, setVerificationMessage] = useState("");
+	const [resendLoading, setResendLoading] = useState(false);
+	const [resendError, setResendError] = useState("");
 
 	function set(key) {
 		return (e) => {
 			const value = e.target.value;
 			setForm((f) => ({ ...f, [key]: value }));
 			if (err) setErr("");
+			if (resendError) setResendError("");
 		};
 	}
 
@@ -86,9 +91,21 @@ export function SignupPage() {
 		);
 	}
 
+	async function sendVerification(email) {
+		const data = await resendVerification(email);
+		setVerificationMessage(
+			data.message || "Te enviamos un enlace para verificar tu email."
+		);
+	}
+
 	async function handleSubmit() {
 		const validationError = validateForm();
-		if (validationError) { setErr(validationError); return; }
+		if (validationError) {
+			setErr(validationError);
+			return;
+		}
+
+		const normalizedEmail = form.email.trim().toLowerCase();
 
 		setErr("");
 		setLoading(true);
@@ -99,9 +116,15 @@ export function SignupPage() {
 				nombre: form.nombre.trim(),
 				direccion: form.direccion.trim(),
 				telefono: form.telefono.trim(),
-				email: form.email.trim().toLowerCase(),
+				email: normalizedEmail,
 			});
-			navigate("/login", { state: { registered: true } });
+			setRegisteredEmail(normalizedEmail);
+
+			try {
+				await sendVerification(normalizedEmail);
+			} catch {
+				setVerificationMessage("La cuenta fue creada. Si no recibís el email, podés reenviar la verificación desde esta pantalla.");
+			}
 		} catch (e) {
 			if (isBackendDownError(e)) {
 				setErr("No se pudo conectar con el servidor. Intentá de nuevo en unos minutos.");
@@ -111,6 +134,72 @@ export function SignupPage() {
 		} finally {
 			setLoading(false);
 		}
+	}
+
+	async function handleResendVerification() {
+		if (!registeredEmail) return;
+		setResendError("");
+		setResendLoading(true);
+		try {
+			await sendVerification(registeredEmail);
+		} catch (e) {
+			setResendError(e.message || "No se pudo reenviar la verificación.");
+		} finally {
+			setResendLoading(false);
+		}
+	}
+
+	if (registeredEmail) {
+		return (
+			<div className={styles.authPage}>
+				<div className={styles.authLeft}>
+					<div className={styles.authBgPattern} />
+					<div className={styles.authBrand}>
+						<div className={styles.authBrandName}>AQUAWASH</div>
+						<div className={styles.authBrandTagline}>Verificá tu cuenta</div>
+					</div>
+					<div className={styles.signupInfoBlock}>
+						<div className={styles.signupInfoTitle}>SIGUIENTES PASOS</div>
+						{[
+							"Abrí el email que te enviamos",
+							"Hacé click en el enlace de verificación",
+							"Después iniciá sesión normalmente",
+						].map((text) => (
+							<div key={text} className={styles.signupInfoItem}>
+								<div className={styles.signupInfoArrow}>→</div>
+								<div className={styles.signupInfoText}>{text}</div>
+							</div>
+						))}
+					</div>
+					<div className={styles.authBigText}>EMAIL</div>
+				</div>
+
+				<div className={styles.authRight}>
+					<div className={`${styles.authFormBox} ${styles.authFormBoxWide}`}>
+						<div className={styles.authTitle}>Revisá tu correo</div>
+						<div className={styles.authSubtitle}>
+							Tu cuenta fue creada con <strong>{registeredEmail}</strong>.
+						</div>
+
+						{verificationMessage && <div className={styles.successText}>{verificationMessage}</div>}
+						{resendError && <div className={styles.errorText}>{resendError}</div>}
+
+						<div className={styles.authForm}>
+							<button className={styles.primaryButton} onClick={handleResendVerification} disabled={resendLoading}>
+								{resendLoading ? "Reenviando…" : "Reenviar verificación"}
+							</button>
+
+							<button
+								className={styles.secondaryButton}
+								onClick={() => navigate("/login", { state: { registered: true, email: registeredEmail } })}
+							>
+								Ir al login
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
 	}
 
 	return (

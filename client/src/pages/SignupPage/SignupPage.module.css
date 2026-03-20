@@ -244,3 +244,53 @@
     color: var(--muted2);
     margin-top: 20px;
 }
+
+.secondaryButton {
+    width: 100%;
+    justify-content: center;
+    padding: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 8px;
+    border: 1px solid var(--border2);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: all 0.15s;
+    background: transparent;
+    color: var(--muted2);
+}
+
+.secondaryButton:hover {
+    background: var(--card2);
+    color: var(--text);
+}
+
+.inlineActions {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.inlineActionButton {
+    background: transparent;
+    border: none;
+    color: var(--cyan);
+    cursor: pointer;
+    padding: 0;
+    font-size: 12px;
+}
+
+.inlineActionButton:disabled {
+    color: var(--muted);
+    cursor: not-allowed;
+}
+
+.helperText {
+    font-size: 12px;
+    color: var(--muted2);
+    line-height: 1.5;
+}

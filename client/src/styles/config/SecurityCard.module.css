@@ -1,0 +1,71 @@
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.statusBox,
+.infoBox {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--card2);
+    padding: 16px;
+}
+
+.statusBox {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.emailValue {
+    margin-top: 8px;
+    font-size: 14px;
+    color: var(--text);
+    word-break: break-word;
+}
+
+.badgeSuccess,
+.badgeWarning {
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.badgeSuccess {
+    color: var(--green);
+    background: rgba(47, 191, 113, 0.12);
+    border: 1px solid rgba(47, 191, 113, 0.24);
+}
+
+.badgeWarning {
+    color: var(--orange);
+    background: rgba(242, 198, 109, 0.12);
+    border: 1px solid rgba(242, 198, 109, 0.24);
+}
+
+.infoTitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.infoText {
+    font-size: 13px;
+    color: var(--muted2);
+    line-height: 1.5;
+    margin-bottom: 14px;
+}
+
+@media (max-width: 640px) {
+    .statusBox {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

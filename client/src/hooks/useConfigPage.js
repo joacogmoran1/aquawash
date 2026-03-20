@@ -36,7 +36,7 @@ const EMPTY_SERVICIO_FORM = {
 };
 
 export function useConfigPage(showToast) {
-    const { user } = useAuth();
+    const { user, updateUser, resendVerification, forgotPassword } = useAuth();
 
     const [loading, setLoading] = useState(true);
     const [operacion, setOperacion] = useState({});
@@ -52,6 +52,9 @@ export function useConfigPage(showToast) {
 
     const [saving, setSaving] = useState(false);
     const [savingConfig, setSavingConfig] = useState(false);
+    const [resendingVerification, setResendingVerification] = useState(false);
+    const [sendingPasswordReset, setSendingPasswordReset] = useState(false);
+
 
     useEffect(() => {
         loadOperacion();
@@ -94,7 +97,6 @@ export function useConfigPage(showToast) {
             return;
         }
 
-        // DIAS_SEMANA.key ahora es "lun", "mar", etc. — coincide con el backend
         const payload = {
             nombre: sanitizeText(negocioForm.nombre).trim(),
             email: sanitizeEmail(negocioForm.email).trim(),
@@ -131,6 +133,11 @@ export function useConfigPage(showToast) {
             setInitialOperacion(updated);
             setInitialNegocioForm(negocioUpdated);
             setConfigEditing(false);
+            updateUser({
+                ...negocioUpdated,
+                email_verified: updated.email_verified ?? user?.email_verified ?? false,
+            });
+
 
             showToast("Configuración guardada", "success");
         } catch (e) {
@@ -194,6 +201,42 @@ export function useConfigPage(showToast) {
         }
     }
 
+    async function resendVerificationEmail() {
+        const email = initialNegocioForm.email || negocioForm.email || user?.email || "";
+        if (!email) {
+            showToast("No hay un email configurado para reenviar la verificación", "error");
+            return;
+        }
+
+        setResendingVerification(true);
+        try {
+            const data = await resendVerification(email);
+            showToast(data.message || "Revisá tu casilla para verificar el email", "success");
+        } catch (e) {
+            showToast(e?.message || "No se pudo reenviar la verificación", "error");
+        } finally {
+            setResendingVerification(false);
+        }
+    }
+
+    async function sendPasswordResetEmail() {
+        const email = initialNegocioForm.email || negocioForm.email || user?.email || "";
+        if (!email) {
+            showToast("No hay un email configurado para recuperar la contraseña", "error");
+            return;
+        }
+
+        setSendingPasswordReset(true);
+        try {
+            const data = await forgotPassword(email);
+            showToast(data.message || "Te enviamos un enlace para cambiar la contraseña", "success");
+        } catch (e) {
+            showToast(e?.message || "No se pudo enviar el enlace de cambio", "error");
+        } finally {
+            setSendingPasswordReset(false);
+        }
+    }
+
     function handleHorarioChange(diaKey, field, value) {
         setOperacion((prev) => ({
             ...prev,
@@ -215,10 +258,14 @@ export function useConfigPage(showToast) {
         setEditing,
         saving,
         savingConfig,
+        resendingVerification,
+        sendingPasswordReset,
         cancelConfiguracionGeneral,
         saveConfiguracionGeneral,
         saveServicio,
         deleteServicio,
+        resendVerificationEmail,
+        sendPasswordResetEmail,
         handleHorarioChange,
     };
 }

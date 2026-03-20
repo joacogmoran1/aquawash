@@ -10,6 +10,7 @@ import { ConfigHeaderSection } from "../../sections/config/ConfigHeaderSection/C
 import { BusinessSection } from "../../sections/config/BusinessSection/BusinessSection";
 import { ServicesSection } from "../../sections/config/ServicesSection/ServicesSection";
 import { OperationScheduleSection } from "../../sections/config/OperationScheduleSection/OperationScheduleSection";
+import { SecuritySection } from "../../sections/config/SecuritySection/SecuritySection";
 
 // Style
 import layoutStyles from "../../styles/config/ConfigPageLayout.module.css";
@@ -29,10 +30,14 @@ export function ConfigPage({ showToast }) {
         setEditing,
         saving,
         savingConfig,
+        resendingVerification,
+        sendingPasswordReset,
         cancelConfiguracionGeneral,
         saveConfiguracionGeneral,
         saveServicio,
         deleteServicio,
+        resendVerificationEmail,
+        sendPasswordResetEmail,
         handleHorarioChange,
     } = useConfigPage(showToast);
 
@@ -73,6 +78,15 @@ export function ConfigPage({ showToast }) {
                     setOperacion={setOperacion}
                     handleHorarioChange={handleHorarioChange}
                     disabled={!configEditing}
+                />
+
+                <SecuritySection
+                    email={negocioForm.email}
+                    emailVerified={Boolean(operacion.email_verified)}
+                    resendingVerification={resendingVerification}
+                    sendingPasswordReset={sendingPasswordReset}
+                    onResendVerification={resendVerificationEmail}
+                    onSendPasswordReset={sendPasswordResetEmail}
                 />
             </div>
         </div>

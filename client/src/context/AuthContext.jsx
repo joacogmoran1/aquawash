@@ -74,16 +74,38 @@ export function AuthProvider({ children }) {
 	}
 
 	async function signup(formData) {
-		const { confirm, ...body } = formData;
-		await api.post("/auth/register", body);
+		const { confirm: _confirm, ...body } = formData;
+		return api.post("/auth/register", body);
 	}
 
 	async function logout() {
-		try { await api.post("/auth/logout"); } catch { }
-		finally { clearAccessToken(); setUser(null); }
+		try {
+			await api.post("/auth/logout");
+		} catch {
+			// Ignoramos errores al cerrar sesión para limpiar el estado local igual.
+		} finally {
+			clearAccessToken();
+			setUser(null);
+		}
 	}
 
 	const updateUser = (patch) => setUser((prev) => prev ? { ...prev, ...patch } : null);
+
+	async function resendVerification(email) {
+		return api.post("/auth/resend-verification", { email });
+	}
+
+	async function forgotPassword(email) {
+		return api.post("/auth/forgot-password", { email });
+	}
+
+	async function resetPassword(token, password) {
+		return api.post("/auth/reset-password", { token, password });
+	}
+
+	async function verifyEmail(token) {
+		return api.get(`/auth/verify-email?token=${encodeURIComponent(token)}`);
+	}
 
 	return (
 		<AuthContext.Provider value={{
@@ -94,6 +116,7 @@ export function AuthProvider({ children }) {
 			isLoading,
 			loading: isLoading,
 			login, signup, logout, updateUser,
+			resendVerification, forgotPassword, resetPassword, verifyEmail,
 		}}>
 			{children}
 		</AuthContext.Provider>
