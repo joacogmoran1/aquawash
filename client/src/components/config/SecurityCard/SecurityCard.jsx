@@ -7,7 +7,6 @@ export function SecurityCard({
     emailVerified,
     resendingVerification,
     sendingPasswordReset,
-    onResendVerification,
     onSendPasswordReset,
     onDeleteAccount,
     deletingAccount,
@@ -49,20 +48,6 @@ export function SecurityCard({
                         <div className={emailVerified ? styles.badgeSuccess : styles.badgeWarning}>
                             {emailVerified ? 'Verificado' : 'Pendiente'}
                         </div>
-                    </div>
-
-                    <div className={styles.infoBox}>
-                        <div className={styles.infoTitle}>Verificación de email</div>
-                        <div className={styles.infoText}>
-                            Si todavía no validaste tu correo, podés reenviar el enlace de verificación.
-                        </div>
-                        <button
-                            className={shared.ghostButton}
-                            onClick={onResendVerification}
-                            disabled={!email || resendingVerification || emailVerified}
-                        >
-                            {resendingVerification ? 'Enviando…' : emailVerified ? 'Email verificado' : 'Reenviar verificación'}
-                        </button>
                     </div>
 
                     <div className={styles.infoBox}>

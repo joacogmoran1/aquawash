@@ -202,24 +202,6 @@ export function useConfigPage(showToast) {
         }
     }
 
-    async function resendVerificationEmail() {
-        const email = initialNegocioForm.email || negocioForm.email || user?.email || "";
-        if (!email) {
-            showToast("No hay un email configurado para reenviar la verificación", "error");
-            return;
-        }
-
-        setResendingVerification(true);
-        try {
-            const data = await resendVerification(email);
-            showToast(data.message || "Revisá tu casilla para verificar el email", "success");
-        } catch (e) {
-            showToast(e?.message || "No se pudo reenviar la verificación", "error");
-        } finally {
-            setResendingVerification(false);
-        }
-    }
-
     async function sendPasswordResetEmail() {
         const email = initialNegocioForm.email || negocioForm.email || user?.email || "";
         if (!email) {
@@ -276,7 +258,6 @@ export function useConfigPage(showToast) {
         saveConfiguracionGeneral,
         saveServicio,
         deleteServicio,
-        resendVerificationEmail,
         sendPasswordResetEmail,
         handleHorarioChange,
         deletingAccount,

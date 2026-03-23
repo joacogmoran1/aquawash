@@ -47,6 +47,14 @@ const normalizePassword = (v) => {
 	return s;
 };
 
+// Helper para construir el objeto lavadero con email_verified del usuario
+function buildLavaderoResponse(lavadero, usuario) {
+	return {
+		...lavadero.toJSON(),
+		email_verified: usuario.email_verified,
+	};
+}
+
 async function register(req, res, next) {
 	try {
 		const raw = pick(req.body, ['nombre', 'direccion', 'telefono', 'email', 'password']);
@@ -84,17 +92,24 @@ async function login(req, res, next) {
 		const accessToken = authService.generateAccessToken(usuario.id, lavadero.id, usuario.rol);
 		const refreshToken = await authService.issueRefreshToken(usuario.id, req.ip, req.headers['user-agent']);
 		res.cookie(COOKIE_NAME, refreshToken, COOKIE_OPTS);
-		res.json({ lavadero, usuario, accessToken });
+		res.json({
+			lavadero: buildLavaderoResponse(lavadero, usuario),
+			usuario,
+			accessToken,
+		});
 	} catch (err) { next(err); }
 }
 
 async function refresh(req, res, next) {
 	try {
-		const { lavadero, accessToken, refreshToken } = await authService.rotateRefreshToken(
+		const { lavadero, usuario, accessToken, refreshToken } = await authService.rotateRefreshToken(
 			req.cookies?.[COOKIE_NAME], req.ip, req.headers['user-agent']
 		);
 		res.cookie(COOKIE_NAME, refreshToken, COOKIE_OPTS);
-		res.json({ lavadero, accessToken });
+		res.json({
+			lavadero: buildLavaderoResponse(lavadero, usuario),
+			accessToken,
+		});
 	} catch (err) { next(err); }
 }
 
@@ -118,15 +133,19 @@ async function verifyEmail(req, res, next) {
 		const usuario = await Usuario.unscoped().findOne({
 			where: { email_verify_token: token },
 		});
-		if (!usuario) throw createError(400, 'Token inválido o expirado.');
-		if (usuario.email_verified) return res.json({ message: 'Email ya verificado.' });
-		if (usuario.email_verify_expires < new Date()) throw createError(400, 'El token de verificación expiró.');
 
-		await usuario.update({
-			email_verified: true,
-			email_verify_token: null,
-			email_verify_expires: null,
-		});
+		if (!usuario) throw createError(400, 'Token inválido o expirado.');
+
+		// Doble llamada (StrictMode, scanner de Gmail) — retornar éxito igual
+		if (usuario.email_verified) return res.json({ message: 'Email ya verificado.' });
+
+		if (usuario.email_verify_expires < new Date()) {
+			throw createError(400, 'El token de verificación expiró.');
+		}
+
+		// No nullear el token: llamadas concurrentes con el mismo token
+		// también encuentran al usuario y retornan éxito.
+		await usuario.update({ email_verified: true });
 
 		res.json({ message: 'Email verificado correctamente.' });
 	} catch (err) { next(err); }
@@ -228,7 +247,7 @@ async function crearUsuario(req, res, next) {
 			email: normalizeEmail(raw.email),
 			password_hash,
 			rol: raw.rol,
-			email_verified: true, // los usuarios creados por el owner no necesitan verificar
+			email_verified: true,
 		});
 
 		res.status(201).json(usuario);
@@ -282,7 +301,6 @@ async function deleteAccount(req, res, next) {
 		const valid = await bcrypt.compare(password, usuario.password_hash);
 		if (!valid) throw createError(401, 'Contraseña incorrecta.');
 
-		// Eliminar el lavadero — CASCADE borra todo lo relacionado incluyendo usuarios
 		const lavadero = await Lavadero.findByPk(req.lavaderoId);
 		if (!lavadero) throw createError(404, 'Lavadero no encontrado.');
 		await lavadero.destroy();

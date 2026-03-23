@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import styles from "../LoginPage/LoginPage.module.css";
+import styles from "../../styles/LoginPage.module.css";
 
 export function ResetPasswordPage() {
     const navigate = useNavigate();

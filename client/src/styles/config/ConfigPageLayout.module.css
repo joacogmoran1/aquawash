@@ -6,9 +6,9 @@
 
 .pageGrid {
     display: grid;
-    grid-template-columns: 0.75fr 1.55fr;
+    grid-template-columns: .4fr .6fr;
     gap: 16px;
-    align-items: stretch;
+    align-items: start;
     min-width: 0;
 }
 
@@ -30,7 +30,6 @@
     }
 
     .pageGrid {
-        grid-template-columns: 0.9fr 1.1fr;
         gap: 14px;
     }
 }
@@ -48,6 +47,10 @@
 
     .gridColumn {
         height: auto;
+    }
+
+    .fullWidth {
+        grid-column: auto;
     }
 }
 

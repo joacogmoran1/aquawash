@@ -1,3 +1,4 @@
+import { useAuth } from "../../context/AuthContext";
 import { useConfigPage } from "../../hooks/useConfigPage";
 import { LoadingState } from "../../components/LoadingState/LoadingState";
 import { ConfigHeaderSection } from "../../sections/config/ConfigHeaderSection/ConfigHeaderSection";
@@ -8,6 +9,8 @@ import { SecuritySection } from "../../sections/config/SecuritySection/SecurityS
 import layoutStyles from "../../styles/config/ConfigPageLayout.module.css";
 
 export function ConfigPage({ showToast }) {
+    const { user } = useAuth();
+
     const {
         loading,
         operacion,
@@ -28,7 +31,6 @@ export function ConfigPage({ showToast }) {
         saveConfiguracionGeneral,
         saveServicio,
         deleteServicio,
-        resendVerificationEmail,
         sendPasswordResetEmail,
         handleHorarioChange,
         deletingAccount,
@@ -48,40 +50,47 @@ export function ConfigPage({ showToast }) {
             />
 
             <div className={layoutStyles.pageGrid}>
-                <BusinessSection
-                    negocioForm={negocioForm}
-                    setNegocioForm={setNegocioForm}
-                    disabled={!configEditing}
-                />
+                <div className={layoutStyles.gridColumn}>
+                    <BusinessSection
+                        negocioForm={negocioForm}
+                        setNegocioForm={setNegocioForm}
+                        disabled={!configEditing}
+                    />
+                </div>
 
-                <ServicesSection
-                    operacion={operacion}
-                    form={form}
-                    setForm={setForm}
-                    editing={editing}
-                    setEditing={setEditing}
-                    saveServicio={saveServicio}
-                    saving={saving}
-                    deleteServicio={deleteServicio}
-                />
+                <div className={layoutStyles.gridColumn}>
+                    <SecuritySection
+                        email={negocioForm.email}
+                        emailVerified={Boolean(user?.email_verified)}
+                        resendingVerification={resendingVerification}
+                        sendingPasswordReset={sendingPasswordReset}
+                        onSendPasswordReset={sendPasswordResetEmail}
+                        onDeleteAccount={deleteUserAccount}
+                        deletingAccount={deletingAccount}
+                    />
+                </div>
 
-                <OperationScheduleSection
-                    operacion={operacion}
-                    setOperacion={setOperacion}
-                    handleHorarioChange={handleHorarioChange}
-                    disabled={!configEditing}
-                />
+                <div className={`${layoutStyles.fullWidth} ${layoutStyles.gridColumn}`}>
+                    <ServicesSection
+                        operacion={operacion}
+                        form={form}
+                        setForm={setForm}
+                        editing={editing}
+                        setEditing={setEditing}
+                        saveServicio={saveServicio}
+                        saving={saving}
+                        deleteServicio={deleteServicio}
+                    />
+                </div>
 
-                <SecuritySection
-                    email={negocioForm.email}
-                    emailVerified={Boolean(operacion.email_verified)}
-                    resendingVerification={resendingVerification}
-                    sendingPasswordReset={sendingPasswordReset}
-                    onResendVerification={resendVerificationEmail}
-                    onSendPasswordReset={sendPasswordResetEmail}
-                    onDeleteAccount={deleteUserAccount}
-                    deletingAccount={deletingAccount}
-                />
+                <div className={`${layoutStyles.fullWidth} ${layoutStyles.gridColumn}`}>
+                    <OperationScheduleSection
+                        operacion={operacion}
+                        setOperacion={setOperacion}
+                        handleHorarioChange={handleHorarioChange}
+                        disabled={!configEditing}
+                    />
+                </div>
             </div>
         </div>
     );
