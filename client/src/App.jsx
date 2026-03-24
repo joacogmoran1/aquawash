@@ -13,6 +13,7 @@ import { DashboardPage } from "./pages/DashboardPage/DashboardPage";
 import { CalendarPage } from "./pages/CalendarPage/CalendarPage";
 import { ClientsPage } from "./pages/ClientsPage/ClientsPage";
 import { ConfigPage } from "./pages/ConfigPage/ConfigPage";
+import { BookingPage } from "./pages/BookingPage/BookingPage";   // ← nueva página pública
 
 // Components
 import { PageLoading } from "./components/PageLoading/PageLoading";
@@ -20,7 +21,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary/ErrorBoundary";
 import { Sidebar } from "./components/SideBar/Sidebar";
 import { Toast } from "./components/Toast/Toast";
 
-// Uitls
+// Utils
 import { CSS } from "./utils/theme";
 
 
@@ -34,6 +35,15 @@ function PublicAuthRoutes() {
 		<Routes>
 			<Route path="/verify-email" element={<VerifyEmailPage />} />
 			<Route path="/reset-password" element={<ResetPasswordPage />} />
+		</Routes>
+	);
+}
+
+/** Rutas de reserva pública — sin autenticación, sin sidebar */
+function PublicBookingRoutes() {
+	return (
+		<Routes>
+			<Route path="/book/:lavaderoId" element={<BookingPage />} />
 		</Routes>
 	);
 }
@@ -71,10 +81,17 @@ function AppShell() {
 		setToast({ msg, type });
 	}, []);
 
+	// ── Rutas completamente públicas (sin layout) ──────────────────────────
 	if (["/verify-email", "/reset-password"].includes(location.pathname)) {
 		return <PublicAuthRoutes />;
 	}
 
+	// ── Página de reservas online (accesible sin cuenta) ───────────────────
+	if (location.pathname.startsWith("/book/")) {
+		return <PublicBookingRoutes />;
+	}
+
+	// ── App autenticada ────────────────────────────────────────────────────
 	if (isLoading) return <FullscreenLoader />;
 	if (!user) return <AuthRoutes />;
 

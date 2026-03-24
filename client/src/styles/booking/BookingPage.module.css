@@ -1,0 +1,1094 @@
+/* ─── Layout ──────────────────────────────────────────────────────── */
+.page {
+    min-height: 100vh;
+    background: var(--bg);
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px 64px;
+}
+
+.container {
+    width: 100%;
+    max-width: 640px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ─── Header ─────────────────────────────────────────────────────── */
+.header {
+    text-align: center;
+    padding: 6px 0;
+}
+
+.brandMark {
+    font-family: var(--font-disp);
+    font-size: 13px;
+    letter-spacing: 5px;
+    color: var(--cyan);
+    opacity: .65;
+    margin-bottom: 4px;
+}
+
+.lavaderoName {
+    font-family: var(--font-disp);
+    font-size: 36px;
+    letter-spacing: 1px;
+    color: var(--text);
+    margin: 0;
+    line-height: 1.1;
+}
+
+.lavaderoAddress {
+    font-size: 13px;
+    color: var(--muted2);
+    margin: 5px 0 0;
+}
+
+/* ─── Progress ───────────────────────────────────────────────────── */
+.progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progressStep {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: .35;
+    transition: opacity .2s;
+}
+
+.progressStep.active {
+    opacity: 1;
+}
+
+.progressNum {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted2);
+    flex-shrink: 0;
+    transition: all .2s;
+}
+
+.progressStep.active .progressNum {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    background: var(--cyan-glow);
+}
+
+.progressLabel {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted2);
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.progressStep.active .progressLabel {
+    color: var(--text);
+}
+
+.progressLine {
+    flex: 1;
+    max-width: 40px;
+    height: 1px;
+    background: var(--border);
+    margin: 0 8px;
+    transition: background .2s;
+}
+
+.progressLine.active {
+    background: var(--cyan);
+    opacity: .4;
+}
+
+/* ─── Card ───────────────────────────────────────────────────────── */
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.cardTitle {
+    font-family: var(--font-disp);
+    font-size: 24px;
+    letter-spacing: .5px;
+    color: var(--text);
+    margin: 0;
+    line-height: 1.1;
+}
+
+.cardSubtitle {
+    font-size: 14px;
+    color: var(--muted2);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ─── Back link ──────────────────────────────────────────────────── */
+.backLink {
+    background: none;
+    border: none;
+    color: var(--muted2);
+    font-size: 13px;
+    cursor: pointer;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: color .15s;
+}
+
+.backLink:hover {
+    color: var(--text);
+}
+
+/* ─── Welcome ────────────────────────────────────────────────────── */
+.welcomeGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.welcomeBtn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 18px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    cursor: pointer;
+    transition: all .15s;
+    text-align: left;
+}
+
+.welcomeBtn:hover {
+    border-color: var(--cyan);
+    background: var(--cyan-glow);
+}
+
+.welcomeBtnIcon {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.welcomeBtnTitle {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.welcomeBtnSub {
+    font-size: 12px;
+    color: var(--muted2);
+    line-height: 1.4;
+}
+
+/* ─── Lookup ─────────────────────────────────────────────────────── */
+.inputDNI {
+    font-family: var(--font-mono);
+    font-size: 20px;
+    letter-spacing: 4px;
+    text-align: center;
+}
+
+.lookupNote {
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+    margin: 0;
+}
+
+.linkBtn {
+    background: none;
+    border: none;
+    color: var(--cyan);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 0;
+    text-decoration: underline;
+}
+
+/* ─── Greeting (returning client) ────────────────────────────────── */
+.greetingBox {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background: var(--cyan-glow);
+    border: 1px solid rgba(47, 128, 255, .22);
+    border-radius: 12px;
+}
+
+.greetingAvatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(47, 128, 255, .18);
+    border: 1px solid rgba(47, 128, 255, .35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-disp);
+    font-size: 18px;
+    color: var(--cyan);
+    flex-shrink: 0;
+}
+
+.greetingHola {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 3px;
+}
+
+.greetingSub {
+    font-size: 12px;
+    color: var(--muted2);
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* ─── Autos ──────────────────────────────────────────────────────── */
+.autosList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.autoCard {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    cursor: pointer;
+    transition: all .15s;
+    text-align: left;
+    color: var(--text);
+}
+
+.autoCard:hover {
+    border-color: var(--border2);
+    background: var(--card2);
+}
+
+.autoCardSelected {
+    border-color: var(--cyan);
+    background: var(--cyan-glow);
+}
+
+.autoIcon {
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.autoInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+
+.autoTitle {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.autoPlate {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--cyan);
+    letter-spacing: 1px;
+}
+
+.autoMeta {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.autoCheck {
+    color: var(--cyan);
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.addAutoBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px dashed var(--border2);
+    background: transparent;
+    color: var(--cyan);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.addAutoBtn:hover {
+    border-color: var(--cyan);
+    background: var(--cyan-glow);
+}
+
+.newAutoBox {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    background: var(--card2);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.newAutoBoxHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.newAutoBoxTitle {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.closeNewAutoBtn {
+    background: none;
+    border: none;
+    color: var(--muted2);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0;
+}
+
+/* ─── Fields ──────────────────────────────────────────────────────── */
+.fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.fieldsetLegend {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+    width: 100%;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 0;
+}
+
+.fieldRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.fieldNarrow {
+    max-width: 110px;
+}
+
+.label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.optional {
+    font-size: 8px;
+    opacity: .65;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.input {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: var(--font-body);
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+    -webkit-appearance: none;
+}
+
+.input:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 2px var(--cyan-glow);
+}
+
+.input::placeholder {
+    color: var(--muted);
+}
+
+/* ─── Servicios ──────────────────────────────────────────────────── */
+.serviceGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.serviceCard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all .15s;
+    text-align: left;
+    color: var(--text);
+}
+
+.serviceCard:hover {
+    border-color: var(--border2);
+    background: var(--card2);
+}
+
+.serviceCardActive {
+    border-color: var(--cyan);
+    background: var(--cyan-glow);
+}
+
+.serviceInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.serviceName {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.serviceDuration {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+}
+
+.servicePrice {
+    font-family: var(--font-mono);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--cyan);
+    flex-shrink: 0;
+}
+
+/* ─── Calendario ─────────────────────────────────────────────────── */
+.calWidget {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.calHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 2px;
+}
+
+.calMonthTitle {
+    font-family: var(--font-disp);
+    font-size: 24px;
+    letter-spacing: 2px;
+    color: var(--text);
+    line-height: 1;
+}
+
+.calNavBtns {
+    display: flex;
+    gap: 6px;
+}
+
+.calNavBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--card2);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.calNavBtn:hover {
+    border-color: var(--border2);
+    background: var(--border);
+}
+
+.calWeekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    padding: 0 2px;
+}
+
+.calWeekday {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--cyan);
+    letter-spacing: .5px;
+    padding: 4px 0;
+}
+
+.calGrid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.calDay {
+    aspect-ratio: 1;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card2);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 10px;
+    cursor: pointer;
+    transition: all .14s;
+    font-size: 14px;
+    font-weight: 600;
+    position: relative;
+}
+
+.calDay:hover:not(:disabled) {
+    border-color: var(--border2);
+    background: var(--card);
+    transform: translateY(-1px);
+}
+
+.calDayOther {
+    opacity: .18;
+    pointer-events: none;
+}
+
+.calDayToday {
+    border-color: rgba(47, 128, 255, .35);
+    background: rgba(47, 128, 255, .08);
+}
+
+.calDaySelected {
+    background: rgba(47, 128, 255, .2) !important;
+    border-color: var(--cyan) !important;
+    color: var(--cyan) !important;
+}
+
+.calDayDisabled {
+    opacity: .3;
+    cursor: not-allowed;
+    color: var(--muted);
+}
+
+.calDayDisabled:hover {
+    transform: none;
+}
+
+.calDayNum {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.calDayClosed {
+    font-family: var(--font-mono);
+    font-size: 7px;
+    color: var(--muted);
+    letter-spacing: .3px;
+    margin-top: 3px;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.calLegend {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-top: 4px;
+    flex-wrap: wrap;
+}
+
+.calLegendItem {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--muted2);
+    font-family: var(--font-mono);
+}
+
+.calLegendDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+}
+
+.calLegendOpen {
+    background: var(--card2);
+    border-color: var(--border2);
+}
+
+.calLegendClosed {
+    background: transparent;
+    opacity: .3;
+}
+
+.calLegendSel {
+    background: rgba(47, 128, 255, .2);
+    border-color: var(--cyan);
+}
+
+/* ─── Slots ──────────────────────────────────────────────────────── */
+.slotsHeader {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.slotsDate {
+    font-size: 12px;
+    color: var(--muted2);
+    font-family: var(--font-mono);
+    text-transform: capitalize;
+}
+
+.slotsLegend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.slotsLegendItem {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--muted2);
+}
+
+.slotsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 8px;
+}
+
+.slotCard {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 14px 14px 12px;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all .15s;
+    text-align: left;
+    color: var(--text);
+}
+
+.slotCard:hover {
+    border-color: var(--border2);
+    background: var(--card);
+    transform: translateY(-1px);
+}
+
+.slotCardSelected {
+    border-color: var(--cyan) !important;
+    background: var(--cyan-glow) !important;
+}
+
+.slotHora {
+    font-family: var(--font-disp);
+    font-size: 22px;
+    letter-spacing: 1px;
+    line-height: 1;
+}
+
+.slotCardSelected .slotHora {
+    color: var(--cyan);
+}
+
+.slotDots {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.slotDot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: background .2s;
+}
+
+.slotDotTaken {
+    background: var(--border2) !important;
+}
+
+.slotDisponibles {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .5px;
+    font-weight: 500;
+}
+
+@keyframes blink {
+
+    0%,
+    80%,
+    100% {
+        opacity: .15
+    }
+
+    40% {
+        opacity: 1
+    }
+}
+
+.slotsLoading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--muted2);
+    font-size: 13px;
+    padding: 8px 0;
+}
+
+.spinnerDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--cyan);
+    animation: blink 1.2s infinite;
+    flex-shrink: 0;
+}
+
+.noSlotsBox {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px dashed var(--border2);
+    border-radius: 10px;
+    color: var(--muted2);
+    font-size: 13px;
+}
+
+/* ─── Resumen ────────────────────────────────────────────────────── */
+.summary {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+}
+
+.summaryTitle {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin: 0 0 10px;
+}
+
+.summaryRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.summaryRow:last-child {
+    border-bottom: none;
+}
+
+.summaryLabel {
+    font-size: 12px;
+    color: var(--muted2);
+    flex-shrink: 0;
+}
+
+.summaryValue {
+    font-size: 13px;
+    font-weight: 500;
+    text-align: right;
+    word-break: break-word;
+}
+
+.summaryValueHighlight {
+    font-family: var(--font-mono);
+    color: var(--cyan);
+    font-size: 16px;
+}
+
+/* ─── Error ──────────────────────────────────────────────────────── */
+.error {
+    color: var(--red);
+    font-size: 12px;
+    font-family: var(--font-mono);
+    padding: 8px 12px;
+    background: rgba(255, 107, 107, .08);
+    border: 1px solid rgba(255, 107, 107, .2);
+    border-radius: 8px;
+    margin: 0;
+}
+
+/* ─── Botones ────────────────────────────────────────────────────── */
+.btnPrimary {
+    width: 100%;
+    padding: 13px;
+    border-radius: 10px;
+    border: 1px solid var(--cyan);
+    background: var(--cyan);
+    color: #07131c;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.btnPrimary:hover:not(:disabled) {
+    background: rgba(96, 170, 255, .95);
+}
+
+.btnPrimary:disabled {
+    opacity: .65;
+    cursor: not-allowed;
+}
+
+.btnGhost {
+    padding: 12px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--muted2);
+    font-size: 13px;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: all .15s;
+    flex-shrink: 0;
+}
+
+.btnGhost:hover {
+    background: var(--card2);
+    color: var(--text);
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.actions .btnPrimary {
+    flex: 1;
+}
+
+/* ─── Success ────────────────────────────────────────────────────── */
+.successWrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+}
+
+.successTitle {
+    font-family: var(--font-disp);
+    font-size: 30px;
+    letter-spacing: 1px;
+    color: var(--green);
+    margin: 0;
+}
+
+.successMsg {
+    font-size: 14px;
+    color: var(--muted2);
+    margin: 0;
+    max-width: 320px;
+}
+
+.successWrap .summary {
+    width: 100%;
+    text-align: left;
+    margin-top: 6px;
+}
+
+.successNote {
+    font-size: 12px;
+    color: var(--muted);
+    padding: 10px 14px;
+    background: var(--card2);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    margin-top: 4px;
+    line-height: 1.5;
+    width: 100%;
+    text-align: left;
+}
+
+/* ─── Footer + misc ──────────────────────────────────────────────── */
+.footer {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    padding: 4px 0;
+}
+
+.loadingText {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    margin: 80px auto;
+    text-align: center;
+}
+
+.errorPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin: 80px auto;
+    text-align: center;
+}
+
+.errorMsg {
+    font-size: 14px;
+    color: var(--muted2);
+}
+
+.noSlotsText {
+    font-size: 13px;
+    color: var(--muted2);
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────── */
+@media (max-width:520px) {
+    .page {
+        padding: 14px 10px 48px;
+    }
+
+    .card {
+        padding: 18px 14px;
+        border-radius: 12px;
+        gap: 14px;
+    }
+
+    .cardTitle {
+        font-size: 20px;
+    }
+
+    .lavaderoName {
+        font-size: 28px;
+    }
+
+    .welcomeGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .fieldRow {
+        grid-template-columns: 1fr;
+    }
+
+    .fieldNarrow {
+        max-width: 100%;
+    }
+
+    .calMonthTitle {
+        font-size: 20px;
+    }
+
+    .calDay {
+        padding: 7px;
+        border-radius: 9px;
+    }
+
+    .calDayNum {
+        font-size: 12px;
+    }
+
+    .calDayClosed {
+        display: none;
+    }
+
+    .slotsGrid {
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    }
+
+    .slotHora {
+        font-size: 19px;
+    }
+
+    .actions {
+        flex-direction: column-reverse;
+    }
+
+    .btnGhost {
+        width: 100%;
+        text-align: center;
+    }
+}

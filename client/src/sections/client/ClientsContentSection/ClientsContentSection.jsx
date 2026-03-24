@@ -26,40 +26,36 @@ export function ClientsContentSection({
     return (
         <div className={layoutStyles.pageContent}>
             <div className={shared.card}>
-                <ClientsToolbar
-                    search={search}
-                    setSearch={setSearch}
-                    sortBy={sortBy}
-                    setSortBy={setSortBy}
-                    lastVisitFilter={lastVisitFilter}
-                    setLastVisitFilter={setLastVisitFilter}
-                    processedClients={processedClients}
-                    totalClients={totalClients}
-                    onNewClient={onNewClient}
-                />
-
-                {processedClients.length === 0 ? (
-                    <ClientsState type="empty" />
-                ) : (
-                    <ClientsTable
+                <div className={layoutStyles.cardToolbar}>
+                    <ClientsToolbar
+                        search={search}
+                        setSearch={setSearch}
+                        sortBy={sortBy}
+                        setSortBy={setSortBy}
+                        lastVisitFilter={lastVisitFilter}
+                        setLastVisitFilter={setLastVisitFilter}
                         processedClients={processedClients}
-                        setSelectedId={setSelectedId}
-                        handleDelete={requestDelete}
+                        totalClients={totalClients}
+                        onNewClient={onNewClient}
                     />
-                )}
+                </div>
+
+                <div className={layoutStyles.cardBody}>
+                    {processedClients.length === 0 ? (
+                        <div className={layoutStyles.emptyWrap}>
+                            <ClientsState type="empty" />
+                        </div>
+                    ) : (
+                        <ClientsTable
+                            processedClients={processedClients}
+                            setSelectedId={setSelectedId}
+                            handleDelete={requestDelete}
+                        />
+                    )}
+                </div>
 
                 {pagination.totalPages > 1 && (
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            gap: 12,
-                            padding: "16px 0 4px",
-                            borderTop: "1px solid var(--border)",
-                            marginTop: 12,
-                        }}
-                    >
+                    <div className={layoutStyles.paginationBar}>
                         <button
                             className={`${shared.btn} ${shared.btnGhost} ${shared.btnSm}`}
                             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
@@ -68,16 +64,8 @@ export function ClientsContentSection({
                             ← Anterior
                         </button>
 
-                        <span
-                            style={{
-                                fontFamily: "var(--font-mono)",
-                                fontSize: 12,
-                                color: "var(--muted2)",
-                            }}
-                        >
-                            {currentPage} / {pagination.totalPages}
-                            {" "}·{" "}
-                            {pagination.total} clientes
+                        <span className={layoutStyles.paginationText}>
+                            {currentPage} / {pagination.totalPages} · {pagination.total} clientes
                         </span>
 
                         <button

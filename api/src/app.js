@@ -15,6 +15,7 @@ const tenantFilter = require('./middlewares/tenantFilter');
 const { errorHandler } = require('./middlewares/errorHandler');
 
 const authRoutes = require('./routes/auth');
+const publicRoutes = require('./routes/public');       // ← rutas públicas de turnos online
 const lavaderoRoutes = require('./routes/lavaderos');
 const clienteRoutes = require('./routes/clientes');
 const autoRoutes = require('./routes/autos');
@@ -97,10 +98,11 @@ app.get('/health', async (req, res) => {
 	}
 });
 
-// Rutas públicas
+// ── Rutas públicas (sin autenticación) ──────────────────────────────────────
 app.use('/auth', authRoutes);
+app.use('/public', publicRoutes);   // turnos online para clientes del negocio
 
-// Rutas protegidas — sin createLimiter global, cada router lo aplica solo en POST
+// ── Rutas protegidas (requieren JWT) ────────────────────────────────────────
 app.use('/clientes', authenticate, tenantFilter(), clienteRoutes);
 app.use('/lavaderos', authenticate, tenantFilter(), lavaderoRoutes);
 app.use('/autos', authenticate, tenantFilter(), autoRoutes);

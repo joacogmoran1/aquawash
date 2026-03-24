@@ -45,6 +45,21 @@
     letter-spacing: 1px;
 }
 
+/* ÓRDENES ACTIVAS */
+.ordersContainer {
+    height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-radius: 10px;
+}
+
+.ordersContainer thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--card);
+}
+
 .barChart {
     display: flex;
     align-items: flex-end;
@@ -164,5 +179,9 @@
 @media (max-width: 640px) {
     .pageContent {
         padding: 16px;
+    }
+
+    .ordersContainer {
+        height: 280px;
     }
 }
