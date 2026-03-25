@@ -1,4 +1,3 @@
-
 // Components
 import { CalendarWidget } from '../../components/booking/CalendarWidget/CalendarWidget';
 import { SlotCard } from '../../components/booking/SlotCard/SlotCard';
@@ -28,6 +27,8 @@ export function CalendarSection({
   newAutoForm,
   form,
   formError,
+  dniDuplicado,
+  onGoToLookup,
   setStep,
   scrollTop,
   handleSubmit,
@@ -116,9 +117,9 @@ export function CalendarSection({
                   value={
                     selectedAutoId
                       ? (() => {
-                          const a = lookupResult.autos.find(x => x.id === selectedAutoId);
-                          return a ? `${a.marca} ${a.modelo} · ${a.patente}` : '';
-                        })()
+                        const a = lookupResult.autos.find(x => x.id === selectedAutoId);
+                        return a ? `${a.marca} ${a.modelo} · ${a.patente}` : '';
+                      })()
                       : `${newAutoForm.marca} ${newAutoForm.modelo} · ${newAutoForm.patente}`
                   }
                 />
@@ -130,7 +131,23 @@ export function CalendarSection({
               </>
             )}
           </div>
-          {formError && <p className={styles.error}>{formError}</p>}
+
+          {formError && (
+            <div className={styles.errorBlock}>
+              <p className={styles.error}>{formError}</p>
+              {dniDuplicado && (
+                <button
+                  type="button"
+                  className={styles.btnPrimary}
+                  onClick={onGoToLookup}
+                  style={{ marginTop: 10 }}
+                >
+                  Ir a "Ya soy cliente" →
+                </button>
+              )}
+            </div>
+          )}
+
           <div className={styles.actions}>
             <button className={styles.btnGhost} onClick={() => { setStep(isReturning ? 'returning' : 'new-form'); scrollTop(); }}>
               ← Volver

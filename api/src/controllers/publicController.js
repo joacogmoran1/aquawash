@@ -116,7 +116,7 @@ async function getSlots(req, res, next) {
         const now = new Date();
         const slots = [];
         for (let h = aperturaH; h < cierreH; h++) {
-            const horaStr = `${String(h).padStart(2, '0')}:00`;
+            const horaStr = `${String(h).padStart(2, '00')}:00`;
             const slotDatetime = buildArgDatetime(fecha, horaStr);
             if (slotDatetime <= now) continue;
             const ocupados = slotCount[h] || 0;
@@ -129,8 +129,6 @@ async function getSlots(req, res, next) {
 }
 
 // ── POST /public/:lavaderoId/lookup ────────────────────────────────────────────
-// Identifica a un cliente por DNI + email. Ambos deben coincidir.
-// Solo devuelve nombre + autos. Nunca expone email, teléfono ni DNI.
 async function lookup(req, res, next) {
     try {
         const lavaderoId = assertUUID(req.params.lavaderoId, 'lavaderoId');
@@ -146,7 +144,6 @@ async function lookup(req, res, next) {
         const lavadero = await Lavadero.findByPk(lavaderoId, { attributes: ['id'] });
         if (!lavadero) throw createError(404, 'Lavadero no encontrado.');
 
-        // Buscar por DNI primero
         const cliente = await Cliente.findOne({
             where: { lavadero_id: lavaderoId, dni: dniSafe },
             attributes: ['id', 'nombre', 'email'],
@@ -156,14 +153,11 @@ async function lookup(req, res, next) {
             }],
         });
 
-        // Respuesta genérica si no existe o el email no coincide —
-        // no revelamos cuál de los dos falló para evitar enumeración
         const GENERIC_ERROR = 'Los datos ingresados no coinciden con ningún cliente registrado en este lavadero.';
         if (!cliente) throw createError(404, GENERIC_ERROR);
         if (!cliente.email || cliente.email.toLowerCase() !== emailSafe.toLowerCase())
             throw createError(404, GENERIC_ERROR);
 
-        // Respuesta mínima — sin datos de contacto
         res.json({
             cliente_id: cliente.id,
             nombre: cliente.nombre,
@@ -189,13 +183,12 @@ async function book(req, res, next) {
         const maxDate = new Date(); maxDate.setDate(maxDate.getDate() + MAX_BOOK_DAYS);
         if (horaLlegada > maxDate) throw createError(400, 'La fecha excede el horizonte máximo de reservas.');
 
-        // ── Validar según modo (returning / new) ──────────────────────────────
         const isReturning = !!(req.body.cliente_id);
 
-        let clienteNuevo = null;   // { nombre, telefono, email, dni }
-        let nuevoAuto = null;   // { marca, modelo, patente, color, year }
-        let clienteId = null;   // UUID cliente existente
-        let autoId = null;   // UUID auto existente
+        let clienteNuevo = null;
+        let nuevoAuto = null;
+        let clienteId = null;
+        let autoId = null;
 
         if (isReturning) {
             clienteId = assertUUID(req.body.cliente_id, 'cliente_id');
@@ -291,20 +284,25 @@ async function book(req, res, next) {
                 cliente = await Cliente.findOne({ where: { id: clienteId, lavadero_id: lavaderoId }, transaction: t });
                 if (!cliente) throw createError(403, 'Cliente no válido para este lavadero.');
             } else {
-                // Intentar reutilizar por email o teléfono
-                if (clienteNuevo.email)
-                    cliente = await Cliente.findOne({ where: { lavadero_id: lavaderoId, email: clienteNuevo.email }, transaction: t });
-                if (!cliente)
-                    cliente = await Cliente.findOne({ where: { lavadero_id: lavaderoId, telefono: clienteNuevo.telefono }, transaction: t });
-                if (!cliente) {
-                    cliente = await Cliente.create({
-                        lavadero_id: lavaderoId, nombre: clienteNuevo.nombre,
-                        telefono: clienteNuevo.telefono, email: clienteNuevo.email || null,
-                        dni: clienteNuevo.dni || null,
-                    }, { transaction: t });
-                } else if (clienteNuevo.dni && !cliente.dni) {
-                    await cliente.update({ dni: clienteNuevo.dni }, { transaction: t });
+                // Si viene con DNI, verificar que no exista ya en este lavadero.
+                // Si existe, el cliente no es nuevo — debe usar "Ya soy cliente".
+                if (clienteNuevo.dni) {
+                    const existente = await Cliente.findOne({
+                        where: { lavadero_id: lavaderoId, dni: clienteNuevo.dni },
+                        transaction: t,
+                    });
+                    if (existente) {
+                        throw createError(409, 'Ya existe un cliente registrado con ese número de documento. Si ya sos cliente, usá la opción "Ya soy cliente" para identificarte.');
+                    }
                 }
+                // Nuevo cliente — siempre crear un registro nuevo
+                cliente = await Cliente.create({
+                    lavadero_id: lavaderoId,
+                    nombre: clienteNuevo.nombre,
+                    telefono: clienteNuevo.telefono,
+                    email: clienteNuevo.email || null,
+                    dni: clienteNuevo.dni || null,
+                }, { transaction: t });
             }
 
             // ── Auto ──────────────────────────────────────────────────────────

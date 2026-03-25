@@ -54,6 +54,7 @@ export function BookingPage() {
     const [slotsMsg, setSlotsMsg] = useState('');
 
     const [formError, setFormError] = useState('');
+    const [dniDuplicado, setDniDuplicado] = useState(false);
     const [booking, setBooking] = useState(false);
     const [bookingResult, setBookingResult] = useState(null);
 
@@ -109,6 +110,7 @@ export function BookingPage() {
     function setF(k, v) {
         setForm(p => ({ ...p, [k]: v }));
         setFormError('');
+        setDniDuplicado(false);
     }
 
     function setNA(k, v) {
@@ -163,6 +165,19 @@ export function BookingPage() {
         }
     }
 
+    // ── Ir al flujo "Ya soy cliente" (desde error 409 de DNI duplicado) ───────
+    function handleGoToLookup() {
+        setDniDuplicado(false);
+        setFormError('');
+        // Pre-cargar el DNI ingresado en el formulario para que no tenga que reescribirlo
+        setDniInput(form.dni || '');
+        setEmailInput(form.email || '');
+        setLookupResult(null);
+        setLookupError('');
+        setStep('lookup');
+        scrollTop();
+    }
+
     // ── Validación y avance desde formulario nuevo cliente ────────────────────
     function goCalendarFromNew() {
         const err = validateNewClientForm(form);
@@ -172,6 +187,7 @@ export function BookingPage() {
         }
 
         setFormError('');
+        setDniDuplicado(false);
         resetTurno();
         setStep('calendar');
         scrollTop();
@@ -202,6 +218,7 @@ export function BookingPage() {
     // ── Confirmar turno ───────────────────────────────────────────────────────
     async function handleSubmit() {
         setFormError('');
+        setDniDuplicado(false);
         if (!servicioId) { setFormError('Seleccioná un servicio.'); return; }
         if (!fecha) { setFormError('Seleccioná una fecha en el calendario.'); return; }
         if (!hora) { setFormError('Seleccioná un horario disponible.'); return; }
@@ -239,7 +256,12 @@ export function BookingPage() {
             setStep('success');
             scrollTop();
         } catch (e) {
-            setFormError(e?.message || 'No se pudo agendar el turno. Intentá de nuevo.');
+            const msg = e?.message || 'No se pudo agendar el turno. Intentá de nuevo.';
+            setFormError(msg);
+            // Si el DNI ya está registrado, mostrar botón para ir al flujo correcto
+            if (msg.includes('Ya existe un cliente registrado con ese número de documento')) {
+                setDniDuplicado(true);
+            }
         } finally {
             setBooking(false);
         }
@@ -285,6 +307,7 @@ export function BookingPage() {
                             setStep('new-form');
                             setForm(INIT_FORM);
                             setFormError('');
+                            setDniDuplicado(false);
                             scrollTop();
                         }}
                     />
@@ -358,6 +381,8 @@ export function BookingPage() {
                         newAutoForm={newAutoForm}
                         form={form}
                         formError={formError}
+                        dniDuplicado={dniDuplicado}
+                        onGoToLookup={handleGoToLookup}
                         setStep={setStep}
                         scrollTop={scrollTop}
                         handleSubmit={handleSubmit}

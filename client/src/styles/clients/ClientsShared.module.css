@@ -185,3 +185,53 @@
         font-size: 11px;
     }
 }
+
+.searchActionBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+
+    border-radius: 10px;
+    border: 1px solid var(--border);
+
+    background: var(--card2);
+    color: var(--muted);
+
+    cursor: pointer;
+
+    transition: 
+        background 0.2s ease,
+        border 0.2s ease,
+        color 0.2s ease,
+        transform 0.1s ease,
+        box-shadow 0.2s ease;
+}
+
+/* Hover */
+.searchActionBtn:hover {
+    background: var(--card);
+    color: var(--text);
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.08);
+}
+
+/* Active (click) */
+.searchActionBtn:active {
+    transform: scale(0.95);
+}
+
+/* Variante para botón principal (buscar) */
+.searchActionBtnPrimary {
+    background: rgba(0, 255, 255, 0.08);
+    color: var(--cyan);
+    border-color: rgba(0, 255, 255, 0.2);
+}
+
+.searchActionBtnPrimary:hover {
+    background: rgba(0, 255, 255, 0.15);
+    border-color: var(--cyan);
+    color: var(--cyan);
+}

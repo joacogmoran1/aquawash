@@ -16,7 +16,6 @@ import { getLastVisitGroup } from "../../utils/clients/clientsHelpers";
 
 const PAGE_SIZE = 50;
 
-
 export function ClientsPage({ showToast }) {
 	const [clients, setClients] = useState([]);
 	const [pagination, setPagination] = useState({ page: 1, total: 0, totalPages: 1 });
@@ -33,29 +32,34 @@ export function ClientsPage({ showToast }) {
 	const [sortBy, setSortBy] = useState("default");
 	const [lastVisitFilter, setLastVisitFilter] = useState("todas");
 
-	const loadClients = useCallback(async (q, page) => {
-		setLoading(true);
-		try {
-			const params = new URLSearchParams();
-			if (q) params.set("search", q);
-			params.set("page", String(page));
-			params.set("limit", String(PAGE_SIZE));
+	const loadClients = useCallback(
+		async (q, page) => {
+			setLoading(true);
 
-			const res = await api.get(`/clientes?${params.toString()}`);
+			try {
+				const params = new URLSearchParams();
 
-			if (Array.isArray(res)) {
-				setClients(res);
-				setPagination({ page: 1, total: res.length, totalPages: 1 });
-			} else {
-				setClients(res.data ?? []);
-				setPagination(res.pagination ?? { page: 1, total: 0, totalPages: 1 });
+				if (q) params.set("search", q);
+				params.set("page", String(page));
+				params.set("limit", String(PAGE_SIZE));
+
+				const res = await api.get(`/clientes?${params.toString()}`);
+
+				if (Array.isArray(res)) {
+					setClients(res);
+					setPagination({ page: 1, total: res.length, totalPages: 1 });
+				} else {
+					setClients(res.data ?? []);
+					setPagination(res.pagination ?? { page: 1, total: 0, totalPages: 1 });
+				}
+			} catch (e) {
+				showToast?.(e.message || "Error al cargar clientes", "error");
+			} finally {
+				setLoading(false);
 			}
-		} catch (e) {
-			showToast?.(e.message || "Error al cargar clientes", "error");
-		} finally {
-			setLoading(false);
-		}
-	}, [showToast]);
+		},
+		[showToast]
+	);
 
 	async function handleUpdate(id, patch) {
 		const updated = await api.put(`/clientes/${id}`, patch);
@@ -76,6 +80,7 @@ export function ClientsPage({ showToast }) {
 		await api.delete(`/clientes/${id}`);
 		setClients((prev) => prev.filter((c) => c.id !== id));
 		setDeleteId(null);
+
 		if (selectedId === id) {
 			setSelectedId(null);
 			setDetailClient(null);
@@ -84,6 +89,7 @@ export function ClientsPage({ showToast }) {
 
 	async function doDelete() {
 		if (!deleteId) return;
+
 		try {
 			await deleteClient(deleteId);
 			showToast("Cliente eliminado", "success");
@@ -95,7 +101,9 @@ export function ClientsPage({ showToast }) {
 
 	async function addClient() {
 		if (!form.nombre) return;
+
 		setSaving(true);
+
 		try {
 			await api.post("/clientes", form);
 			setCurrentPage(1);
@@ -136,16 +144,13 @@ export function ClientsPage({ showToast }) {
 				const bTime = b.ultima_visita
 					? new Date(b.ultima_visita).getTime()
 					: 0;
+
 				return bTime - aTime;
 			});
 		}
 
 		return result;
 	}, [clients, sortBy, lastVisitFilter]);
-
-	useEffect(() => {
-		setCurrentPage(1);
-	}, [search]);
 
 	useEffect(() => {
 		loadClients(search, currentPage);
@@ -156,6 +161,7 @@ export function ClientsPage({ showToast }) {
 			setDetailClient(null);
 			return;
 		}
+
 		api.get(`/clientes/${selectedId}`)
 			.then(setDetailClient)
 			.catch(console.error);
@@ -175,11 +181,15 @@ export function ClientsPage({ showToast }) {
 	}
 
 	if (loading) return <PageLoading />;
+
 	return (
 		<>
 			<ClientsContentSection
 				search={search}
-				setSearch={setSearch}
+				setSearch={(value) => {
+					setCurrentPage(1);
+					setSearch(value);
+				}}
 				sortBy={sortBy}
 				setSortBy={setSortBy}
 				lastVisitFilter={lastVisitFilter}

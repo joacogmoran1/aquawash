@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 // Components
 import { Icon } from "../../Icon/Icon";
 
@@ -15,6 +17,29 @@ export function ClientsToolbar({
     processedClients,
     onNewClient,
 }) {
+    const [draftSearch, setDraftSearch] = useState(search || "");
+
+    useEffect(() => {
+        setDraftSearch(search || "");
+    }, [search]);
+
+    function handleSubmit(e) {
+        e.preventDefault();
+        setSearch(draftSearch.trim());
+    }
+
+    function handleClear() {
+        setDraftSearch("");
+        setSearch("");
+    }
+
+    function handleKeyDown(e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            setSearch(draftSearch.trim());
+        }
+    }
+
     return (
         <div className={styles.sectionHeader}>
             <div className={styles.headerLeft}>
@@ -25,15 +50,39 @@ export function ClientsToolbar({
             </div>
 
             <div className={styles.headerRight}>
-                <div className={styles.searchBar}>
+                <form className={styles.searchBar} onSubmit={handleSubmit}>
                     <Icon name="search" size={14} color="var(--muted)" />
+
                     <input
+                        type="text"
                         className={styles.searchBarInput}
                         placeholder="Buscar cliente..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        value={draftSearch}
+                        onChange={(e) => setDraftSearch(e.target.value)}
+                        onKeyDown={handleKeyDown}
                     />
-                </div>
+
+                    {draftSearch && (
+                        <button
+                            type="button"
+                            className={styles.searchActionBtn}
+                            onClick={handleClear}
+                            aria-label="Limpiar búsqueda"
+                            title="Limpiar"
+                        >
+                            <Icon name="x" size={14} />
+                        </button>
+                    )}
+
+                    <button
+                        type="submit"
+                        className={`${styles.searchActionBtn} ${styles.searchActionBtnPrimary}`}
+                        aria-label="Buscar"
+                        title="Buscar"
+                    >
+                        <Icon name="search" size={14} />
+                    </button>
+                </form>
 
                 <select
                     className={styles.select}
