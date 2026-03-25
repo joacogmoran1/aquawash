@@ -1,25 +1,51 @@
 .pageContent {
-    padding: 32px;
+    padding: 12px;
     flex: 1;
 }
 
-.statusCardsGrid {
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 12px;
-    margin-bottom: 24px;
+@media (min-width: 480px) {
+    .pageContent {
+        padding: 16px;
+    }
 }
 
+@media (min-width: 768px) {
+    .pageContent {
+        padding: 24px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .pageContent {
+        padding: 32px;
+    }
+}
+
+/* ── FLOW LEGEND ────────────────────────────────────────── */
 .flowLegend {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 20px;
-    padding: 10px 16px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    width: fit-content;
+    display: none;
+    /* hide on mobile to save space */
+}
+
+@media (min-width: 640px) {
+    .flowLegend {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 16px;
+        padding: 8px 14px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        width: fit-content;
+        flex-wrap: wrap;
+    }
+}
+
+@media (min-width: 768px) {
+    .flowLegend {
+        margin-bottom: 20px;
+    }
 }
 
 .flowLegendTitle {
@@ -41,48 +67,81 @@
     font-size: 12px;
 }
 
+/* ── FILTER BUTTONS ─────────────────────────────────────── */
 .filterButtonsWrap {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: nowrap;
     overflow-x: auto;
     flex: 1;
     min-width: 0;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+}
+
+@media (min-width: 640px) {
+    .filterButtonsWrap {
+        gap: 8px;
+    }
 }
 
 .filterButton {
-    padding: 6px 14px;
+    padding: 5px 10px;
     border-radius: 20px;
     cursor: pointer;
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 500;
     letter-spacing: 0.5px;
     border: 1px solid var(--border);
     transition: all 0.15s;
     flex-shrink: 0;
     background: transparent;
+    white-space: nowrap;
 }
 
+@media (min-width: 640px) {
+    .filterButton {
+        padding: 6px 14px;
+        font-size: 10px;
+    }
+}
+
+/* ── SEARCH & ACTIONS ───────────────────────────────────── */
 .searchActions {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
     flex-shrink: 0;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .searchActions {
+        width: auto;
+    }
 }
 
 .searchBar {
     display: flex;
     align-items: center;
     gap: 8px;
-    min-width: 235px;
     height: 34px;
-    padding: 0 12px;
+    padding: 0 10px;
     background: var(--card2);
     border: 1px solid var(--border);
     border-radius: 8px;
-    flex-shrink: 0;
+    flex: 1;
+    min-width: 0;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+@media (min-width: 768px) {
+    .searchBar {
+        min-width: 200px;
+        max-width: 300px;
+        padding: 0 12px;
+    }
 }
 
 .searchBar:focus-within {
@@ -97,8 +156,14 @@
     border: none;
     outline: none;
     color: var(--text);
-    font-size: 13px;
+    font-size: 12px;
     font-family: var(--font-body);
+}
+
+@media (min-width: 640px) {
+    .searchBar input {
+        font-size: 13px;
+    }
 }
 
 .searchBar input::placeholder {
@@ -120,91 +185,91 @@
     flex-shrink: 0;
 }
 
+/* ── ROW ACTIONS ────────────────────────────────────────── */
 .rowActions {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
     width: 100%;
+}
+
+@media (min-width: 640px) {
+    .rowActions {
+        gap: 6px;
+    }
 }
 
 .actionButton {
     width: 100%;
-    height: 32px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    border-radius: 10px;
-    font-size: 12px;
+    gap: 4px;
+    border-radius: 8px;
+    font-size: 10px;
     font-weight: 600;
     white-space: nowrap;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+}
+
+@media (min-width: 640px) {
+    .actionButton {
+        height: 32px;
+        gap: 6px;
+        font-size: 12px;
+        border-radius: 10px;
+    }
 }
 
 .completedLabel {
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 9px;
     color: var(--muted);
 }
 
+@media (min-width: 640px) {
+    .completedLabel {
+        font-size: 10px;
+    }
+}
+
 .footerTotals {
-    margin-top: 16px;
-    padding: 12px 16px;
+    margin-top: 14px;
+    padding: 12px 14px;
     background: var(--card2);
     border-radius: 8px;
     border: 1px solid var(--border);
     display: flex;
-    gap: 32px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+@media (min-width: 640px) {
+    .footerTotals {
+        gap: 32px;
+        flex-wrap: nowrap;
+    }
 }
 
 .footerTotalsLabel {
     font-family: var(--font-mono);
     font-size: 9px;
     color: var(--muted);
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     margin-bottom: 3px;
 }
 
 .footerTotalsValue {
     font-family: var(--font-mono);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
 }
 
-@media (max-width: 1400px) {
-    .statusCardsGrid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 1100px) {
-    .searchActions {
-        width: 100%;
-    }
-
-    .searchBar {
-        min-width: 0;
-        flex: 1;
-    }
-}
-
-@media (max-width: 900px) {
-    .statusCardsGrid {
-        grid-template-columns: 1fr;
-    }
-
-    .footerTotals {
-        flex-direction: column;
-        gap: 14px;
-    }
-
-    .flowLegend {
-        width: 100%;
-        flex-wrap: wrap;
-    }
-}
-
-@media (max-width: 640px) {
-    .pageContent {
-        padding: 16px;
+@media (min-width: 640px) {
+    .footerTotalsValue {
+        font-size: 14px;
     }
 }

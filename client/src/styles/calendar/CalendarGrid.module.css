@@ -1,55 +1,138 @@
 .calWeekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-    margin-bottom: 10px;
-    position: relative;
-    z-index: 1;
+    gap: 3px;
+    margin-bottom: 6px;
+}
+
+@media (min-width: 480px) {
+    .calWeekdays {
+        gap: 4px;
+        margin-bottom: 8px;
+    }
+}
+
+@media (min-width: 768px) {
+    .calWeekdays {
+        gap: 6px;
+        margin-bottom: 10px;
+    }
 }
 
 .calWeekday {
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 7px;
     color: var(--muted);
     text-align: center;
-    padding: 6px 4px;
-    letter-spacing: 0.14em;
+    padding: 3px 2px;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    white-space: nowrap;
+}
+
+@media (min-width: 480px) {
+    .calWeekday {
+        font-size: 8px;
+        padding: 4px;
+        letter-spacing: 0.1em;
+    }
+}
+
+@media (min-width: 768px) {
+    .calWeekday {
+        font-size: 9px;
+        letter-spacing: 0.12em;
+    }
+}
+
+@media (min-width: 1024px) {
+    .calWeekday {
+        font-size: 10px;
+        letter-spacing: 0.14em;
+    }
 }
 
 .calDays {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 8px;
+    gap: 3px;
     width: 100%;
-    max-width: 760px;
-    position: relative;
-    z-index: 1;
+}
+
+@media (min-width: 480px) {
+    .calDays {
+        gap: 4px;
+    }
+}
+
+@media (min-width: 640px) {
+    .calDays {
+        gap: 5px;
+    }
+}
+
+@media (min-width: 768px) {
+    .calDays {
+        gap: 6px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .calDays {
+        gap: 8px;
+    }
 }
 
 .calDay {
-    min-height: 74px;
-    border-radius: 18px;
+    min-height: 38px;
+    border-radius: 8px;
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
-    padding: 12px;
+    padding: 6px;
     border: 1px solid var(--border2);
     cursor: pointer;
-    transition:
-        transform 0.18s ease,
-        background 0.18s ease,
-        border-color 0.18s ease,
-        box-shadow 0.18s ease,
-        color 0.18s ease;
+    transition: transform 0.14s ease, background 0.14s ease, border-color 0.14s ease;
     position: relative;
-    font-size: 14px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--text);
     background: var(--card2);
-    box-shadow: none;
     overflow: hidden;
+}
+
+@media (min-width: 480px) {
+    .calDay {
+        min-height: 44px;
+        border-radius: 10px;
+        padding: 7px;
+        font-size: 12px;
+    }
+}
+
+@media (min-width: 640px) {
+    .calDay {
+        min-height: 50px;
+        border-radius: 12px;
+        padding: 8px;
+    }
+}
+
+@media (min-width: 768px) {
+    .calDay {
+        min-height: 58px;
+        border-radius: 14px;
+        padding: 10px;
+        font-size: 13px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .calDay {
+        min-height: 68px;
+        border-radius: 16px;
+        padding: 12px;
+        font-size: 14px;
+    }
 }
 
 .calDay:hover {
@@ -63,154 +146,49 @@
 }
 
 .calDayToday {
-    color: var(--text);
     border-color: rgba(47, 128, 255, 0.28);
     background: rgba(47, 128, 255, 0.08);
-    box-shadow: none;
 }
 
 .calDaySelected {
     color: var(--bg);
     border-color: rgba(47, 128, 255, 0.35);
     background: rgba(47, 128, 255, 0.18);
-    box-shadow: none;
 }
 
 .calDayHasEvents::after {
     content: "";
     position: absolute;
-    bottom: 10px;
-    left: 12px;
-    width: 6px;
-    height: 6px;
+    bottom: 5px;
+    left: 6px;
+    width: 5px;
+    height: 5px;
     border-radius: 999px;
     background: rgba(242, 198, 109, 0.95);
-    box-shadow: none;
 }
 
-.calDaySelected::after {
-    background: rgba(11, 12, 16, 0.85);
-    box-shadow: none;
-}
-
-.calDayPast {
-    opacity: 0.45;
-}
-
-/* NOTEBOOK / TABLET GRANDE */
-@media (max-width: 1200px) {
-    .calDays {
-        max-width: 100%;
-    }
-
-    .calWeekdays {
-        gap: 7px;
-    }
-
-    .calDays {
-        gap: 7px;
-    }
-
-    .calDay {
-        min-height: 68px;
-        padding: 11px;
-        border-radius: 16px;
-        font-size: 13.5px;
-    }
-}
-
-/* TABLET */
-@media (max-width: 992px) {
-    .calWeekdays {
-        gap: 6px;
-        margin-bottom: 8px;
-    }
-
-    .calWeekday {
-        font-size: 9px;
-        letter-spacing: 0.1em;
-        padding: 5px 2px;
-    }
-
-    .calDays {
-        gap: 6px;
-    }
-
-    .calDay {
-        min-height: 60px;
-        padding: 10px;
-        border-radius: 14px;
-        font-size: 13px;
-    }
-
+@media (min-width: 640px) {
     .calDayHasEvents::after {
-        bottom: 8px;
-        left: 10px;
-        width: 5px;
-        height: 5px;
-    }
-}
-
-/* MOBILE */
-@media (max-width: 768px) {
-    .calWeekdays {
-        gap: 5px;
-        margin-bottom: 8px;
-    }
-
-    .calWeekday {
-        font-size: 8px;
-        letter-spacing: 0.08em;
-        padding: 4px 1px;
-    }
-
-    .calDays {
-        gap: 5px;
-    }
-
-    .calDay {
-        min-height: 54px;
-        padding: 8px;
-        border-radius: 12px;
-        font-size: 12px;
-    }
-
-    .calDayHasEvents::after {
-        bottom: 8px;
+        bottom: 7px;
         left: 8px;
         width: 5px;
         height: 5px;
     }
 }
 
-/* MOBILE CHICO */
-@media (max-width: 480px) {
-    .calWeekdays {
-        gap: 4px;
-        margin-bottom: 6px;
-    }
-
-    .calWeekday {
-        font-size: 7px;
-        letter-spacing: 0.06em;
-        padding: 3px 0;
-    }
-
-    .calDays {
-        gap: 4px;
-    }
-
-    .calDay {
-        min-height: 46px;
-        padding: 6px;
-        border-radius: 10px;
-        font-size: 11px;
-    }
-
+@media (min-width: 1024px) {
     .calDayHasEvents::after {
-        bottom: 6px;
-        left: 6px;
-        width: 4px;
-        height: 4px;
+        bottom: 10px;
+        left: 12px;
+        width: 6px;
+        height: 6px;
     }
+}
+
+.calDaySelected::after {
+    background: rgba(11, 12, 16, 0.85);
+}
+
+.calDayPast {
+    opacity: 0.45;
 }

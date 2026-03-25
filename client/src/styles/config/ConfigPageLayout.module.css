@@ -1,15 +1,47 @@
 .pageContent {
-    padding: 32px;
+    padding: 12px;
     flex: 1;
     min-width: 0;
 }
 
+@media (min-width: 480px) {
+    .pageContent {
+        padding: 16px;
+    }
+}
+
+@media (min-width: 768px) {
+    .pageContent {
+        padding: 20px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .pageContent {
+        padding: 32px;
+    }
+}
+
+/* ── GRID: 1col mobile → 2col desktop ───────────────────── */
 .pageGrid {
     display: grid;
-    grid-template-columns: .4fr .6fr;
-    gap: 16px;
+    grid-template-columns: 1fr;
+    gap: 12px;
     align-items: start;
     min-width: 0;
+}
+
+@media (min-width: 640px) {
+    .pageGrid {
+        gap: 14px;
+    }
+}
+
+@media (min-width: 900px) {
+    .pageGrid {
+        grid-template-columns: 0.4fr 0.6fr;
+        gap: 16px;
+    }
 }
 
 .gridColumn {
@@ -19,59 +51,12 @@
     height: 100%;
 }
 
-.fullWidth {
-    grid-column: 1 / -1;
-}
-
-/* NOTEBOOK */
-@media (max-width: 1200px) {
-    .pageContent {
-        padding: 24px;
-    }
-
-    .pageGrid {
-        gap: 14px;
-    }
-}
-
-/* TABLET */
-@media (max-width: 900px) {
-    .pageContent {
-        padding: 20px;
-    }
-
-    .pageGrid {
-        grid-template-columns: 1fr;
-        gap: 14px;
-    }
-
+@media (max-width: 899px) {
     .gridColumn {
         height: auto;
     }
-
-    .fullWidth {
-        grid-column: auto;
-    }
 }
 
-/* MOBILE */
-@media (max-width: 768px) {
-    .pageContent {
-        padding: 16px;
-    }
-
-    .pageGrid {
-        gap: 12px;
-    }
-}
-
-/* MOBILE CHICO */
-@media (max-width: 480px) {
-    .pageContent {
-        padding: 12px;
-    }
-
-    .pageGrid {
-        gap: 10px;
-    }
+.fullWidth {
+    grid-column: 1 / -1;
 }

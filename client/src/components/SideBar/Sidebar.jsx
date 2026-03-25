@@ -12,7 +12,7 @@ import { initials } from "../../utils/dateUtils";
 import { NAV } from "../../utils/constants";
 
 // Style
-import styles from "./Sidebar.module.css";
+import styles from "../../styles/Sidebar.module.css";
 
 
 export function Sidebar() {

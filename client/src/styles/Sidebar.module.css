@@ -1,0 +1,284 @@
+/* ─────────────────────────────
+   SIDEBAR BASE — fixed drawer on desktop
+───────────────────────────── */
+.sidebar {
+    width: min(82vw, 280px);
+    min-height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 120;
+    transform: translateX(-100%);
+    transition: transform 0.24s ease;
+    box-shadow: 18px 0 40px rgba(0, 0, 0, 0.28);
+}
+
+.sidebarOpen {
+    transform: translateX(0);
+}
+
+/* Desktop: always visible, no shadow */
+@media (min-width: 769px) {
+    .sidebar {
+        width: 196px;
+        transform: translateX(0);
+        box-shadow: none;
+    }
+}
+
+@media (min-width: 1024px) {
+    .sidebar {
+        width: 220px;
+    }
+}
+
+/* ─── LOGO ─────────────────────────────────────────────── */
+.sidebarLogo {
+    padding: 18px 16px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+@media (min-width: 769px) {
+    .sidebarLogo {
+        padding: 24px 18px 18px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .sidebarLogo {
+        padding: 28px 24px 20px;
+    }
+}
+
+.logoRow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.logoBlock {
+    text-align: left;
+}
+
+.logoMark {
+    font-family: var(--font-disp);
+    font-size: 22px;
+    letter-spacing: 1.5px;
+    color: var(--cyan);
+    line-height: 1;
+}
+
+@media (min-width: 769px) {
+    .logoMark {
+        font-size: 23px;
+        letter-spacing: 2px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .logoMark {
+        font-size: 26px;
+    }
+}
+
+.logoMarkAccent {
+    color: var(--text);
+}
+
+.logoSub {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: var(--muted);
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-top: 4px;
+}
+
+@media (min-width: 1024px) {
+    .logoSub {
+        font-size: 9px;
+        letter-spacing: 3px;
+    }
+}
+
+/* ─── NAV ──────────────────────────────────────────────── */
+.sidebarNav {
+    flex: 1;
+    padding: 12px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow-y: auto;
+}
+
+@media (min-width: 1024px) {
+    .sidebarNav {
+        padding: 16px 12px;
+    }
+}
+
+.navItem {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--muted2);
+    border: 1px solid transparent;
+    background: transparent;
+    text-align: left;
+    font-family: var(--font-body);
+}
+
+@media (min-width: 769px) {
+    .navItem {
+        padding: 10px 12px;
+        border-radius: 10px;
+    }
+}
+
+.navItem:hover {
+    background: var(--card);
+    color: var(--text);
+}
+
+.navItemActive {
+    background: var(--cyan-glow);
+    color: var(--cyan);
+    border-color: rgba(47, 128, 255, 0.25);
+}
+
+/* ─── FOOTER ───────────────────────────────────────────── */
+.sidebarFooter {
+    padding: 12px 10px;
+    border-top: 1px solid var(--border);
+}
+
+@media (min-width: 1024px) {
+    .sidebarFooter {
+        padding: 16px 12px;
+    }
+}
+
+.userChip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    background: var(--card);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    min-width: 0;
+}
+
+.userAvatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--cyan-glow);
+    border: 1px solid rgba(47, 128, 255, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--cyan);
+    flex-shrink: 0;
+}
+
+.userInfo {
+    min-width: 0;
+}
+
+.userName {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.userRole {
+    font-size: 10px;
+    color: var(--muted);
+    font-family: var(--font-mono);
+}
+
+.logoutBtn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted2);
+    cursor: pointer;
+    font-size: 13.5px;
+    font-weight: 500;
+    font-family: var(--font-body);
+    transition: all 0.15s ease;
+}
+
+.logoutBtn:hover {
+    background: rgba(255, 77, 109, 0.1);
+    color: var(--red);
+    border-color: rgba(255, 77, 109, 0.3);
+}
+
+/* ─── MOBILE BUTTON & OVERLAY ──────────────────────────── */
+.mobileMenuBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 140;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mobileMenuBtnActive {
+    background: var(--cyan-glow);
+    color: var(--cyan);
+    border-color: rgba(47, 128, 255, 0.3);
+}
+
+.sidebarOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 8, 14, 0.5);
+    z-index: 110;
+}
+
+/* Hide mobile button on desktop */
+@media (min-width: 769px) {
+    .mobileMenuBtn {
+        display: none;
+    }
+
+    .sidebarOverlay {
+        display: none;
+    }
+}

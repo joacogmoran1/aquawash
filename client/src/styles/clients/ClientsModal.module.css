@@ -3,32 +3,58 @@
     inset: 0;
     z-index: 1000;
     background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: none;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
-    padding: 16px;
+    padding: 0;
+}
+
+@media (min-width: 640px) {
+    .modalOverlay {
+        align-items: center;
+        padding: 16px;
+    }
 }
 
 .modal {
     width: 100%;
-    max-width: 420px;
+    max-width: 100%;
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px;
-    box-shadow: none;
+    border-radius: 14px 14px 0 0;
+    padding: 20px 16px;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
-.modalSm {
-    max-width: 360px;
+@media (min-width: 640px) {
+    .modal {
+        max-width: 420px;
+        border-radius: 12px;
+        padding: 18px;
+        max-height: none;
+    }
+}
+
+.modalSm {}
+
+@media (min-width: 640px) {
+    .modalSm {
+        max-width: 360px;
+    }
 }
 
 .modalTitle {
     font-size: 15px;
     font-weight: 700;
     color: var(--text);
-    margin-bottom: 12px;
+    margin-bottom: 10px;
+}
+
+@media (min-width: 640px) {
+    .modalTitle {
+        margin-bottom: 12px;
+    }
 }
 
 .modalText {
@@ -41,35 +67,60 @@
 .modalForm {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
+}
+
+@media (min-width: 640px) {
+    .modalForm {
+        gap: 12px;
+    }
 }
 
 .inputGroup {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
+}
+
+@media (min-width: 640px) {
+    .inputGroup {
+        gap: 6px;
+    }
 }
 
 .inputLabel {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--muted);
     font-family: var(--font-mono);
+}
+
+@media (min-width: 640px) {
+    .inputLabel {
+        font-size: 10px;
+        letter-spacing: 0.16em;
+    }
 }
 
 .input {
     width: 100%;
     height: 38px;
     padding: 0 12px;
-    border-radius: 10px;
+    border-radius: 9px;
     border: 1px solid var(--border2);
     background: var(--bg);
     color: var(--text);
     font-size: 13px;
     outline: none;
     transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+@media (min-width: 640px) {
+    .input {
+        border-radius: 10px;
+    }
 }
 
 .input::placeholder {
@@ -83,13 +134,27 @@
 
 .modalActions {
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
     gap: 8px;
     margin-top: 14px;
 }
 
-@media (max-width: 768px) {
+@media (min-width: 480px) {
     .modalActions {
-        flex-direction: column;
+        flex-direction: row;
+        justify-content: flex-end;
+    }
+}
+
+.modalActions .btn,
+.modalActions button {
+    width: 100%;
+}
+
+@media (min-width: 480px) {
+
+    .modalActions .btn,
+    .modalActions button {
+        width: auto;
     }
 }

@@ -2,9 +2,16 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 16px;
+    gap: 10px;
+    margin-bottom: 12px;
     flex-wrap: wrap;
+}
+
+@media (min-width: 640px) {
+    .toolbar {
+        gap: 12px;
+        margin-bottom: 16px;
+    }
 }
 
 .spacer {
@@ -15,24 +22,43 @@
 .actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+}
+
+@media (min-width: 640px) {
+    .actions {
+        gap: 10px;
+    }
 }
 
 .btnGhost,
 .btnPrimary,
 .btnDanger {
-    height: 36px;
-    padding: 0 16px;
-    border-radius: 12px;
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 10px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    font-size: 14px;
+    gap: 7px;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
-    transition: 0.18s ease;
+    transition: 0.15s ease;
     white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+
+    .btnGhost,
+    .btnPrimary,
+    .btnDanger {
+        height: 36px;
+        padding: 0 16px;
+        gap: 8px;
+        font-size: 13px;
+        border-radius: 12px;
+    }
 }
 
 .btnGhost {
@@ -42,8 +68,8 @@
 }
 
 .btnGhost:hover {
-    background: var(--hover);
-    border-color: var(--border-strong);
+    background: var(--card2);
+    border-color: var(--border2);
 }
 
 .btnPrimary {

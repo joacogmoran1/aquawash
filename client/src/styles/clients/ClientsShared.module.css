@@ -1,30 +1,50 @@
 .card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px 22px 22px;
-    box-shadow: none;
+    border-radius: 10px;
+    padding: 14px;
     overflow: hidden;
-
-    /* NUEVO */
     display: flex;
     flex-direction: column;
     flex: 1;
     min-height: 0;
-    height: calc(100vh - 50px);
-    max-height: calc(100vh - 50px);
+    /* Mobile: auto height */
+    height: auto;
+    max-height: none;
 }
 
+@media (min-width: 480px) {
+    .card {
+        padding: 16px;
+        border-radius: 12px;
+    }
+}
+
+@media (min-width: 640px) {
+    .card {
+        padding: 18px 20px;
+    }
+}
+
+/* On desktop, fill viewport */
+@media (min-width: 769px) {
+    .card {
+        height: calc(100vh - 50px);
+        max-height: calc(100vh - 50px);
+    }
+}
+
+/* ── BADGES ─────────────────────────────────────────────── */
 .badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 22px;
-    padding: 0 10px;
+    min-height: 20px;
+    padding: 0 8px;
     border-radius: 999px;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 800;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     font-family: var(--font-mono);
     text-transform: uppercase;
     border: 1px solid transparent;
@@ -32,11 +52,18 @@
     line-height: 1;
 }
 
+@media (min-width: 640px) {
+    .badge {
+        min-height: 22px;
+        padding: 0 10px;
+        font-size: 10px;
+    }
+}
+
 .badgeCyan {
     color: var(--cyan);
     background: rgba(47, 128, 255, 0.12);
     border-color: rgba(47, 128, 255, 0.3);
-    box-shadow: inset 0 0 12px rgba(47, 128, 255, 0.08);
 }
 
 .badgeOrange {
@@ -63,27 +90,32 @@
     border-color: rgba(127, 135, 150, 0.2);
 }
 
+/* ── BUTTONS ────────────────────────────────────────────── */
 .btn {
-    height: 36px;
+    height: 32px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 0 12px;
-    border-radius: 10px;
+    gap: 5px;
+    padding: 0 10px;
+    border-radius: 8px;
     border: 1px solid transparent;
     background: rgba(255, 255, 255, 0.03);
     color: var(--text);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     cursor: pointer;
-    transition:
-        background 0.15s ease,
-        border-color 0.15s ease,
-        color 0.15s ease,
-        transform 0.08s ease,
-        box-shadow 0.15s ease;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+    .btn {
+        height: 36px;
+        padding: 0 12px;
+        gap: 6px;
+        font-size: 12px;
+    }
 }
 
 .btn:hover {
@@ -108,9 +140,6 @@
     color: #a9ddff;
     border-color: rgba(47, 128, 255, 0.65);
     background: rgba(47, 128, 255, 0.08);
-    box-shadow:
-        inset 0 0 10px rgba(47, 128, 255, 0.06),
-        0 0 0 1px rgba(47, 128, 255, 0.03);
 }
 
 .btnPrimary:hover {
@@ -141,25 +170,18 @@
 }
 
 .btnSm {
-    height: 28px;
-    padding: 0 12px;
-    border-radius: 8px;
-    font-size: 11px;
+    height: 26px;
+    padding: 0 10px;
+    border-radius: 7px;
+    font-size: 10px;
     font-family: var(--font-mono);
-    letter-spacing: 0.03em;
 }
 
-@media (max-width: 768px) {
-    .card {
-        padding: 14px;
-        height: calc(100vh - 110px);
-        max-height: calc(100vh - 110px);
-    }
-
-    .btnPrimary,
-    .btnDanger,
-    .btnGhost {
-        width: 100%;
-        max-width: none;
+@media (min-width: 640px) {
+    .btnSm {
+        height: 28px;
+        padding: 0 12px;
+        border-radius: 8px;
+        font-size: 11px;
     }
 }

@@ -1,46 +1,90 @@
+/* ── BASE ───────────────────────────────────────────────── */
 .authPage {
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     background: var(--bg);
     position: relative;
     overflow: hidden;
 }
 
+/* On desktop: side-by-side */
+@media (min-width: 768px) {
+    .authPage {
+        flex-direction: row;
+    }
+}
+
+/* ── LEFT PANEL ─────────────────────────────────────────── */
 .authLeft {
-    width: 45%;
+    /* Mobile: compact top bar */
+    width: 100%;
+    min-height: 120px;
     background: var(--surface);
-    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 60px;
+    padding: 24px 20px;
     position: relative;
     overflow: hidden;
+}
+
+@media (min-width: 768px) {
+    .authLeft {
+        width: 45%;
+        min-height: 100vh;
+        border-bottom: none;
+        border-right: 1px solid var(--border);
+        padding: 48px;
+        justify-content: center;
+    }
+}
+
+@media (min-width: 1024px) {
+    .authLeft {
+        padding: 60px;
+    }
 }
 
 .authBgPattern {
     position: absolute;
     inset: 0;
     opacity: 0.04;
-    background-image: repeating-linear-gradient(45deg,
-            var(--cyan) 0,
-            var(--cyan) 1px,
-            transparent 0,
-            transparent 50%);
+    background-image: repeating-linear-gradient(45deg, var(--cyan) 0, var(--cyan) 1px, transparent 0, transparent 50%);
     background-size: 20px 20px;
 }
 
 .authBigText {
     font-family: var(--font-disp);
-    font-size: 80px;
+    font-size: 56px;
     line-height: 0.9;
     color: var(--cyan);
-    opacity: 0.15;
+    opacity: 0.12;
     position: absolute;
-    bottom: 40px;
-    left: 40px;
+    bottom: 16px;
+    left: 20px;
     letter-spacing: 4px;
     user-select: none;
+    display: none;
+    /* hidden on mobile */
+}
+
+@media (min-width: 768px) {
+    .authBigText {
+        display: block;
+        font-size: 64px;
+        bottom: 32px;
+        left: 32px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .authBigText {
+        font-size: 80px;
+        bottom: 40px;
+        left: 40px;
+    }
 }
 
 .authBrand {
@@ -50,59 +94,139 @@
 
 .authBrandName {
     font-family: var(--font-disp);
-    font-size: 48px;
+    font-size: 32px;
     color: var(--cyan);
-    letter-spacing: 3px;
+    letter-spacing: 2px;
+}
+
+@media (min-width: 768px) {
+    .authBrandName {
+        font-size: 40px;
+        letter-spacing: 3px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .authBrandName {
+        font-size: 48px;
+    }
 }
 
 .authBrandTagline {
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: 9px;
     color: var(--muted);
-    letter-spacing: 3px;
+    letter-spacing: 2.5px;
     text-transform: uppercase;
-    margin-top: 8px;
+    margin-top: 6px;
+}
+
+@media (min-width: 768px) {
+    .authBrandTagline {
+        font-size: 10px;
+        letter-spacing: 3px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .authBrandTagline {
+        font-size: 11px;
+    }
 }
 
 .authFeatures {
-    margin-top: 48px;
-    display: flex;
+    margin-top: 24px;
+    display: none;
+    /* hidden on small mobile */
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     position: relative;
     z-index: 1;
+}
+
+@media (min-width: 480px) {
+    .authFeatures {
+        display: flex;
+    }
+}
+
+@media (min-width: 768px) {
+    .authFeatures {
+        margin-top: 40px;
+        gap: 14px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .authFeatures {
+        margin-top: 48px;
+        gap: 16px;
+    }
 }
 
 .authFeature {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
 }
 
 .authFeatureIcon {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
     background: var(--cyan-glow);
     border: 1px solid rgba(47, 128, 255, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 15px;
+    font-size: 13px;
     flex-shrink: 0;
 }
 
+@media (min-width: 640px) {
+    .authFeatureIcon {
+        width: 32px;
+        height: 32px;
+        font-size: 15px;
+    }
+}
+
 .authFeatureText {
-    font-size: 13px;
+    font-size: 12.5px;
     color: var(--muted2);
 }
 
+@media (min-width: 640px) {
+    .authFeatureText {
+        font-size: 13px;
+    }
+}
+
+/* ── RIGHT PANEL ────────────────────────────────────────── */
 .authRight {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 60px;
+    padding: 24px 16px;
+}
+
+@media (min-width: 480px) {
+    .authRight {
+        padding: 32px 24px;
+    }
+}
+
+@media (min-width: 768px) {
+    .authRight {
+        padding: 48px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .authRight {
+        padding: 60px;
+    }
 }
 
 .authFormBox {
@@ -112,48 +236,99 @@
 
 .authTitle {
     font-family: var(--font-disp);
-    font-size: 36px;
-    letter-spacing: 1.5px;
-    margin-bottom: 6px;
+    font-size: 28px;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+@media (min-width: 640px) {
+    .authTitle {
+        font-size: 32px;
+    }
+}
+
+@media (min-width: 768px) {
+    .authTitle {
+        font-size: 36px;
+    }
 }
 
 .authSubtitle {
-    font-size: 13px;
+    font-size: 12.5px;
     color: var(--muted2);
-    margin-bottom: 36px;
+    margin-bottom: 24px;
+}
+
+@media (min-width: 640px) {
+    .authSubtitle {
+        font-size: 13px;
+        margin-bottom: 32px;
+    }
+}
+
+@media (min-width: 768px) {
+    .authSubtitle {
+        margin-bottom: 36px;
+    }
 }
 
 .authForm {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
+}
+
+@media (min-width: 640px) {
+    .authForm {
+        gap: 20px;
+    }
 }
 
 .inputGroup {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
+}
+
+@media (min-width: 640px) {
+    .inputGroup {
+        gap: 6px;
+    }
 }
 
 .inputLabel {
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 9px;
     color: var(--muted);
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
+}
+
+@media (min-width: 640px) {
+    .inputLabel {
+        font-size: 10px;
+        letter-spacing: 2px;
+    }
 }
 
 .input {
     width: 100%;
-    padding: 10px 14px;
+    padding: 10px 12px;
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text);
-    font-size: 14px;
+    font-size: 13px;
     font-family: var(--font-body);
     outline: none;
     transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+@media (min-width: 640px) {
+    .input {
+        padding: 10px 14px;
+        font-size: 14px;
+    }
 }
 
 .input:focus {
@@ -166,25 +341,38 @@
 }
 
 .successText {
-    padding: 10px 14px;
+    padding: 9px 12px;
     border-radius: 8px;
     background: rgba(0, 255, 159, 0.08);
     border: 1px solid rgba(0, 255, 159, 0.2);
     color: var(--green);
-    font-size: 13px;
-    margin-bottom: 8px;
+    font-size: 12.5px;
+    margin-bottom: 6px;
+}
+
+@media (min-width: 640px) {
+    .successText {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
 }
 
 .errorText {
     color: var(--red);
-    font-size: 12px;
+    font-size: 11.5px;
     font-family: var(--font-mono);
+}
+
+@media (min-width: 640px) {
+    .errorText {
+        font-size: 12px;
+    }
 }
 
 .primaryButton {
     width: 100%;
     justify-content: center;
-    padding: 12px;
+    padding: 11px;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -199,58 +387,25 @@
     color: #080b12;
 }
 
+@media (min-width: 640px) {
+    .primaryButton {
+        padding: 12px;
+    }
+}
+
 .primaryButton:hover:not(:disabled) {
     background: rgba(96, 170, 255, 0.95);
-    box-shadow: none;
 }
 
 .primaryButton:disabled {
     opacity: 0.7;
     cursor: not-allowed;
-    box-shadow: none;
-}
-
-.authDivider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 4px 0;
-}
-
-.authDividerLine {
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-}
-
-.authDividerText {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--muted);
-}
-
-.authLink {
-    color: var(--cyan);
-    cursor: pointer;
-    text-decoration: none;
-    font-size: 13px;
-}
-
-.authLink:hover {
-    text-decoration: underline;
-}
-
-.authSwitch {
-    text-align: center;
-    font-size: 13px;
-    color: var(--muted2);
-    margin-top: 20px;
 }
 
 .secondaryButton {
     width: 100%;
     justify-content: center;
-    padding: 12px;
+    padding: 11px;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -273,7 +428,7 @@
 .inlineActions {
     display: flex;
     justify-content: space-between;
-    gap: 12px;
+    gap: 8px;
     flex-wrap: wrap;
 }
 
@@ -283,7 +438,13 @@
     color: var(--cyan);
     cursor: pointer;
     padding: 0;
-    font-size: 12px;
+    font-size: 11.5px;
+}
+
+@media (min-width: 640px) {
+    .inlineActionButton {
+        font-size: 12px;
+    }
 }
 
 .inlineActionButton:disabled {
@@ -292,7 +453,62 @@
 }
 
 .helperText {
-    font-size: 12px;
+    font-size: 11.5px;
     color: var(--muted2);
     line-height: 1.5;
+}
+
+@media (min-width: 640px) {
+    .helperText {
+        font-size: 12px;
+    }
+}
+
+.authSwitch {
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--muted2);
+    margin-top: 16px;
+}
+
+@media (min-width: 640px) {
+    .authSwitch {
+        font-size: 13px;
+        margin-top: 20px;
+    }
+}
+
+.authLink {
+    color: var(--cyan);
+    cursor: pointer;
+}
+
+.authLink:hover {
+    text-decoration: underline;
+}
+
+/* ── DIVIDER ─────────────────────────────────────────────── */
+.authDivider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 2px 0;
+}
+
+.authDividerLine {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+.authDividerText {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--muted);
+}
+
+@media (min-width: 640px) {
+    .authDividerText {
+        font-size: 10px;
+    }
 }

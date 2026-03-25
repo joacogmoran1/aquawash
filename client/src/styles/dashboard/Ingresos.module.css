@@ -1,42 +1,101 @@
 .pageContent {
-    padding: 32px;
+    padding: 12px;
     flex: 1;
 }
 
-.statsGrid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    margin-bottom: 24px;
+@media (min-width: 480px) {
+    .pageContent {
+        padding: 16px;
+    }
 }
 
+@media (min-width: 768px) {
+    .pageContent {
+        padding: 24px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .pageContent {
+        padding: 32px;
+    }
+}
+
+/* ── STATS: 2col mobile → 4col desktop ──────────────────── */
+.statsGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+@media (min-width: 640px) {
+    .statsGrid {
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .statsGrid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+}
+
+/* ── INGRESOS LAYOUT: 1col → 2col ───────────────────────── */
 .ingresosLayout {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 20px;
-    margin-bottom: 20px;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+@media (min-width: 768px) {
+    .ingresosLayout {
+        gap: 18px;
+        margin-bottom: 18px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .ingresosLayout {
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
 }
 
 .sideColumn {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
 }
 
-.legendRow,
+@media (min-width: 640px) {
+    .sideColumn {
+        gap: 16px;
+    }
+}
+
+/* ── LEGEND ─────────────────────────────────────────────── */
+.legendRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
 .legendItem {
     display: flex;
     align-items: center;
-    gap: 16px;
-}
-
-.legendItem {
-    gap: 6px;
+    gap: 5px;
 }
 
 .legendDot {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 2px;
 }
 
@@ -50,16 +109,37 @@
 
 .legendText {
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 9px;
     color: var(--muted2);
 }
 
+@media (min-width: 640px) {
+    .legendText {
+        font-size: 10px;
+    }
+}
+
+/* ── GROUPED BAR CHART ──────────────────────────────────── */
 .groupedBarChart {
     display: flex;
     align-items: flex-end;
-    gap: 6px;
-    height: 140px;
+    gap: 4px;
+    height: 90px;
     padding-bottom: 4px;
+}
+
+@media (min-width: 480px) {
+    .groupedBarChart {
+        height: 110px;
+        gap: 5px;
+    }
+}
+
+@media (min-width: 640px) {
+    .groupedBarChart {
+        height: 140px;
+        gap: 6px;
+    }
 }
 
 .groupedBarCol {
@@ -82,37 +162,69 @@
 .groupedBarPrev,
 .groupedBarCurrent {
     flex: 1;
-    border-radius: 3px 3px 0 0;
+    border-radius: 2px 2px 0 0;
     min-height: 3px;
     transition: all 0.2s;
 }
 
 .groupedBarLabel {
     font-family: var(--font-mono);
-    font-size: 9px;
+    font-size: 7px;
     letter-spacing: 0.5px;
 }
 
+@media (min-width: 480px) {
+    .groupedBarLabel {
+        font-size: 8px;
+    }
+}
+
+@media (min-width: 640px) {
+    .groupedBarLabel {
+        font-size: 9px;
+    }
+}
+
+/* ── DAY DETAIL CARD ────────────────────────────────────── */
 .dayDetailCard {
-    margin-top: 16px;
-    padding: 16px;
+    margin-top: 14px;
+    padding: 14px;
     background: var(--card2);
     border-radius: 10px;
     border: 1px solid var(--border2);
     animation: fadeIn 0.15s ease;
 }
 
+@media (min-width: 640px) {
+    .dayDetailCard {
+        margin-top: 16px;
+        padding: 16px;
+    }
+}
+
 .dayDetailHeader {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
+}
+
+@media (min-width: 640px) {
+    .dayDetailHeader {
+        margin-bottom: 12px;
+    }
 }
 
 .dayDetailTitle {
     font-family: var(--font-disp);
-    font-size: 20px;
+    font-size: 16px;
     letter-spacing: 1px;
+}
+
+@media (min-width: 640px) {
+    .dayDetailTitle {
+        font-size: 20px;
+    }
 }
 
 .closeBtn {
@@ -120,13 +232,27 @@
     border: none;
     color: var(--muted);
     cursor: pointer;
-    font-size: 18px;
+    font-size: 16px;
 }
 
+@media (min-width: 640px) {
+    .closeBtn {
+        font-size: 18px;
+    }
+}
+
+/* ── DAY METRICS: 2col mobile → 4col desktop ─────────────── */
 .dayMetricsGrid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+@media (min-width: 640px) {
+    .dayMetricsGrid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
 }
 
 .metricBox {
@@ -135,85 +261,158 @@
 
 .metricLabel {
     font-family: var(--font-mono);
-    font-size: 9px;
+    font-size: 8px;
     color: var(--muted);
-    letter-spacing: 1.5px;
-    margin-bottom: 4px;
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+}
+
+@media (min-width: 640px) {
+    .metricLabel {
+        font-size: 9px;
+        letter-spacing: 1.5px;
+    }
 }
 
 .metricValue {
     font-family: var(--font-mono);
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 500;
 }
 
+@media (min-width: 640px) {
+    .metricValue {
+        font-size: 15px;
+    }
+}
+
 .serviceMiniGrid {
-    margin-top: 12px;
+    margin-top: 10px;
     display: flex;
-    gap: 8px;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+@media (min-width: 640px) {
+    .serviceMiniGrid {
+        flex-wrap: nowrap;
+        gap: 8px;
+    }
 }
 
 .serviceMiniCard {
     flex: 1;
-    padding: 10px;
+    min-width: 80px;
+    padding: 8px;
     background: var(--card);
     border-radius: 8px;
     border: 1px solid var(--border);
     text-align: center;
 }
 
+@media (min-width: 640px) {
+    .serviceMiniCard {
+        padding: 10px;
+    }
+}
+
 .serviceMiniValue {
     font-family: var(--font-mono);
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 500;
 }
 
-.serviceMiniLabel {
-    font-size: 10px;
-    color: var(--muted);
-    margin-top: 3px;
+@media (min-width: 640px) {
+    .serviceMiniValue {
+        font-size: 18px;
+    }
 }
 
+.serviceMiniLabel {
+    font-size: 9px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+@media (min-width: 640px) {
+    .serviceMiniLabel {
+        font-size: 10px;
+        margin-top: 3px;
+    }
+}
+
+/* ── SIDE STATS ─────────────────────────────────────────── */
 .sideSectionTitle {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+}
+
+@media (min-width: 640px) {
+    .sideSectionTitle {
+        margin-bottom: 16px;
+    }
 }
 
 .serviceBlock {
-    margin-bottom: 18px;
+    margin-bottom: 14px;
+}
+
+@media (min-width: 640px) {
+    .serviceBlock {
+        margin-bottom: 18px;
+    }
 }
 
 .serviceRow {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
 }
 
 .serviceName {
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 500;
 }
 
-.serviceCount,
-.serviceIncome,
-.paymentValue {
+.serviceCount {
     font-family: var(--font-mono);
+    font-size: 10px;
 }
 
-.serviceCount {
-    font-size: 11px;
+@media (min-width: 640px) {
+    .serviceName {
+        font-size: 12.5px;
+    }
+
+    .serviceCount {
+        font-size: 11px;
+    }
 }
 
 .serviceIncome {
-    font-size: 10px;
+    font-family: var(--font-mono);
+    font-size: 9px;
     color: var(--muted);
-    margin-top: 4px;
+    margin-top: 3px;
+}
+
+@media (min-width: 640px) {
+    .serviceIncome {
+        font-size: 10px;
+        margin-top: 4px;
+    }
 }
 
 .progressTrack {
-    height: 5px;
+    height: 4px;
     background: var(--border);
     border-radius: 3px;
     overflow: hidden;
+}
+
+@media (min-width: 640px) {
+    .progressTrack {
+        height: 5px;
+    }
 }
 
 .progressFill {
@@ -224,8 +423,15 @@
 .paymentRow {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+@media (min-width: 640px) {
+    .paymentRow {
+        gap: 10px;
+        margin-bottom: 10px;
+    }
 }
 
 .paymentDot {
@@ -236,16 +442,28 @@
 }
 
 .paymentName {
-    font-size: 12px;
+    font-size: 11px;
     flex: 1;
 }
 
+@media (min-width: 640px) {
+    .paymentName {
+        font-size: 12px;
+    }
+}
+
 .paymentTrack {
-    width: 80px;
+    width: 60px;
     height: 4px;
     background: var(--border);
     border-radius: 2px;
     overflow: hidden;
+}
+
+@media (min-width: 640px) {
+    .paymentTrack {
+        width: 80px;
+    }
 }
 
 .paymentFill {
@@ -254,10 +472,18 @@
 }
 
 .paymentValue {
-    font-size: 11px;
+    font-family: var(--font-mono);
+    font-size: 10px;
     color: var(--muted2);
-    width: 20px;
+    width: 18px;
     text-align: right;
+}
+
+@media (min-width: 640px) {
+    .paymentValue {
+        font-size: 11px;
+        width: 20px;
+    }
 }
 
 @keyframes fadeIn {
@@ -269,31 +495,5 @@
     to {
         opacity: 1;
         transform: translateY(0);
-    }
-}
-
-@media (max-width: 900px) {
-
-    .statsGrid,
-    .ingresosLayout {
-        grid-template-columns: 1fr;
-    }
-
-    .dayMetricsGrid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 640px) {
-    .pageContent {
-        padding: 16px;
-    }
-
-    .serviceMiniGrid {
-        flex-direction: column;
-    }
-
-    .dayMetricsGrid {
-        grid-template-columns: 1fr;
     }
 }

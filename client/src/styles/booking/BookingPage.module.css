@@ -1,10 +1,22 @@
-/* ─── Layout ──────────────────────────────────────────────────────── */
+/* ─── Layout ──────────────────────────────────────────────── */
 .page {
     min-height: 100vh;
     background: var(--bg);
     display: flex;
     justify-content: center;
-    padding: 32px 16px 64px;
+    padding: 16px 12px 48px;
+}
+
+@media (min-width: 480px) {
+    .page {
+        padding: 24px 16px 56px;
+    }
+}
+
+@media (min-width: 640px) {
+    .page {
+        padding: 32px 16px 64px;
+    }
 }
 
 .container {
@@ -12,18 +24,24 @@
     max-width: 640px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
 }
 
-/* ─── Header ─────────────────────────────────────────────────────── */
+@media (min-width: 640px) {
+    .container {
+        gap: 16px;
+    }
+}
+
+/* ─── Header ─────────────────────────────────────────────── */
 .header {
     text-align: center;
-    padding: 6px 0;
+    padding: 4px 0;
 }
 
 .brandMark {
     font-family: var(--font-disp);
-    font-size: 13px;
+    font-size: 11px;
     letter-spacing: 5px;
     color: var(--cyan);
     opacity: .65;
@@ -32,32 +50,57 @@
 
 .lavaderoName {
     font-family: var(--font-disp);
-    font-size: 36px;
+    font-size: 28px;
     letter-spacing: 1px;
     color: var(--text);
     margin: 0;
     line-height: 1.1;
 }
 
-.lavaderoAddress {
-    font-size: 13px;
-    color: var(--muted2);
-    margin: 5px 0 0;
+@media (min-width: 480px) {
+    .lavaderoName {
+        font-size: 32px;
+    }
 }
 
-/* ─── Progress ───────────────────────────────────────────────────── */
+@media (min-width: 640px) {
+    .lavaderoName {
+        font-size: 36px;
+    }
+}
+
+.lavaderoAddress {
+    font-size: 12.5px;
+    color: var(--muted2);
+    margin: 4px 0 0;
+}
+
+@media (min-width: 640px) {
+    .lavaderoAddress {
+        font-size: 13px;
+    }
+}
+
+/* ─── Progress ───────────────────────────────────────────── */
 .progress {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 0;
 }
 
 .progressStep {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     opacity: .35;
     transition: opacity .2s;
+}
+
+@media (min-width: 480px) {
+    .progressStep {
+        gap: 8px;
+    }
 }
 
 .progressStep.active {
@@ -65,18 +108,25 @@
 }
 
 .progressNum {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     border: 1.5px solid var(--border2);
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: 10px;
     color: var(--muted2);
     flex-shrink: 0;
     transition: all .2s;
+}
+
+@media (min-width: 480px) {
+    .progressNum {
+        width: 24px;
+        height: 24px;
+    }
 }
 
 .progressStep.active .progressNum {
@@ -87,10 +137,25 @@
 
 .progressLabel {
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 9px;
     color: var(--muted2);
-    letter-spacing: 1px;
+    letter-spacing: 0.8px;
     white-space: nowrap;
+    display: none;
+}
+
+@media (min-width: 400px) {
+    .progressLabel {
+        display: block;
+        font-size: 9px;
+    }
+}
+
+@media (min-width: 640px) {
+    .progressLabel {
+        font-size: 10px;
+        letter-spacing: 1px;
+    }
 }
 
 .progressStep.active .progressLabel {
@@ -99,11 +164,18 @@
 
 .progressLine {
     flex: 1;
-    max-width: 40px;
+    max-width: 30px;
     height: 1px;
     background: var(--border);
-    margin: 0 8px;
+    margin: 0 6px;
     transition: background .2s;
+}
+
+@media (min-width: 480px) {
+    .progressLine {
+        max-width: 40px;
+        margin: 0 8px;
+    }
 }
 
 .progressLine.active {
@@ -111,39 +183,66 @@
     opacity: .4;
 }
 
-/* ─── Card ───────────────────────────────────────────────────────── */
+/* ─── Card ───────────────────────────────────────────────── */
 .card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 24px;
+    border-radius: 12px;
+    padding: 18px 14px;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 16px;
+}
+
+@media (min-width: 480px) {
+    .card {
+        padding: 20px;
+        border-radius: 13px;
+    }
+}
+
+@media (min-width: 640px) {
+    .card {
+        padding: 24px;
+        border-radius: 14px;
+        gap: 18px;
+    }
 }
 
 .cardTitle {
     font-family: var(--font-disp);
-    font-size: 24px;
+    font-size: 20px;
     letter-spacing: .5px;
     color: var(--text);
     margin: 0;
     line-height: 1.1;
 }
 
+@media (min-width: 480px) {
+    .cardTitle {
+        font-size: 22px;
+    }
+}
+
+@media (min-width: 640px) {
+    .cardTitle {
+        font-size: 24px;
+    }
+}
+
 .cardSubtitle {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--muted2);
     margin: 0;
     line-height: 1.5;
 }
 
-/* ─── Back link ──────────────────────────────────────────────────── */
+/* ─── Back link ──────────────────────────────────────────── */
 .backLink {
     background: none;
     border: none;
     color: var(--muted2);
-    font-size: 13px;
+    font-size: 12.5px;
     cursor: pointer;
     padding: 0;
     display: inline-flex;
@@ -156,25 +255,39 @@
     color: var(--text);
 }
 
-/* ─── Welcome ────────────────────────────────────────────────────── */
+/* ─── Welcome ────────────────────────────────────────────── */
 .welcomeGrid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+@media (min-width: 400px) {
+    .welcomeGrid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
 }
 
 .welcomeBtn {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 6px;
-    padding: 18px 16px;
-    border-radius: 12px;
+    gap: 5px;
+    padding: 16px 14px;
+    border-radius: 11px;
     border: 1px solid var(--border);
     background: var(--bg);
     cursor: pointer;
     transition: all .15s;
     text-align: left;
+}
+
+@media (min-width: 640px) {
+    .welcomeBtn {
+        padding: 18px 16px;
+        gap: 6px;
+    }
 }
 
 .welcomeBtn:hover {
@@ -183,23 +296,35 @@
 }
 
 .welcomeBtnIcon {
-    font-size: 22px;
+    font-size: 20px;
     line-height: 1;
 }
 
+@media (min-width: 640px) {
+    .welcomeBtnIcon {
+        font-size: 22px;
+    }
+}
+
 .welcomeBtnTitle {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text);
 }
 
 .welcomeBtnSub {
-    font-size: 12px;
+    font-size: 11.5px;
     color: var(--muted2);
     line-height: 1.4;
 }
 
-/* ─── Lookup ─────────────────────────────────────────────────────── */
+@media (min-width: 640px) {
+    .welcomeBtnSub {
+        font-size: 12px;
+    }
+}
+
+/* ─── Lookup ─────────────────────────────────────────────── */
 .inputDNI {
     font-family: var(--font-mono);
     font-size: 20px;
@@ -208,10 +333,16 @@
 }
 
 .lookupNote {
-    font-size: 12px;
+    font-size: 11.5px;
     color: var(--muted);
     text-align: center;
     margin: 0;
+}
+
+@media (min-width: 640px) {
+    .lookupNote {
+        font-size: 12px;
+    }
 }
 
 .linkBtn {
@@ -219,25 +350,33 @@
     border: none;
     color: var(--cyan);
     cursor: pointer;
-    font-size: 12px;
+    font-size: inherit;
     padding: 0;
     text-decoration: underline;
 }
 
-/* ─── Greeting (returning client) ────────────────────────────────── */
+/* ─── Greeting ───────────────────────────────────────────── */
 .greetingBox {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 16px;
+    gap: 12px;
+    padding: 14px;
     background: var(--cyan-glow);
     border: 1px solid rgba(47, 128, 255, .22);
-    border-radius: 12px;
+    border-radius: 11px;
+}
+
+@media (min-width: 640px) {
+    .greetingBox {
+        padding: 16px;
+        gap: 14px;
+        border-radius: 12px;
+    }
 }
 
 .greetingAvatar {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: rgba(47, 128, 255, .18);
     border: 1px solid rgba(47, 128, 255, .35);
@@ -245,13 +384,21 @@
     align-items: center;
     justify-content: center;
     font-family: var(--font-disp);
-    font-size: 18px;
+    font-size: 16px;
     color: var(--cyan);
     flex-shrink: 0;
 }
 
+@media (min-width: 640px) {
+    .greetingAvatar {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+    }
+}
+
 .greetingHola {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     color: var(--text);
     margin: 0 0 3px;
@@ -264,25 +411,39 @@
     line-height: 1.4;
 }
 
-/* ─── Autos ──────────────────────────────────────────────────────── */
+/* ─── Autos ──────────────────────────────────────────────── */
 .autosList {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 7px;
+}
+
+@media (min-width: 640px) {
+    .autosList {
+        gap: 8px;
+    }
 }
 
 .autoCard {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    border-radius: 10px;
+    gap: 10px;
+    padding: 11px 12px;
+    border-radius: 9px;
     border: 1px solid var(--border);
     background: var(--bg);
     cursor: pointer;
     transition: all .15s;
     text-align: left;
     color: var(--text);
+}
+
+@media (min-width: 640px) {
+    .autoCard {
+        padding: 12px 14px;
+        border-radius: 10px;
+        gap: 12px;
+    }
 }
 
 .autoCard:hover {
@@ -296,8 +457,14 @@
 }
 
 .autoIcon {
-    font-size: 18px;
+    font-size: 16px;
     flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+    .autoIcon {
+        font-size: 18px;
+    }
 }
 
 .autoInfo {
@@ -309,40 +476,48 @@
 }
 
 .autoTitle {
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 500;
 }
 
 .autoPlate {
     font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: 11.5px;
     color: var(--cyan);
     letter-spacing: 1px;
 }
 
 .autoMeta {
-    font-size: 11px;
+    font-size: 10.5px;
     color: var(--muted);
 }
 
 .autoCheck {
     color: var(--cyan);
-    font-size: 16px;
+    font-size: 15px;
     flex-shrink: 0;
 }
 
 .addAutoBtn {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 14px;
-    border-radius: 10px;
+    gap: 7px;
+    padding: 11px 13px;
+    border-radius: 9px;
     border: 1px dashed var(--border2);
     background: transparent;
     color: var(--cyan);
-    font-size: 13px;
+    font-size: 12.5px;
     cursor: pointer;
     transition: all .15s;
+}
+
+@media (min-width: 640px) {
+    .addAutoBtn {
+        padding: 12px 14px;
+        font-size: 13px;
+        border-radius: 10px;
+    }
 }
 
 .addAutoBtn:hover {
@@ -352,12 +527,20 @@
 
 .newAutoBox {
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px;
+    border-radius: 9px;
+    padding: 12px;
     background: var(--card2);
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
+}
+
+@media (min-width: 640px) {
+    .newAutoBox {
+        border-radius: 10px;
+        padding: 14px;
+        gap: 12px;
+    }
 }
 
 .newAutoBoxHeader {
@@ -368,7 +551,7 @@
 
 .newAutoBoxTitle {
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 9px;
     color: var(--muted);
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -379,61 +562,101 @@
     border: none;
     color: var(--muted2);
     cursor: pointer;
-    font-size: 14px;
+    font-size: 13px;
     padding: 0;
 }
 
-/* ─── Fields ──────────────────────────────────────────────────────── */
+/* ─── Fields ──────────────────────────────────────────────── */
 .fieldset {
     border: none;
     padding: 0;
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
+}
+
+@media (min-width: 640px) {
+    .fieldset {
+        gap: 12px;
+    }
 }
 
 .fieldsetLegend {
     font-family: var(--font-mono);
-    font-size: 9px;
+    font-size: 8.5px;
     color: var(--muted);
-    letter-spacing: 2.5px;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     display: block;
     width: 100%;
     border-bottom: 1px solid var(--border);
-    padding-bottom: 8px;
+    padding-bottom: 7px;
+}
+
+@media (min-width: 640px) {
+    .fieldsetLegend {
+        font-size: 9px;
+        letter-spacing: 2.5px;
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+    }
 }
 
 .field {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
     flex: 1;
     min-width: 0;
+}
+
+@media (min-width: 640px) {
+    .field {
+        gap: 5px;
+    }
 }
 
 .fieldRow {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 8px;
+}
+
+@media (min-width: 640px) {
+    .fieldRow {
+        gap: 10px;
+    }
 }
 
 .fieldNarrow {
-    max-width: 110px;
+    max-width: 100%;
+}
+
+@media (min-width: 640px) {
+    .fieldNarrow {
+        max-width: 110px;
+    }
 }
 
 .label {
     font-family: var(--font-mono);
-    font-size: 9px;
+    font-size: 8.5px;
     color: var(--muted);
-    letter-spacing: 1.5px;
+    letter-spacing: 1.2px;
     text-transform: uppercase;
 }
 
+@media (min-width: 640px) {
+    .label {
+        font-size: 9px;
+        letter-spacing: 1.5px;
+    }
+}
+
 .optional {
-    font-size: 8px;
+    font-size: 7.5px;
     opacity: .65;
     text-transform: none;
     letter-spacing: 0;
@@ -441,16 +664,22 @@
 
 .input {
     width: 100%;
-    padding: 10px 12px;
+    padding: 9px 11px;
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text);
-    font-size: 14px;
+    font-size: 13px;
     font-family: var(--font-body);
     outline: none;
     transition: border-color .15s, box-shadow .15s;
     -webkit-appearance: none;
+}
+
+@media (min-width: 640px) {
+    .input {
+        padding: 10px 12px;
+    }
 }
 
 .input:focus {
@@ -462,26 +691,39 @@
     color: var(--muted);
 }
 
-/* ─── Servicios ──────────────────────────────────────────────────── */
+/* ─── Services ───────────────────────────────────────────── */
 .serviceGrid {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 7px;
+}
+
+@media (min-width: 640px) {
+    .serviceGrid {
+        gap: 8px;
+    }
 }
 
 .serviceCard {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: 14px 16px;
+    gap: 10px;
+    padding: 13px 14px;
     background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 9px;
     cursor: pointer;
     transition: all .15s;
     text-align: left;
     color: var(--text);
+}
+
+@media (min-width: 640px) {
+    .serviceCard {
+        padding: 14px 16px;
+        border-radius: 10px;
+    }
 }
 
 .serviceCard:hover {
@@ -497,61 +739,92 @@
 .serviceInfo {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 2px;
     min-width: 0;
 }
 
 .serviceName {
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 500;
 }
 
 .serviceDuration {
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 9.5px;
     color: var(--muted);
 }
 
 .servicePrice {
     font-family: var(--font-mono);
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     color: var(--cyan);
     flex-shrink: 0;
 }
 
-/* ─── Calendario ─────────────────────────────────────────────────── */
+@media (min-width: 640px) {
+    .servicePrice {
+        font-size: 16px;
+    }
+}
+
+/* ─── Calendar ───────────────────────────────────────────── */
 .calWidget {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
+}
+
+@media (min-width: 640px) {
+    .calWidget {
+        gap: 12px;
+    }
 }
 
 .calHeader {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: 0 2px;
+    gap: 10px;
+    padding: 0 1px;
 }
 
 .calMonthTitle {
     font-family: var(--font-disp);
-    font-size: 24px;
-    letter-spacing: 2px;
+    font-size: 20px;
+    letter-spacing: 1.5px;
     color: var(--text);
     line-height: 1;
 }
 
+@media (min-width: 480px) {
+    .calMonthTitle {
+        font-size: 22px;
+    }
+}
+
+@media (min-width: 640px) {
+    .calMonthTitle {
+        font-size: 24px;
+        letter-spacing: 2px;
+    }
+}
+
 .calNavBtns {
     display: flex;
-    gap: 6px;
+    gap: 5px;
+}
+
+@media (min-width: 640px) {
+    .calNavBtns {
+        gap: 6px;
+    }
 }
 
 .calNavBtn {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
     border: 1px solid var(--border);
     background: var(--card2);
     color: var(--text);
@@ -562,6 +835,14 @@
     transition: all .15s;
 }
 
+@media (min-width: 640px) {
+    .calNavBtn {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+    }
+}
+
 .calNavBtn:hover {
     border-color: var(--border2);
     background: var(--border);
@@ -570,28 +851,53 @@
 .calWeekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    padding: 0 2px;
+    gap: 2px;
+    padding: 0 1px;
+}
+
+@media (min-width: 480px) {
+    .calWeekdays {
+        gap: 3px;
+    }
+}
+
+@media (min-width: 640px) {
+    .calWeekdays {
+        gap: 4px;
+    }
 }
 
 .calWeekday {
     text-align: center;
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 9px;
     color: var(--cyan);
-    letter-spacing: .5px;
-    padding: 4px 0;
+    letter-spacing: .3px;
+    padding: 3px 0;
+}
+
+@media (min-width: 640px) {
+    .calWeekday {
+        font-size: 10px;
+        letter-spacing: .5px;
+    }
 }
 
 .calGrid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
+    gap: 3px;
+}
+
+@media (min-width: 480px) {
+    .calGrid {
+        gap: 4px;
+    }
 }
 
 .calDay {
     aspect-ratio: 1;
-    border-radius: 12px;
+    border-radius: 10px;
     border: 1px solid var(--border);
     background: var(--card2);
     color: var(--text);
@@ -599,12 +905,27 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
-    padding: 10px;
+    padding: 7px;
     cursor: pointer;
     transition: all .14s;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     position: relative;
+}
+
+@media (min-width: 480px) {
+    .calDay {
+        border-radius: 11px;
+        padding: 9px;
+        font-size: 14px;
+    }
+}
+
+@media (min-width: 640px) {
+    .calDay {
+        border-radius: 12px;
+        padding: 10px;
+    }
 }
 
 .calDay:hover:not(:disabled) {
@@ -640,25 +961,39 @@
 }
 
 .calDayNum {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     line-height: 1;
 }
 
+@media (min-width: 640px) {
+    .calDayNum {
+        font-size: 14px;
+    }
+}
+
 .calDayClosed {
     font-family: var(--font-mono);
-    font-size: 7px;
+    font-size: 6.5px;
     color: var(--muted);
-    letter-spacing: .3px;
-    margin-top: 3px;
+    letter-spacing: .2px;
+    margin-top: 2px;
     line-height: 1;
     text-transform: uppercase;
+    display: none;
+}
+
+@media (min-width: 480px) {
+    .calDayClosed {
+        display: block;
+        font-size: 7px;
+    }
 }
 
 .calLegend {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
     padding-top: 4px;
     flex-wrap: wrap;
 }
@@ -666,15 +1001,21 @@
 .calLegendItem {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 11px;
+    gap: 5px;
+    font-size: 10.5px;
     color: var(--muted2);
     font-family: var(--font-mono);
 }
 
+@media (min-width: 640px) {
+    .calLegendItem {
+        font-size: 11px;
+    }
+}
+
 .calLegendDot {
-    width: 10px;
-    height: 10px;
+    width: 9px;
+    height: 9px;
     border-radius: 3px;
     flex-shrink: 0;
     border: 1px solid var(--border);
@@ -695,17 +1036,17 @@
     border-color: var(--cyan);
 }
 
-/* ─── Slots ──────────────────────────────────────────────────────── */
+/* ─── Slots ──────────────────────────────────────────────── */
 .slotsHeader {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
 }
 
 .slotsDate {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--muted2);
     font-family: var(--font-mono);
     text-transform: capitalize;
@@ -713,38 +1054,53 @@
 
 .slotsLegend {
     display: flex;
-    gap: 16px;
+    gap: 12px;
     flex-wrap: wrap;
 }
 
 .slotsLegendItem {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 11px;
+    gap: 5px;
+    font-size: 10.5px;
     font-family: var(--font-mono);
     color: var(--muted2);
 }
 
 .slotsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 7px;
+}
+
+@media (min-width: 640px) {
+    .slotsGrid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 8px;
+    }
 }
 
 .slotCard {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
-    padding: 14px 14px 12px;
+    gap: 7px;
+    padding: 12px 12px 10px;
     background: var(--card2);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 11px;
     cursor: pointer;
     transition: all .15s;
     text-align: left;
     color: var(--text);
+}
+
+@media (min-width: 640px) {
+    .slotCard {
+        gap: 8px;
+        padding: 14px 14px 12px;
+        border-radius: 12px;
+    }
 }
 
 .slotCard:hover {
@@ -760,9 +1116,15 @@
 
 .slotHora {
     font-family: var(--font-disp);
-    font-size: 22px;
+    font-size: 20px;
     letter-spacing: 1px;
     line-height: 1;
+}
+
+@media (min-width: 640px) {
+    .slotHora {
+        font-size: 22px;
+    }
 }
 
 .slotCardSelected .slotHora {
@@ -771,16 +1133,29 @@
 
 .slotDots {
     display: flex;
-    gap: 4px;
+    gap: 3px;
     flex-wrap: wrap;
 }
 
+@media (min-width: 640px) {
+    .slotDots {
+        gap: 4px;
+    }
+}
+
 .slotDot {
-    width: 9px;
-    height: 9px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     flex-shrink: 0;
     transition: background .2s;
+}
+
+@media (min-width: 640px) {
+    .slotDot {
+        width: 9px;
+        height: 9px;
+    }
 }
 
 .slotDotTaken {
@@ -789,9 +1164,15 @@
 
 .slotDisponibles {
     font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: .5px;
+    font-size: 9.5px;
+    letter-spacing: .4px;
     font-weight: 500;
+}
+
+@media (min-width: 640px) {
+    .slotDisponibles {
+        font-size: 10px;
+    }
 }
 
 @keyframes blink {
@@ -810,55 +1191,96 @@
 .slotsLoading {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     color: var(--muted2);
-    font-size: 13px;
+    font-size: 12.5px;
     padding: 8px 0;
 }
 
+@media (min-width: 640px) {
+    .slotsLoading {
+        font-size: 13px;
+    }
+}
+
 .spinnerDot {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: var(--cyan);
     animation: blink 1.2s infinite;
     flex-shrink: 0;
 }
 
+@media (min-width: 640px) {
+    .spinnerDot {
+        width: 8px;
+        height: 8px;
+    }
+}
+
 .noSlotsBox {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 14px 16px;
+    gap: 10px;
+    padding: 12px 14px;
     border: 1px dashed var(--border2);
-    border-radius: 10px;
+    border-radius: 9px;
     color: var(--muted2);
-    font-size: 13px;
+    font-size: 12.5px;
 }
 
-/* ─── Resumen ────────────────────────────────────────────────────── */
+@media (min-width: 640px) {
+    .noSlotsBox {
+        padding: 14px 16px;
+        font-size: 13px;
+        border-radius: 10px;
+    }
+}
+
+/* ─── Summary ────────────────────────────────────────────── */
 .summary {
     background: var(--card2);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 16px;
+    border-radius: 9px;
+    padding: 12px 14px;
+}
+
+@media (min-width: 640px) {
+    .summary {
+        border-radius: 10px;
+        padding: 14px 16px;
+    }
 }
 
 .summaryTitle {
     font-family: var(--font-mono);
-    font-size: 9px;
+    font-size: 8.5px;
     color: var(--muted);
-    letter-spacing: 2px;
-    margin: 0 0 10px;
+    letter-spacing: 1.5px;
+    margin: 0 0 8px;
+}
+
+@media (min-width: 640px) {
+    .summaryTitle {
+        font-size: 9px;
+        margin: 0 0 10px;
+    }
 }
 
 .summaryRow {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
-    padding: 8px 0;
+    gap: 10px;
+    padding: 7px 0;
     border-bottom: 1px solid var(--border);
+}
+
+@media (min-width: 640px) {
+    .summaryRow {
+        padding: 8px 0;
+    }
 }
 
 .summaryRow:last-child {
@@ -866,49 +1288,82 @@
 }
 
 .summaryLabel {
-    font-size: 12px;
+    font-size: 11.5px;
     color: var(--muted2);
     flex-shrink: 0;
 }
 
+@media (min-width: 640px) {
+    .summaryLabel {
+        font-size: 12px;
+    }
+}
+
 .summaryValue {
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 500;
     text-align: right;
     word-break: break-word;
 }
 
+@media (min-width: 640px) {
+    .summaryValue {
+        font-size: 13px;
+    }
+}
+
 .summaryValueHighlight {
     font-family: var(--font-mono);
     color: var(--cyan);
-    font-size: 16px;
+    font-size: 14px;
 }
 
-/* ─── Error ──────────────────────────────────────────────────────── */
+@media (min-width: 640px) {
+    .summaryValueHighlight {
+        font-size: 16px;
+    }
+}
+
+/* ─── Error ──────────────────────────────────────────────── */
 .error {
     color: var(--red);
-    font-size: 12px;
+    font-size: 11.5px;
     font-family: var(--font-mono);
-    padding: 8px 12px;
+    padding: 7px 11px;
     background: rgba(255, 107, 107, .08);
     border: 1px solid rgba(255, 107, 107, .2);
     border-radius: 8px;
     margin: 0;
 }
 
-/* ─── Botones ────────────────────────────────────────────────────── */
+@media (min-width: 640px) {
+    .error {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+}
+
+/* ─── Buttons ────────────────────────────────────────────── */
 .btnPrimary {
     width: 100%;
-    padding: 13px;
-    border-radius: 10px;
+    padding: 12px;
+    border-radius: 9px;
     border: 1px solid var(--cyan);
     background: var(--cyan);
     color: #07131c;
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 600;
     font-family: var(--font-body);
     cursor: pointer;
     transition: all .15s;
+}
+
+@media (min-width: 640px) {
+    .btnPrimary {
+        padding: 13px;
+        font-size: 14px;
+        border-radius: 10px;
+    }
 }
 
 .btnPrimary:hover:not(:disabled) {
@@ -921,16 +1376,24 @@
 }
 
 .btnGhost {
-    padding: 12px 18px;
-    border-radius: 10px;
+    padding: 11px 16px;
+    border-radius: 9px;
     border: 1px solid var(--border2);
     background: transparent;
     color: var(--muted2);
-    font-size: 13px;
+    font-size: 12.5px;
     font-family: var(--font-body);
     cursor: pointer;
     transition: all .15s;
     flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+    .btnGhost {
+        padding: 12px 18px;
+        font-size: 13px;
+        border-radius: 10px;
+    }
 }
 
 .btnGhost:hover {
@@ -940,48 +1403,73 @@
 
 .actions {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
+}
+
+@media (min-width: 640px) {
+    .actions {
+        gap: 10px;
+    }
 }
 
 .actions .btnPrimary {
     flex: 1;
 }
 
-/* ─── Success ────────────────────────────────────────────────────── */
+/* ─── Success ────────────────────────────────────────────── */
 .successWrap {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 12px;
+    gap: 10px;
+}
+
+@media (min-width: 640px) {
+    .successWrap {
+        gap: 12px;
+    }
 }
 
 .successTitle {
     font-family: var(--font-disp);
-    font-size: 30px;
+    font-size: 26px;
     letter-spacing: 1px;
     color: var(--green);
     margin: 0;
 }
 
+@media (min-width: 640px) {
+    .successTitle {
+        font-size: 30px;
+    }
+}
+
 .successMsg {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--muted2);
     margin: 0;
-    max-width: 320px;
+    max-width: 300px;
+}
+
+@media (min-width: 640px) {
+    .successMsg {
+        font-size: 14px;
+        max-width: 320px;
+    }
 }
 
 .successWrap .summary {
     width: 100%;
     text-align: left;
-    margin-top: 6px;
+    margin-top: 4px;
 }
 
 .successNote {
-    font-size: 12px;
+    font-size: 11.5px;
     color: var(--muted);
-    padding: 10px 14px;
+    padding: 9px 13px;
     background: var(--card2);
     border-radius: 8px;
     border: 1px solid var(--border);
@@ -991,104 +1479,63 @@
     text-align: left;
 }
 
-/* ─── Footer + misc ──────────────────────────────────────────────── */
+@media (min-width: 640px) {
+    .successNote {
+        font-size: 12px;
+        padding: 10px 14px;
+    }
+}
+
+/* ─── Footer ─────────────────────────────────────────────── */
 .footer {
     text-align: center;
-    font-size: 13px;
+    font-size: 12.5px;
     color: var(--muted);
     padding: 4px 0;
 }
 
 .loadingText {
     font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: 11.5px;
     color: var(--muted);
-    margin: 80px auto;
+    margin: 60px auto;
     text-align: center;
+}
+
+@media (min-width: 640px) {
+    .loadingText {
+        font-size: 12px;
+        margin: 80px auto;
+    }
 }
 
 .errorPage {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
-    margin: 80px auto;
+    gap: 10px;
+    margin: 60px auto;
     text-align: center;
 }
 
-.errorMsg {
-    font-size: 14px;
-    color: var(--muted2);
+@media (min-width: 640px) {
+    .errorPage {
+        margin: 80px auto;
+    }
 }
 
-.noSlotsText {
+.errorMsg {
     font-size: 13px;
     color: var(--muted2);
 }
 
-/* ─── Responsive ─────────────────────────────────────────────────── */
-@media (max-width:520px) {
-    .page {
-        padding: 14px 10px 48px;
-    }
+.noSlotsText {
+    font-size: 12.5px;
+    color: var(--muted2);
+}
 
-    .card {
-        padding: 18px 14px;
-        border-radius: 12px;
-        gap: 14px;
-    }
-
-    .cardTitle {
-        font-size: 20px;
-    }
-
-    .lavaderoName {
-        font-size: 28px;
-    }
-
-    .welcomeGrid {
-        grid-template-columns: 1fr;
-    }
-
-    .fieldRow {
-        grid-template-columns: 1fr;
-    }
-
-    .fieldNarrow {
-        max-width: 100%;
-    }
-
-    .calMonthTitle {
-        font-size: 20px;
-    }
-
-    .calDay {
-        padding: 7px;
-        border-radius: 9px;
-    }
-
-    .calDayNum {
-        font-size: 12px;
-    }
-
-    .calDayClosed {
-        display: none;
-    }
-
-    .slotsGrid {
-        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-    }
-
-    .slotHora {
-        font-size: 19px;
-    }
-
-    .actions {
-        flex-direction: column-reverse;
-    }
-
-    .btnGhost {
-        width: 100%;
-        text-align: center;
+@media (min-width: 640px) {
+    .noSlotsText {
+        font-size: 13px;
     }
 }

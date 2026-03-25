@@ -2,9 +2,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 300px;
-    padding: 32px;
+    min-height: 200px;
+    padding: 24px;
     flex: 1;
+}
+
+@media (min-width: 640px) {
+    .loadingPage {
+        min-height: 300px;
+        padding: 32px;
+    }
 }
 
 .loadingText {
@@ -16,42 +23,90 @@
 .card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 24px;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+@media (min-width: 640px) {
+    .card {
+        border-radius: 12px;
+        padding: 20px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .card {
+        padding: 24px;
+    }
 }
 
 .sectionHeader {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+@media (min-width: 640px) {
+    .sectionHeader {
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: nowrap;
+    }
 }
 
 .sectionHeaderRight {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+    .sectionHeaderRight {
+        gap: 14px;
+    }
 }
 
 .sectionTitle {
     font-family: var(--font-disp);
-    font-size: 20px;
+    font-size: 18px;
     letter-spacing: 1px;
     font-weight: 500;
 }
 
+@media (min-width: 640px) {
+    .sectionTitle {
+        font-size: 20px;
+    }
+}
+
 .sectionMeta {
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 9px;
     color: var(--muted);
     margin-top: 2px;
 }
 
+@media (min-width: 640px) {
+    .sectionMeta {
+        font-size: 10px;
+    }
+}
+
 .totalText {
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: 10px;
     color: var(--muted2);
+}
+
+@media (min-width: 640px) {
+    .totalText {
+        font-size: 11px;
+    }
 }
 
 .totalValue {
@@ -59,12 +114,12 @@
 }
 
 .btnGhostSm {
-    height: 30px;
-    padding: 0 10px;
+    height: 28px;
+    padding: 0 8px;
     border-radius: 8px;
     cursor: pointer;
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 500;
     border: 1px solid var(--border);
     background: transparent;
@@ -72,7 +127,17 @@
     transition: all 0.15s;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+    .btnGhostSm {
+        height: 30px;
+        padding: 0 10px;
+        font-size: 11px;
+        gap: 6px;
+    }
 }
 
 .btnGhostSm:hover {
@@ -81,14 +146,22 @@
     background: rgba(47, 128, 255, 0.08);
 }
 
+/* ── STAT CARDS ─────────────────────────────────────────── */
 .statCard {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 16px;
+    padding: 14px;
     position: relative;
     overflow: hidden;
-    transition: border-color 0.2s, opacity 0.15s;
+    transition: border-color 0.2s;
+    cursor: default;
+}
+
+@media (min-width: 640px) {
+    .statCard {
+        padding: 16px;
+    }
 }
 
 .statCard::before {
@@ -99,46 +172,98 @@
     right: 0;
     height: 2px;
     background: var(--accent-color, var(--cyan));
-    box-shadow: 0 0 12px var(--accent-color, var(--cyan));
 }
 
 .statIcon {
     position: absolute;
-    right: 16px;
-    top: 16px;
+    right: 12px;
+    top: 12px;
     opacity: 0.1;
-    font-size: 36px;
+    font-size: 28px;
+}
+
+@media (min-width: 640px) {
+    .statIcon {
+        right: 16px;
+        top: 16px;
+        font-size: 36px;
+    }
 }
 
 .statLabel {
     font-family: var(--font-mono);
-    font-size: 9px;
+    font-size: 8px;
     color: var(--muted);
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+}
+
+@media (min-width: 640px) {
+    .statLabel {
+        font-size: 9px;
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+    }
 }
 
 .statValue {
     font-family: var(--font-disp);
-    font-size: 42px;
+    font-size: 32px;
     color: var(--text);
     letter-spacing: 1px;
     line-height: 1;
 }
 
+@media (min-width: 640px) {
+    .statValue {
+        font-size: 38px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .statValue {
+        font-size: 42px;
+    }
+}
+
 .statValueMd {
-    font-size: 28px;
+    font-size: 22px;
+}
+
+@media (min-width: 640px) {
+    .statValueMd {
+        font-size: 26px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .statValueMd {
+        font-size: 28px;
+    }
 }
 
 .statusStatValue {
-    font-size: 30px;
+    font-size: 24px;
+}
+
+@media (min-width: 640px) {
+    .statusStatValue {
+        font-size: 30px;
+    }
 }
 
 .statChange {
     font-family: var(--font-mono);
-    font-size: 10px;
-    margin-top: 8px;
+    font-size: 9px;
+    margin-top: 6px;
+}
+
+@media (min-width: 640px) {
+    .statChange {
+        font-size: 10px;
+        margin-top: 8px;
+    }
 }
 
 .statUp {
@@ -149,15 +274,23 @@
     color: var(--red);
 }
 
+/* ── BADGES ─────────────────────────────────────────────── */
 .badge {
     display: inline-flex;
     align-items: center;
-    padding: 3px 10px;
+    padding: 2px 8px;
     border-radius: 20px;
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 500;
     letter-spacing: 0.5px;
+}
+
+@media (min-width: 640px) {
+    .badge {
+        padding: 3px 10px;
+        font-size: 10px;
+    }
 }
 
 .badgeCyan {
@@ -190,21 +323,31 @@
     border: 1px solid rgba(255, 107, 107, 0.25);
 }
 
+/* ── TABLE ──────────────────────────────────────────────── */
 .table {
     width: 100%;
     border-collapse: collapse;
 }
 
 .table thead th {
-    padding: 10px 16px;
+    padding: 8px 12px;
     text-align: left;
     font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 2px;
+    font-size: 9px;
+    letter-spacing: 1.5px;
     color: var(--muted);
     text-transform: uppercase;
     border-bottom: 1px solid var(--border);
     font-weight: 400;
+    white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+    .table thead th {
+        padding: 10px 16px;
+        font-size: 10px;
+        letter-spacing: 2px;
+    }
 }
 
 .table tbody tr {
@@ -217,8 +360,15 @@
 }
 
 .table tbody td {
-    padding: 14px 16px;
-    font-size: 13.5px;
+    padding: 10px 12px;
+    font-size: 12.5px;
+}
+
+@media (min-width: 640px) {
+    .table tbody td {
+        padding: 14px 16px;
+        font-size: 13.5px;
+    }
 }
 
 .clickableRow {
@@ -231,18 +381,36 @@
 
 .clientPrimary {
     font-weight: 500;
-    font-size: 13.5px;
+    font-size: 12.5px;
+}
+
+@media (min-width: 640px) {
+    .clientPrimary {
+        font-size: 13.5px;
+    }
 }
 
 .clientSecondary {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--muted);
     font-family: var(--font-mono);
 }
 
+@media (min-width: 640px) {
+    .clientSecondary {
+        font-size: 11px;
+    }
+}
+
 .serviceCell {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--muted2);
+}
+
+@media (min-width: 640px) {
+    .serviceCell {
+        font-size: 13px;
+    }
 }
 
 .timeCell,
@@ -257,93 +425,173 @@
 }
 
 .timeCell {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--muted2);
 }
 
 .durationCell {
-    font-size: 12px;
+    font-size: 11px;
 }
 
 .durationCellMuted {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--muted);
 }
 
 .moneyCell {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     color: var(--cyan);
 }
 
 .dayCell {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
 }
 
 .numberCell {
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .orangeMonoCell {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--orange);
 }
 
 .dateCell {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--muted2);
 }
 
 .diffCell {
-    font-size: 11px;
+    font-size: 10px;
 }
 
+@media (min-width: 640px) {
+    .timeCell {
+        font-size: 12px;
+    }
+
+    .durationCell,
+    .durationCellMuted {
+        font-size: 12px;
+    }
+
+    .moneyCell {
+        font-size: 13px;
+    }
+
+    .dayCell {
+        font-size: 12px;
+    }
+
+    .numberCell {
+        font-size: 13px;
+    }
+
+    .orangeMonoCell {
+        font-size: 12px;
+    }
+
+    .dateCell {
+        font-size: 12px;
+    }
+
+    .diffCell {
+        font-size: 11px;
+    }
+}
+
+/* ── EMPTY STATE ────────────────────────────────────────── */
 .emptyState {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 32px 16px;
+    padding: 28px 16px;
+}
+
+@media (min-width: 640px) {
+    .emptyState {
+        padding: 32px 16px;
+    }
 }
 
 .emptyIcon {
-    font-size: 24px;
+    font-size: 20px;
     margin-bottom: 8px;
 }
 
+@media (min-width: 640px) {
+    .emptyIcon {
+        font-size: 24px;
+    }
+}
+
 .emptyText {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--muted2);
 }
 
+@media (min-width: 640px) {
+    .emptyText {
+        font-size: 14px;
+    }
+}
+
+/* ── MODAL ──────────────────────────────────────────────── */
 .modalOverlay {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.45);
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
     z-index: 1000;
 }
 
+@media (min-width: 640px) {
+    .modalOverlay {
+        align-items: center;
+        padding: 16px;
+    }
+}
+
 .modal {
-    max-width: 380px;
+    max-width: 100%;
     width: 100%;
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 24px;
+    border-radius: 16px 16px 0 0;
+    padding: 20px 16px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+@media (min-width: 640px) {
+    .modal {
+        max-width: 380px;
+        border-radius: 12px;
+        padding: 24px;
+        max-height: none;
+        overflow: visible;
+    }
 }
 
 .modalTitle {
     font-family: var(--font-disp);
-    font-size: 22px;
-    margin-bottom: 12px;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+@media (min-width: 640px) {
+    .modalTitle {
+        font-size: 22px;
+    }
 }
 
 .modalText {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--muted2);
     line-height: 1.6;
     margin-bottom: 8px;
@@ -354,32 +602,28 @@
 }
 
 .modalBadgeWrap {
-    margin: 16px 0;
+    margin: 12px 0;
     display: flex;
     justify-content: center;
 }
 
+@media (min-width: 640px) {
+    .modalBadgeWrap {
+        margin: 16px 0;
+    }
+}
+
 .modalActions {
     display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 18px;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
 }
 
-@media (max-width: 1100px) {
-    .sectionHeader {
-        flex-direction: column;
-        align-items: stretch;
-    }
-}
-
-@media (max-width: 640px) {
-    .card {
-        padding: 18px;
-    }
-
-    .table {
-        display: block;
-        overflow-x: auto;
+@media (min-width: 480px) {
+    .modalActions {
+        flex-direction: row;
+        justify-content: flex-end;
+        margin-top: 18px;
     }
 }

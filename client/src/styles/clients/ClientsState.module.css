@@ -3,20 +3,39 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 42px 12px;
+    padding: 32px 12px;
     text-align: center;
-    gap: 8px;
-    border-radius: 12px;
+    gap: 7px;
+    border-radius: 10px;
     border: 1px dashed rgba(86, 114, 170, 0.2);
     background: rgba(255, 255, 255, 0.015);
 }
 
+@media (min-width: 640px) {
+    .emptyState {
+        padding: 42px 12px;
+        gap: 8px;
+    }
+}
+
 .emptyIcon {
-    font-size: 24px;
+    font-size: 22px;
     line-height: 1;
 }
 
+@media (min-width: 640px) {
+    .emptyIcon {
+        font-size: 24px;
+    }
+}
+
 .emptyText {
-    font-size: 13px;
+    font-size: 12.5px;
     color: #8ea4cf;
+}
+
+@media (min-width: 640px) {
+    .emptyText {
+        font-size: 13px;
+    }
 }

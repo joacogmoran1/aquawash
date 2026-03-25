@@ -12,26 +12,8 @@
     gap: 16px;
 }
 
-/* TABLET */
-@media (max-width: 1200px) {
+@media (max-width: 480px) {
     .formStack {
-        gap: 16px;
-    }
-
-    .formGrid {
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-    }
-}
-
-/* MOBILE */
-@media (max-width: 640px) {
-    .formStack {
-        gap: 14px;
-    }
-
-    .formGrid {
-        grid-template-columns: 1fr;
         gap: 12px;
     }
 }

@@ -43,6 +43,10 @@ export const DIAS_SEMANA = [
 	{ key: "dom", label: "Domingo" },
 ];
 
+export const DIAS_ARR = ['dom', 'lun', 'mar', 'mie', 'jue', 'vie', 'sab'];
+
+export const MAX_DAYS = 90;
+
 // ─────────────────────────────────────────────
 // WEEKDAYS (para el grid del calendario, empieza en lunes)
 // ─────────────────────────────────────────────
