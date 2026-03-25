@@ -12,7 +12,7 @@ import { ClientDetail } from "../../components/client/ClientDetail/ClientDetail"
 import { PageLoading } from "../../components/PageLoading/PageLoading";
 
 // Utils
-import { getLastVisitGroup } from "../../utils/clientsHelpers";
+import { getLastVisitGroup } from "../../utils/clients/clientsHelpers";
 
 const PAGE_SIZE = 50;
 

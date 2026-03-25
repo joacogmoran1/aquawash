@@ -1,14 +1,22 @@
 import { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { useConfigPage } from "../../hooks/useConfigPage";
-import { LoadingState } from "../../components/LoadingState/LoadingState";
 
+// Context
+import { useAuth } from "../../context/AuthContext";
+
+// Hooks
+import { useConfigPage } from "../../hooks/useConfigPage";
+
+// Sections
 import { ConfigHeaderSection } from "../../sections/config/ConfigHeaderSection/ConfigHeaderSection";
 import { BusinessSection } from "../../sections/config/BusinessSection/BusinessSection";
 import { ServicesSection } from "../../sections/config/ServicesSection/ServicesSection";
 import { OperationScheduleSection } from "../../sections/config/OperationScheduleSection/OperationScheduleSection";
 import { SecuritySection } from "../../sections/config/SecuritySection/SecuritySection";
 
+// Components
+import { PageLoading } from "../../components/PageLoading/PageLoading";
+
+// Styles
 import layoutStyles from "../../styles/config/ConfigPageLayout.module.css";
 import shared from "../../styles/config/SharedCard.module.css";
 
@@ -102,8 +110,7 @@ export function ConfigPage({ showToast }) {
         deleteUserAccount,
     } = useConfigPage(showToast);
 
-    if (loading) return <LoadingState />;
-
+    if (loading) return <PageLoading />;
     return (
         <div className={layoutStyles.pageContent}>
             <ConfigHeaderSection

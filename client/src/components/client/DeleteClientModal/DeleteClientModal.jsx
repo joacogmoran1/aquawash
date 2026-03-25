@@ -1,48 +1,33 @@
+
 // Components
 import { Icon } from "../../Icon/Icon";
+import { ConfirmModal } from "../../dashboard/ConfirmModal/ConfirmModal";
 
-// Style
-import shared from "../../../styles/clients/ClientsShared.module.css";
-import styles from "../../../styles/clients/ClientsModal.module.css";
-
-export function DeleteClientModal({
-    deleteId,
-    setDeleteId,
-    doDelete,
-}) {
-    if (!deleteId) return null;
-
+export function DeleteClientModal({ deleteId, setDeleteId, doDelete, deleting }) {
     return (
-        <div
-            className={styles.modalOverlay}
-            onClick={(e) => {
-                if (e.target === e.currentTarget) setDeleteId(null);
-            }}
-        >
-            <div className={`${styles.modal} ${styles.modalSm}`}>
-                <div className={styles.modalTitle}>Confirmar eliminación</div>
-
-                <p className={styles.modalText}>
-                    ¿Estás seguro que querés eliminar este cliente? Esta acción no se puede
-                    deshacer.
-                </p>
-
-                <div className={styles.modalActions}>
-                    <button
-                        className={`${shared.btn} ${shared.btnGhost}`}
-                        onClick={() => setDeleteId(null)}
-                    >
+        <ConfirmModal
+            open={!!deleteId}
+            title="Confirmar eliminación"
+            onClose={() => setDeleteId(null)}
+            actions={
+                <>
+                    <button className="btn btn-ghost" onClick={() => setDeleteId(null)}>
                         Cancelar
                     </button>
-
                     <button
-                        className={`${shared.btn} ${shared.btnDanger}`}
+                        className="btn btn-danger"
                         onClick={doDelete}
+                        disabled={!!deleting}
                     >
-                        <Icon name="trash" size={13} /> Eliminar
+                        <Icon name="trash" size={13} />
+                        {deleting ? "Eliminando…" : "Eliminar"}
                     </button>
-                </div>
-            </div>
-        </div>
+                </>
+            }
+        >
+            <p style={{ fontSize: 13, color: "var(--muted2)", lineHeight: 1.5 }}>
+                ¿Estás seguro que querés eliminar este cliente? Esta acción no se puede deshacer.
+            </p>
+        </ConfirmModal>
     );
 }

@@ -1,29 +1,18 @@
 
-// Style
-import shared from "../../../styles/dashboard/Shared.module.css";
+// Components
+import { Modal } from "../../Modal/Modal";
 
-export function ConfirmModal({
-    open,
-    title,
-    children,
-    onClose,
-    actions,
-    maxWidth,
-}) {
-    if (!open) return null;
-
+export function ConfirmModal({ open, title, children, onClose, actions, maxWidth }) {
     return (
-        <div
-            className={shared.modalOverlay}
-            onClick={(e) => {
-                if (e.target === e.currentTarget) onClose?.();
-            }}
+        <Modal
+            open={open}
+            onClose={onClose}
+            title={title}
+            actions={actions}
+            size="sm"
+            style={maxWidth ? { maxWidth } : undefined}
         >
-            <div className={shared.modal} style={maxWidth ? { maxWidth } : undefined}>
-                <div className={shared.modalTitle}>{title}</div>
-                {children}
-                <div className={shared.modalActions}>{actions}</div>
-            </div>
-        </div>
+            {children}
+        </Modal>
     );
 }

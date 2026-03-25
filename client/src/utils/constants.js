@@ -28,6 +28,11 @@ export const NAV = [
 	},
 ];
 
+export const STATE_MAP = {
+	loading: { icon: "⏳", text: "Cargando…" },
+	empty: { icon: "👥", text: "No se encontraron clientes" },
+};
+
 // ─────────────────────────────────────────────
 // DÍAS DE LA SEMANA
 // Claves deben coincidir EXACTAMENTE con las columnas del modelo Lavadero
@@ -171,6 +176,18 @@ export const MINI_COLORS = [
 	"var(--muted2)",
 	"var(--red)",
 ];
+
+export const BADGE_COLORS = {
+	agendado: 'cyan',
+	reservado: 'cyan',
+	confirmado: 'green',
+	lavando: 'cyan',
+	esperando: 'orange',
+	listo: 'green',
+	entregado: 'muted',
+	completado: 'muted',
+	cancelado: 'red',
+};
 
 export const PAYMENT_METHODS = [
 	"efectivo", "transferencia", "mercadopago", "tarjeta", "pendiente",

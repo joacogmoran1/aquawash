@@ -1,6 +1,7 @@
 
 // Components
 import { Icon } from "../../Icon/Icon";
+import { EmptyState } from "../../EmptyState/EmptyState";
 
 // Utils
 import { sanitizeText, sanitizePrice, sanitizeInteger } from "../../../utils/config/configSanitizers";
@@ -145,10 +146,7 @@ export function ServicesCard({
 
             <div className={styles.servicesContent}>
                 {(operacion.Servicios || []).length === 0 ? (
-                    <div className={`${shared.emptyState} ${shared.emptyStateLarge}`}>
-                        <div className={shared.emptyIcon}>🔧</div>
-                        <div className={shared.emptyText}>No hay servicios configurados</div>
-                    </div>
+                    <EmptyState icon="🔧" text="No hay servicios configurados" />
                 ) : (
                     <table className={styles.table}>
                         <thead>

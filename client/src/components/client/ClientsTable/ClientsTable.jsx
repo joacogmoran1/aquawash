@@ -3,7 +3,7 @@ import { Icon } from "../../Icon/Icon";
 
 // Utils
 import { initials } from "../../../utils/dateUtils";
-import { formatLastVisit } from "../../../utils/clientsHelpers";
+import { formatLastVisit } from "../../../utils/clients/clientsHelpers";
 
 // Style
 import shared from "../../../styles/clients/ClientsShared.module.css";

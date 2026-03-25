@@ -12,7 +12,7 @@ import { PageLoading } from "../../components/PageLoading/PageLoading.jsx";
 // Utils
 import { getDaysInMonth, dateKey } from "../../utils/dateUtils";
 import { MONTHS, WEEKDAYS } from "../../utils/constants";
-import { esPasado, diaEsPasado } from "../../utils/calendarHelpers";
+import { esPasado, diaEsPasado } from "../../utils/calendar/calendarHelpers";
 
 
 export function CalendarPage({ showToast }) {
