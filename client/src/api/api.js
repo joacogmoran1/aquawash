@@ -8,7 +8,6 @@ let _refreshQueue = [];
 export function setAccessToken(token) { _accessToken = token; }
 export function clearAccessToken() { _accessToken = null; }
 
-// FIX #5: flushQueue pasa el token a las requests encoladas
 function flushQueue(error, token = null) {
 	_refreshQueue.forEach(({ resolve, reject }) =>
 		error ? reject(error) : resolve(token)
@@ -90,6 +89,37 @@ const api = {
 	post: (path, body) => request('POST', path, body),
 	put: (path, body) => request('PUT', path, body),
 	delete: (path, body) => request('DELETE', path, body),
+};
+
+// ── API pública (sin autenticación, sin refresh) ──────────────────────────────
+async function publicRequest(method, path, body) {
+	const abortCtrl = new AbortController();
+	const timerId = setTimeout(() => abortCtrl.abort(), REQUEST_TIMEOUT);
+
+	let res;
+	try {
+		res = await fetch(`${API_BASE}${path}`, {
+			method,
+			headers: { 'Content-Type': 'application/json' },
+			signal: abortCtrl.signal,
+			...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+		});
+	} catch (err) {
+		clearTimeout(timerId);
+		if (err.name === 'AbortError')
+			throw new Error('La solicitud tardó demasiado. Verificá tu conexión.');
+		throw err;
+	}
+	clearTimeout(timerId);
+
+	const data = await res.json().catch(() => ({}));
+	if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
+	return data;
+}
+
+export const publicApi = {
+	get: (path) => publicRequest('GET', path),
+	post: (path, body) => publicRequest('POST', path, body),
 };
 
 export default api;

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 // Api
-import api from '../../api/api';
+import { publicApi } from '../../api/api';
 
 // Sections
 import { BookingHeaderSection } from '../../sections/booking/BookingHeaderSection';
@@ -57,6 +57,7 @@ export function BookingPage() {
     const [booking, setBooking] = useState(false);
     const [bookingResult, setBookingResult] = useState(null);
 
+    // ── Carga inicial: info del lavadero ──────────────────────────────────────
     useEffect(() => {
         if (!lavaderoId) {
             setPageError('URL de reserva inválida.');
@@ -64,16 +65,16 @@ export function BookingPage() {
             return;
         }
 
-        fetch(`${api}/public/${lavaderoId}/info`)
-            .then(r => r.ok ? r.json() : r.json().then(d => Promise.reject(d)))
+        publicApi.get(`/public/${lavaderoId}/info`)
             .then(data => {
                 setLavadero(data.lavadero);
                 setServicios(data.servicios);
             })
-            .catch(e => setPageError(e?.error || 'No se encontró este lavadero.'))
+            .catch(e => setPageError(e?.message || 'No se encontró este lavadero.'))
             .finally(() => setPageLoad(false));
     }, [lavaderoId]);
 
+    // ── Slots disponibles ─────────────────────────────────────────────────────
     useEffect(() => {
         setHora('');
         setSlots([]);
@@ -84,8 +85,7 @@ export function BookingPage() {
         setSlotsLoading(true);
         const params = new URLSearchParams({ servicio_id: servicioId, fecha });
 
-        fetch(`${api}/public/${lavaderoId}/slots?${params}`)
-            .then(r => r.ok ? r.json() : { slots: [] })
+        publicApi.get(`/public/${lavaderoId}/slots?${params}`)
             .then(data => {
                 if (cancelled) return;
                 setSlots(data.slots || []);
@@ -99,16 +99,13 @@ export function BookingPage() {
                     setSlotsMsg('No se pudieron cargar los horarios.');
                 }
             })
-            .finally(() => {
-                if (!cancelled) setSlotsLoading(false);
-            });
+            .finally(() => { if (!cancelled) setSlotsLoading(false); });
 
-        return () => {
-            cancelled = true;
-        };
+        return () => { cancelled = true; };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lavaderoId, servicioId, fecha]);
 
+    // ── Helpers ───────────────────────────────────────────────────────────────
     function setF(k, v) {
         setForm(p => ({ ...p, [k]: v }));
         setFormError('');
@@ -130,6 +127,7 @@ export function BookingPage() {
         setSlots([]);
     }
 
+    // ── Lookup cliente existente ──────────────────────────────────────────────
     async function handleLookup() {
         setLookupError('');
         const dni = dniInput.replace(/\D/g, '');
@@ -147,17 +145,10 @@ export function BookingPage() {
         setLookupLoading(true);
 
         try {
-            const res = await fetch(`${api}/public/${lavaderoId}/lookup`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ dni, email: emailInput.trim().toLowerCase() }),
+            const data = await publicApi.post(`/public/${lavaderoId}/lookup`, {
+                dni,
+                email: emailInput.trim().toLowerCase(),
             });
-
-            const data = await res.json().catch(() => ({}));
-            if (!res.ok) {
-                setLookupError(data.error || 'Los datos ingresados no coinciden con ningún cliente registrado.');
-                return;
-            }
 
             setLookupResult(data);
             setSelectedAutoId('');
@@ -165,13 +156,14 @@ export function BookingPage() {
             setNewAutoForm(INIT_NEW_AUTO);
             setStep('returning');
             scrollTop();
-        } catch {
-            setLookupError('Error de conexión. Verificá tu internet e intentá de nuevo.');
+        } catch (e) {
+            setLookupError(e?.message || 'Los datos ingresados no coinciden con ningún cliente registrado.');
         } finally {
             setLookupLoading(false);
         }
     }
 
+    // ── Validación y avance desde formulario nuevo cliente ────────────────────
     function goCalendarFromNew() {
         const err = validateNewClientForm(form);
         if (err) {
@@ -185,6 +177,7 @@ export function BookingPage() {
         scrollTop();
     }
 
+    // ── Validación y avance desde cliente existente ───────────────────────────
     function goCalendarFromReturning() {
         setFormError('');
 
@@ -206,6 +199,7 @@ export function BookingPage() {
         scrollTop();
     }
 
+    // ── Confirmar turno ───────────────────────────────────────────────────────
     async function handleSubmit() {
         setFormError('');
         if (!servicioId) { setFormError('Seleccioná un servicio.'); return; }
@@ -239,23 +233,13 @@ export function BookingPage() {
                 payload.auto_year = form.auto_year ? Number(form.auto_year) : undefined;
             }
 
-            const res = await fetch(`${api}/public/${lavaderoId}/book`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-
-            const data = await res.json().catch(() => ({}));
-            if (!res.ok) {
-                setFormError(data.error || 'No se pudo agendar el turno. Intentá de nuevo.');
-                return;
-            }
+            const data = await publicApi.post(`/public/${lavaderoId}/book`, payload);
 
             setBookingResult(data.turno);
             setStep('success');
             scrollTop();
-        } catch {
-            setFormError('Error de conexión. Verificá tu internet e intentá de nuevo.');
+        } catch (e) {
+            setFormError(e?.message || 'No se pudo agendar el turno. Intentá de nuevo.');
         } finally {
             setBooking(false);
         }
@@ -264,6 +248,7 @@ export function BookingPage() {
     const servicioSel = servicios.find(s => s.id === servicioId);
     const isReturning = !!lookupResult;
 
+    // ── Render ────────────────────────────────────────────────────────────────
     if (pageLoad) {
         return <div className={styles.page}><p className={styles.loadingText}>Cargando…</p></div>;
     }
@@ -271,7 +256,10 @@ export function BookingPage() {
     if (pageError) {
         return (
             <div className={styles.page}>
-                <div className={styles.errorPage}><div style={{ fontSize: 32 }}>⚠️</div><p className={styles.errorMsg}>{pageError}</p></div>
+                <div className={styles.errorPage}>
+                    <div style={{ fontSize: 32 }}>⚠️</div>
+                    <p className={styles.errorMsg}>{pageError}</p>
+                </div>
             </div>
         );
     }
@@ -378,10 +366,16 @@ export function BookingPage() {
                 )}
 
                 {step === 'success' && bookingResult && (
-                    <SuccessSection bookingResult={bookingResult} lavadero={lavadero} formatFechaLarga={formatFechaLarga} />
+                    <SuccessSection
+                        bookingResult={bookingResult}
+                        lavadero={lavadero}
+                        formatFechaLarga={formatFechaLarga}
+                    />
                 )}
 
-                {lavadero?.telefono && step !== 'success' && <BookingFooterSection telefono={lavadero.telefono} />}
+                {lavadero?.telefono && step !== 'success' && (
+                    <BookingFooterSection telefono={lavadero.telefono} />
+                )}
             </div>
         </div>
     );

@@ -23,19 +23,19 @@ export function CalendarWidget({ lavadero, selectedDate, onSelectDate }) {
 
   function prev() {
     if (calMonth === 0) {
-      setCalYear(y => y - 1);
+      setCalYear((y) => y - 1);
       setCalMonth(11);
     } else {
-      setCalMonth(m => m - 1);
+      setCalMonth((m) => m - 1);
     }
   }
 
   function next() {
     if (calMonth === 11) {
-      setCalYear(y => y + 1);
+      setCalYear((y) => y + 1);
       setCalMonth(0);
     } else {
-      setCalMonth(m => m + 1);
+      setCalMonth((m) => m + 1);
     }
   }
 
@@ -50,15 +50,27 @@ export function CalendarWidget({ lavadero, selectedDate, onSelectDate }) {
   return (
     <div className={styles.calWidget}>
       <div className={styles.calHeader}>
-        <span className={styles.calMonthTitle}>{MONTHS[calMonth].toUpperCase()} {calYear}</span>
+        <span className={styles.calMonthTitle}>
+          {MONTHS[calMonth]?.label.toUpperCase()} {calYear}
+        </span>
+
         <div className={styles.calNavBtns}>
-          <button className={styles.calNavBtn} onClick={prev} aria-label="Mes anterior"><Icon name="chevLeft" size={16} /></button>
-          <button className={styles.calNavBtn} onClick={next} aria-label="Mes siguiente"><Icon name="chevRight" size={16} /></button>
+          <button className={styles.calNavBtn} onClick={prev} aria-label="Mes anterior">
+            <Icon name="chevLeft" size={16} />
+          </button>
+
+          <button className={styles.calNavBtn} onClick={next} aria-label="Mes siguiente">
+            <Icon name="chevRight" size={16} />
+          </button>
         </div>
       </div>
 
       <div className={styles.calWeekdays}>
-        {WEEKDAYS.map(w => <span key={w} className={styles.calWeekday}>{w}</span>)}
+        {WEEKDAYS.map((w) => (
+          <span key={w.key} className={styles.calWeekday}>
+            {w.short}
+          </span>
+        ))}
       </div>
 
       <div className={styles.calGrid}>
