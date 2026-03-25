@@ -1,9 +1,9 @@
 import { useState } from "react";
 
 // Sections
-import { DashboardMain } from "../../sections/dashboard/DashboardMain/DashboardMain";
-import { IngresosDetail } from "../../sections/dashboard/IngresosDetail/IngresosDetail";
-import { OrdenesDetail } from "../../sections/dashboard/OrdenesDetail/OrdenesDetail";
+import { DashboardMain } from "../../sections/dashboard/DashboardMain";
+import { IngresosDetail } from "../../sections/dashboard/IngresosDetail";
+import { OrdenesDetail } from "../../sections/dashboard/OrdenesDetail";
 
 
 export function DashboardPage() {

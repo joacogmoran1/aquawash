@@ -1,9 +1,9 @@
 
 // Components
-import { BusinessFormCard } from "../../../components/config/BusinessFormCard/BusinessFormCard";
+import { BusinessFormCard } from "../../components/config/BusinessFormCard/BusinessFormCard";
 
 // Style
-import layoutStyles from "../../../styles/config/ConfigPageLayout.module.css";
+import layoutStyles from "../../styles/config/ConfigPageLayout.module.css";
 
 export function BusinessSection({
     negocioForm,

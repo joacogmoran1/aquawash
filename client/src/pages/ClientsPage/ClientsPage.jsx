@@ -4,8 +4,8 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import api from "../../api/api";
 
 // Section
-import { ClientsContentSection } from "../../sections/client/ClientsContentSection/ClientsContentSection";
-import { ClientsModalsSection } from "../../sections/client/ClientsModalsSection/ClientsModalsSection";
+import { ClientsContentSection } from "../../sections/client/ClientsContentSection";
+import { ClientsModalsSection } from "../../sections/client/ClientsModalsSection";
 
 // Components
 import { ClientDetail } from "../../components/client/ClientDetail/ClientDetail";

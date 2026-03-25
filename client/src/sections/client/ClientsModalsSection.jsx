@@ -1,6 +1,6 @@
 // Components
-import { NewClientModal } from "../../../components/client/NewClientModal/NewClientModal";
-import { DeleteClientModal } from "../../../components/client/DeleteClientModal/DeleteClientModal";
+import { NewClientModal } from "../../components/client/NewClientModal/NewClientModal";
+import { DeleteClientModal } from "../../components/client/DeleteClientModal/DeleteClientModal";
 
 export function ClientsModalsSection({
     showModal,

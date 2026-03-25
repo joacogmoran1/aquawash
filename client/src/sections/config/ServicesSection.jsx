@@ -1,9 +1,9 @@
 
 // Components
-import { ServicesCard } from "../../../components/config/ServicesCard/ServicesCard";
+import { ServicesCard } from "../../components/config/ServicesCard/ServicesCard";
 
 // Style
-import layoutStyles from "../../../styles/config/ConfigPageLayout.module.css";
+import layoutStyles from "../../styles/config/ConfigPageLayout.module.css";
 
 
 export function ServicesSection({

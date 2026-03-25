@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 
 // Api
-import api from "../../../api/api";
+import api from "../../api/api";
 
 // Components
-import { Icon } from "../../../components/Icon/Icon";
-import { SectionCard } from "../../../components/dashboard/SectionCard/SectionCard";
-import { StatCard } from "../../../components/dashboard/StatCard/StatCard";
-import { EmptyState } from "../../../components/dashboard/EmptyState/EmptyState";
-import { EstadoBadge } from "../../../components/dashboard/EstadoBadage/EstadoBadage";
-import { PageLoading } from "../../../components/PageLoading/PageLoading";
+import { Icon } from "../../components/Icon/Icon";
+import { SectionCard } from "../../components/dashboard/SectionCard/SectionCard";
+import { StatCard } from "../../components/dashboard/StatCard/StatCard";
+import { EmptyState } from "../../components/dashboard/EmptyState/EmptyState";
+import { EstadoBadge } from "../../components/dashboard/EstadoBadage/EstadoBadage";
+import { PageLoading } from "../../components/PageLoading/PageLoading";
 
 // Utils
 import {
@@ -17,11 +17,11 @@ import {
     fmtHour,
     getWeeklyTotal,
     getMaxIncome,
-} from "../../../utils/dashboard/helpers";
+} from "../../utils/dashboard/helpers";
 
 // Style
-import shared from "../../../styles/dashboard/Shared.module.css";
-import styles from "../../../styles/dashboard/Main.module.css";
+import shared from "../../styles/dashboard/Shared.module.css";
+import styles from "../../styles/dashboard/Main.module.css";
 
 export function DashboardMain({ onGoIngresos, onGoOrdenes }) {
     const [stats, setStats] = useState(null);

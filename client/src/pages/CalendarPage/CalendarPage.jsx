@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import api from "../../api/api";
 
 // Section
-import { CalendarMainSection } from "../../sections/calendar/CalendarMainSection/CalendarMainSection";
+import { CalendarMainSection } from "../../sections/calendar/CalendarMainSection";
 
 // Components
 import { PageLoading } from "../../components/PageLoading/PageLoading.jsx";

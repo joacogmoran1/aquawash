@@ -1,11 +1,11 @@
 // Components
-import { ClientsToolbar } from "../../../components/client/ClientsToolbar/ClientsToolbar";
-import { ClientsTable } from "../../../components/client/ClientsTable/ClientsTable";
-import { ClientsState } from "../../../components/client/ClientsState/ClientsState";
+import { ClientsToolbar } from "../../components/client/ClientsToolbar/ClientsToolbar";
+import { ClientsTable } from "../../components/client/ClientsTable/ClientsTable";
+import { ClientsState } from "../../components/client/ClientsState/ClientsState";
 
 // Style
-import layoutStyles from "../../../styles/clients/ClientsPageLayout.module.css";
-import shared from "../../../styles/clients/ClientsShared.module.css";
+import layoutStyles from "../../styles/clients/ClientsPageLayout.module.css";
+import shared from "../../styles/clients/ClientsShared.module.css";
 
 export function ClientsContentSection({
     search,

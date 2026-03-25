@@ -7,11 +7,11 @@ import { useAuth } from "../../context/AuthContext";
 import { useConfigPage } from "../../hooks/useConfigPage";
 
 // Sections
-import { ConfigHeaderSection } from "../../sections/config/ConfigHeaderSection/ConfigHeaderSection";
-import { BusinessSection } from "../../sections/config/BusinessSection/BusinessSection";
-import { ServicesSection } from "../../sections/config/ServicesSection/ServicesSection";
-import { OperationScheduleSection } from "../../sections/config/OperationScheduleSection/OperationScheduleSection";
-import { SecuritySection } from "../../sections/config/SecuritySection/SecuritySection";
+import { ConfigHeaderSection } from "../../sections/config/ConfigHeaderSection";
+import { BusinessSection } from "../../sections/config/BusinessSection";
+import { ServicesSection } from "../../sections/config/ServicesSection";
+import { OperationScheduleSection } from "../../sections/config/OperationScheduleSection";
+import { SecuritySection } from "../../sections/config/SecuritySection";
 
 // Components
 import { PageLoading } from "../../components/PageLoading/PageLoading";

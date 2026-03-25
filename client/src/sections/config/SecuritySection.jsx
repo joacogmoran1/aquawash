@@ -1,5 +1,9 @@
-import { SecurityCard } from "../../../components/config/SecurityCard/SecurityCard";
-import layoutStyles from "../../../styles/config/ConfigPageLayout.module.css";
+
+// Components
+import { SecurityCard } from "../../components/config/SecurityCard/SecurityCard";
+
+// Style
+import layoutStyles from "../../styles/config/ConfigPageLayout.module.css";
 
 export function SecuritySection({
     email,

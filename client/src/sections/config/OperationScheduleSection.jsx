@@ -1,9 +1,9 @@
 
 // Components
-import { OperationScheduleCard } from "../../../components/config/OperationScheduleCard/OperationScheduleCard";
+import { OperationScheduleCard } from "../../components/config/OperationScheduleCard/OperationScheduleCard";
 
 // Style
-import layoutStyles from "../../../styles/config/ConfigPageLayout.module.css";
+import layoutStyles from "../../styles/config/ConfigPageLayout.module.css";
 
 export function OperationScheduleSection({
     operacion,

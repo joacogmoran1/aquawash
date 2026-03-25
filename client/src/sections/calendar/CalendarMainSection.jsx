@@ -1,12 +1,12 @@
 // Components
-import { CalendarHeader } from "../../../components/calendar/CalendarHeader/CalendarHeader.jsx";
-import { CalendarGrid } from "../../../components/calendar/CalendarGrid/CalendarGrid.jsx";
-import { AppointmentList } from "../../../components/calendar/AppointmentList/AppointmentList.jsx";
-import { StatusLegend } from "../../../components/calendar/StatusLegend/StatusLegend.jsx";
-import { NewAppointmentModal } from "../../../components/calendar/NewAppointmentModal/NewAppointmentModal.jsx";
+import { CalendarHeader } from "../../components/calendar/CalendarHeader/CalendarHeader.jsx";
+import { CalendarGrid } from "../../components/calendar/CalendarGrid/CalendarGrid.jsx";
+import { AppointmentList } from "../../components/calendar/AppointmentList/AppointmentList.jsx";
+import { StatusLegend } from "../../components/calendar/StatusLegend/StatusLegend.jsx";
+import { NewAppointmentModal } from "../../components/calendar/NewAppointmentModal/NewAppointmentModal.jsx";
 
 // Styles
-import styles from "../../../styles/calendar/CalendarPage.module.css";
+import styles from "../../styles/calendar/CalendarPage.module.css";
 
 export function CalendarMainSection({
     month,

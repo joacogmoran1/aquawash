@@ -1,6 +1,6 @@
 
 // Components
-import { ConfigToolbar } from "../../../components/config/ConfigToolbar/ConfigToolbar";
+import { ConfigToolbar } from "../../components/config/ConfigToolbar/ConfigToolbar";
 
 export function ConfigHeaderSection({
     configEditing,

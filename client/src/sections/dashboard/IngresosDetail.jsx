@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
 
 // Api
-import api from "../../../api/api";
+import api from "../../api/api";
 
 // Components
-import { BackBtn } from "../../../components/BackBtn/BackBtn";
-import { SectionCard } from "../../../components/dashboard/SectionCard/SectionCard";
-import { StatCard } from "../../../components/dashboard/StatCard/StatCard";
-import { EmptyState } from "../../../components/dashboard/EmptyState/EmptyState";
-import { PageLoading } from "../../../components/PageLoading/PageLoading";
+import { BackBtn } from "../../components/BackBtn/BackBtn";
+import { SectionCard } from "../../components/dashboard/SectionCard/SectionCard";
+import { StatCard } from "../../components/dashboard/StatCard/StatCard";
+import { EmptyState } from "../../components/dashboard/EmptyState/EmptyState";
+import { PageLoading } from "../../components/PageLoading/PageLoading";
 
 // Utils
-import { PAYMENT_METHOD_COLORS, MINI_COLORS } from "../../../utils/constants";
+import { PAYMENT_METHOD_COLORS, MINI_COLORS } from "../../utils/constants";
 
 // Style
-import shared from "../../../styles/dashboard/Shared.module.css";
-import styles from "../../../styles/dashboard/Ingresos.module.css";
+import shared from "../../styles/dashboard/Shared.module.css";
+import styles from "../../styles/dashboard/Ingresos.module.css";
 
 
 export function IngresosDetail({ onBack }) {

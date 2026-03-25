@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 
 // Api
-import api from "../../../api/api";
+import api from "../../api/api";
 
 // Components
-import { Icon } from "../../../components/Icon/Icon";
-import { BackBtn } from "../../../components/BackBtn/BackBtn";
-import { EstadoBadge } from "../../../components/dashboard/EstadoBadage/EstadoBadage";
-import { ConfirmModal } from "../../../components/dashboard/ConfirmModal/ConfirmModal";
-import { SectionCard } from "../../../components/dashboard/SectionCard/SectionCard";
-import { EmptyState } from "../../../components/dashboard/EmptyState/EmptyState";
-import { PageLoading } from "../../../components/PageLoading/PageLoading";
+import { Icon } from "../../components/Icon/Icon";
+import { BackBtn } from "../../components/BackBtn/BackBtn";
+import { EstadoBadge } from "../../components/dashboard/EstadoBadage/EstadoBadage";
+import { ConfirmModal } from "../../components/dashboard/ConfirmModal/ConfirmModal";
+import { SectionCard } from "../../components/dashboard/SectionCard/SectionCard";
+import { EmptyState } from "../../components/dashboard/EmptyState/EmptyState";
+import { PageLoading } from "../../components/PageLoading/PageLoading";
 
 // Utils
 import {
@@ -19,13 +19,13 @@ import {
 	ESTADO_COLORS,
 	FILTER_COLORS,
 	MONTHS,
-} from "../../../utils/constants";
-import { dateKey } from "../../../utils/dateUtils";
-import { fmtCurrency, fmtHour, getDurationMin } from "../../../utils/dashboard/helpers";
+} from "../../utils/constants";
+import { dateKey } from "../../utils/dateUtils";
+import { fmtCurrency, fmtHour, getDurationMin } from "../../utils/dashboard/helpers";
 
 // Style
-import shared from "../../../styles/dashboard/Shared.module.css";
-import styles from "../../../styles/dashboard/Ordenes.module.css";
+import shared from "../../styles/dashboard/Shared.module.css";
+import styles from "../../styles/dashboard/Ordenes.module.css";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function getWeekOfMonth(date) {
